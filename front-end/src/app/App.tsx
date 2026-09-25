@@ -15,6 +15,7 @@ import { initialStore, type AppStore } from "./store";
 import "../styles/app.css";
 import "../styles/extra.css";
 import "../styles/pages.css";
+import "../styles/dark.css";
 
 export default function App() {
   const [store, setStore] = useState<AppStore>(initialStore);

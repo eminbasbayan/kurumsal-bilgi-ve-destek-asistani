@@ -12,6 +12,7 @@ import {
 } from "@radix-ui/react-icons";
 import { profile } from "../data";
 import { go, PAGE_TITLES } from "../app/navigation";
+import { ThemeToggleButton } from "./ThemeToggleButton";
 
 export function AppShell({
   children,
@@ -96,6 +97,8 @@ export function AppShell({
                 {unread > 0 && <i className="bell-dot" />}
               </IconButton>
             </Tooltip>
+            {/* Dark/Light mode toggle */}
+            <ThemeToggleButton />
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
                 <button className="user-menu">
@@ -117,6 +120,7 @@ export function AppShell({
               </DropdownMenu.Content>
             </DropdownMenu.Root>
           </div>
+     
         </div>
         <main className="content">{children}</main>
       </div>

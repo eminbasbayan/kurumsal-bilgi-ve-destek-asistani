@@ -1,0 +1,193 @@
+html[data-appearance="dark"] {
+  color-scheme: dark;
+  --color-bg: #0b1220;
+  --portal-panel: #111a2e;
+  --color-surface-raised: #17223a;
+  --color-surface-hover: #1b2a47;
+  --color-ink: #f1f5f9;
+  --color-body: #cbd5e1;
+  --color-muted: #a7b4c8;
+  --color-soft: #94a3b8;
+  --color-line: #22304a;
+  --color-control-line: #334155;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-link: #60a5fa;
+  --color-selected-bg: #172554;
+  --color-selected-line: #3b82f6;
+  --color-danger: #f87171;
+  --color-danger-bg: #3b1219;
+  --color-success: #34d399;
+  color: var(--color-body);
+  background: var(--color-bg);
+}
+
+html[data-appearance="dark"] .radix-themes {
+  --color-background: var(--color-bg);
+  --color-panel-solid: var(--portal-panel);
+  --color-panel-translucent: var(--portal-panel);
+  --color-surface: var(--color-surface-raised);
+  --accent-9: var(--color-primary);
+  --accent-10: var(--color-primary-hover);
+  --accent-contrast: #fff;
+  --gray-a6: var(--color-line);
+  background: var(--color-bg);
+  color: var(--color-body);
+}
+
+html[data-appearance="dark"] .login-side {
+  background: var(--color-bg);
+}
+
+html[data-appearance="dark"] .topbar {
+  background: var(--portal-panel);
+  border-bottom-color: var(--color-line);
+}
+
+html[data-appearance="dark"] :is(
+  h1,
+  h2,
+  h3,
+  .topbar-title strong,
+  .user-menu strong,
+  .stats strong,
+  td strong,
+  dd,
+  .request-link,
+  .empty h3,
+  .login-card h2
+) {
+  color: var(--color-ink);
+}
+
+html[data-appearance="dark"] :is(
+  .long-text,
+  .field,
+  .quick button,
+  .priority-options strong,
+  .knowledge,
+  .notification p,
+  .context p,
+  .form-aside ul,
+  .file-picker,
+  td
+) {
+  color: var(--color-body);
+}
+
+html[data-appearance="dark"] :is(
+  .topbar-title span,
+  .user-menu small,
+  .muted,
+  .page-header p:last-child,
+  .panel-title p,
+  .stats .rt-Card div,
+  th,
+  td small,
+  dt,
+  .timeline small,
+  .ticket-message small,
+  .chat-head p,
+  .chat-welcome p,
+  .chat-disclaimer,
+  .assistant-aside p:not(.eyebrow),
+  .source-body p,
+  .notification small,
+  .profile-card p,
+  .field small,
+  .priority-options small,
+  .result-count,
+  .note,
+  .empty
+) {
+  color: var(--color-muted);
+}
+
+html[data-appearance="dark"] :is(
+  .eyebrow,
+  td .request-no,
+  .request-link:hover,
+  .quick button:hover,
+  .knowledge svg,
+  .file-picker svg,
+  .context > svg,
+  .empty svg
+) {
+  color: var(--color-link);
+}
+
+html[data-appearance="dark"] .priority-high {
+  color: var(--color-danger);
+}
+
+html[data-appearance="dark"] .online {
+  color: var(--color-success);
+}
+
+html[data-appearance="dark"] :is(
+  .panel,
+  .requests-card,
+  .form-card,
+  .chat-card,
+  .stats .rt-Card,
+  .profile-card,
+  .profile-details,
+  .assistant-aside .rt-Card,
+  .form-aside .rt-Card,
+  .detail-aside .rt-Card,
+  .detail-aside dl div,
+  .profile-details dl div,
+  th,
+  td,
+  .chat-head,
+  .composer,
+  .knowledge,
+  .notification,
+  .ticket-message,
+  .reply-form,
+  .form-actions,
+  .quick button,
+  .table-scroll tr
+) {
+  border-color: var(--color-line);
+}
+
+html[data-appearance="dark"] :is(
+  .priority-options label,
+  .file-picker,
+  .timeline li:before
+) {
+  border-color: var(--color-control-line);
+}
+
+html[data-appearance="dark"] :is(th, .bubble, .file-chip, .source-body blockquote) {
+  background: var(--color-surface-raised);
+  color: var(--color-body);
+}
+
+html[data-appearance="dark"] .bubble strong {
+  color: var(--color-ink);
+}
+
+html[data-appearance="dark"] .notification {
+  background: var(--portal-panel);
+}
+
+html[data-appearance="dark"] :is(tbody tr:hover, .notification.unread) {
+  background: var(--color-surface-hover);
+}
+
+html[data-appearance="dark"] .chat-row.user .bubble {
+  background: var(--color-selected-bg);
+  color: var(--color-ink);
+}
+
+html[data-appearance="dark"] :is(.priority-options label.selected, .context) {
+  background: var(--color-selected-bg);
+  border-color: var(--color-selected-line);
+}
+
+html[data-appearance="dark"] .form-error {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
