@@ -1,0 +1,16 @@
+export {
+  ATTACHMENT_MIME_TYPES,
+  CATEGORIES,
+  CLOSED_STATUSES,
+  DEFAULT_CONVERSATION_TITLE,
+  DEMO_EMAIL,
+  DEMO_LOGIN_MESSAGE,
+  DEMO_PASSWORD,
+  MAX_ATTACHMENT_BYTES,
+  OPEN_STATUSES,
+  PRIORITIES,
+  REQUEST_STATUSES,
+  teamFor,
+  type Priority,
+  type RequestStatus,
+} from "./config/constants.js";
