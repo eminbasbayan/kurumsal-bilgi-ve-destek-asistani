@@ -129,6 +129,36 @@ after(async () => {
   rmSync(dir, { recursive: true, force: true });
 });
 
+test("swagger bütün uçları oturumsuz açar", async () => {
+  const page = await fetch(`${base}/api-docs/`);
+  assert.equal(page.status, 200);
+  assert.match(page.headers.get("content-type") ?? "", /html/);
+  const spec = await fetch(`${base}/api-docs.json`);
+  assert.equal(spec.status, 200);
+  const document = (await spec.json()) as { paths: Record<string, unknown> };
+  for (const path of [
+    "/api/auth/login",
+    "/api/auth/logout",
+    "/api/profile",
+    "/api/categories",
+    "/api/requests/summary",
+    "/api/requests",
+    "/api/requests/{id}",
+    "/api/requests/{id}/messages",
+    "/api/notifications",
+    "/api/notifications/{id}/read",
+    "/api/notifications/read-all",
+    "/api/sources",
+    "/api/sources/{id}",
+    "/api/conversations",
+    "/api/conversations/{id}",
+    "/api/conversations/{id}/messages",
+    "/api/assistant/messages/{id}/feedback",
+  ]) {
+    assert.ok(document.paths[path], path);
+  }
+});
+
 test("hatalı parola ve eksik oturum reddedilir", async () => {
   const saved = token;
   token = "";

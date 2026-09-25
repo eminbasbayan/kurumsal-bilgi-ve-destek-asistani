@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import type { DatabaseSync } from "node:sqlite";
+import { mountDocs } from "./docs/swagger.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
 import { requireAuth } from "./middleware/auth.js";
 import { createAssistantRouter, createConversationsRouter } from "./modules/assistant/assistant.routes.js";
@@ -20,6 +21,7 @@ export function createApp(db: DatabaseSync, now: Now = () => new Date()): expres
   app.disable("x-powered-by");
   app.use(cors({ origin: "http://localhost:5173" }));
   app.use(express.json());
+  mountDocs(app);
 
   app.use("/api/auth", createPublicAuthRouter(db));
   app.use("/api", requireAuth(db));
