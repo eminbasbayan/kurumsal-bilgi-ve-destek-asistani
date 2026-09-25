@@ -66,7 +66,11 @@ export function AppShell({
         </div>
       </aside>
       {menu && (
-        <button className="scrim" aria-label="Menüyü kapat" onClick={() => setMenu(false)} />
+        <button
+          className="scrim"
+          aria-label="Menüyü kapat"
+          onClick={() => setMenu(false)}
+        />
       )}
       <div className="main-wrap">
         <div className="topbar">

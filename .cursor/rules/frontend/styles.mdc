@@ -1,0 +1,39 @@
+---
+description: CSS tokens, dark mode, and Radix Themes styling rules for the front-end
+globs: front-end/src/**/*.css
+alwaysApply: false
+---
+
+# Front-end styles
+
+Token values and their meanings are defined in `.codex/skills/frontend-development/SKILL.md`. This rule covers where styles go.
+
+## Files
+
+| File | Contents |
+| --- | --- |
+| `src/index.css` | `:root` tokens (`--color-*`, typography sizes), base element styles |
+| `src/styles/app.css` | App shell, sidebar, shared components |
+| `src/styles/pages.css` | Page-specific layouts |
+| `src/styles/extra.css` | Supplementary component styles |
+| `src/styles/dark.css` | Every dark-mode override, under `html[data-appearance="dark"]` |
+
+## Rules
+
+- Use the semantic variables; do not repeat raw hex values in component selectors.
+
+```css
+/* ❌ */
+.request-card { border: 1px solid #e2e8f0; color: #0f172a; }
+
+/* ✅ */
+.request-card { border: 1px solid var(--color-line); color: var(--color-ink); }
+```
+
+- When you add a light-mode color, add its dark counterpart in `dark.css` in the same change. Check contrast in both themes.
+- Style Radix components by adding a `className` or targeting `.radix-themes` tokens. Do not restyle Radix internals in ways that hide focus rings or break states such as `data-state` and `data-disabled`.
+- Status colors come from the existing `status` class mapping (`statusClass` in `src/app/navigation.ts`). Do not add new status colors.
+- Use `font-variant-numeric: tabular-nums` for request numbers, counters, and dates.
+- Put any new animation or transition behind `@media (prefers-reduced-motion: no-preference)`, or disable it under `reduce`.
+- Reuse the existing breakpoints in `pages.css` (`1100px`, `800px`, `600px`) instead of adding new ones. By `600px`, forms are one column and request tables are cards.
+- Long subjects, file names, and source excerpts use `overflow-wrap: anywhere`.

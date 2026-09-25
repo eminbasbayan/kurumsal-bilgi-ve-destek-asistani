@@ -1,0 +1,39 @@
+---
+description: SQLite schema, seed data, and query rules for node:sqlite in the back-end
+globs: back-end/src/db/**/*.ts, back-end/src/modules/**/*.service.ts
+alwaysApply: false
+---
+
+# Database (node:sqlite)
+
+Schema lives in `back-end/src/db/database.ts`, demo data in `back-end/src/db/seed.ts`, helpers in `back-end/src/db/sql.ts`.
+
+## Queries
+
+- Always use `?` placeholders. Never interpolate user input into SQL.
+- Scope every employee-owned read by `employee_id`. Before an update that uses only `id`, first confirm ownership:
+
+```ts
+// ✅ notifications.service.ts pattern
+const owned = db.prepare("SELECT id FROM notifications WHERE id = ? AND employee_id = ?").get(id, employeeId);
+if (!owned) throw new HttpError(404, "Bildirim bulunamadı.");
+db.prepare("UPDATE notifications SET read = 1 WHERE id = ?").run(id);
+```
+
+- Wrap multi-statement writes in `transaction(db, () => ...)`, and read `lastInsertRowid` with `insertedId`.
+- Store timestamps as ISO strings from the injected `now()`; never call `new Date()` inside a service.
+- Map `snake_case` columns to `camelCase` response fields in the service, as `requestListItem` does.
+
+## Data consistency
+
+A request write must keep its related records in step in the same transaction:
+
+- New request: `status = 'Yeni'`, a `Talep oluşturuldu` timeline row, and a notification.
+- New message: update `requests.updated_at`, and add the message and a timeline row.
+- Employees never change `status`; no endpoint should expose that.
+
+## Schema changes
+
+- There is no migration system: `CREATE TABLE IF NOT EXISTS` does not alter existing tables. After a schema change, tell the user to delete `back-end/data/app.sqlite` locally, or add an explicit `ALTER TABLE`.
+- `CHECK` constraints repeat the status and priority lists from `src/config/constants.ts`. Change both together.
+- `seedIfEmpty` runs only when `employees` is empty. Keep seed data idempotent and clearly fictional (`ornek-kurum.com`), and keep at least 10 requests that cover every status.

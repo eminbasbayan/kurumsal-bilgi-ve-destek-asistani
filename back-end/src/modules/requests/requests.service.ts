@@ -1,24 +1,21 @@
 import type { DatabaseSync } from "node:sqlite";
 import {
-  ATTACHMENT_MIME_TYPES,
-  CATEGORIES,
   CLOSED_STATUSES,
-  MAX_ASSISTANT_CONTEXT_LENGTH,
-  MAX_ATTACHMENT_BYTES,
-  MAX_DESCRIPTION_LENGTH,
-  MAX_FILE_NAME_LENGTH,
-  MAX_MESSAGE_LENGTH,
-  MAX_SUBJECT_LENGTH,
   OPEN_STATUSES,
-  PRIORITIES,
-  REQUEST_STATUSES,
   teamFor,
   type Priority,
   type RequestStatus,
 } from "../../config/constants.js";
 import { insertedId, transaction } from "../../db/sql.js";
-import { HttpError, includesTr, isRecord, limitText } from "../../shared/http.js";
+import { HttpError, includesTr } from "../../shared/http.js";
+import { parseInput } from "../../shared/validate.js";
 import type { Employee, Now } from "../../shared/types.js";
+import {
+  createRequestSchema,
+  requestListFilterSchema,
+  requestMessageSchema,
+  type CreateRequestInput,
+} from "./requests.schema.js";
 
 type RequestRow = {
   id: number;
@@ -36,22 +33,7 @@ type RequestRow = {
   assistant_context: string | null;
 };
 
-export type AttachmentInput = {
-  name: string;
-  mimeType: string;
-  sizeBytes: number;
-};
-
-export type CreateRequestInput = {
-  category: string;
-  subcategory: string;
-  subject: string;
-  description: string;
-  priority: Priority;
-  attachments: AttachmentInput[];
-  assistantContext: string | null;
-  clientRequestId: string | null;
-};
+export type { CreateRequestInput };
 
 const openStatuses = new Set<string>(OPEN_STATUSES);
 const closedStatuses = new Set<string>(CLOSED_STATUSES);
@@ -101,15 +83,7 @@ export function listRequests(
   employeeId: number,
   filter: { q?: string; status?: string; category?: string; scope?: string },
 ) {
-  if (filter.scope && !["all", "open", "closed"].includes(filter.scope)) {
-    throw new HttpError(400, "Kapsam all, open veya closed olmalıdır.");
-  }
-  if (filter.status && !REQUEST_STATUSES.includes(filter.status as RequestStatus)) {
-    throw new HttpError(400, "Bilinmeyen talep durumu.");
-  }
-  if (filter.category && !(filter.category in CATEGORIES)) {
-    throw new HttpError(400, "Bilinmeyen kategori.");
-  }
+  const parsed = parseInput(requestListFilterSchema, filter, "Geçersiz süzgeç.");
   const rows = db
     .prepare(
       `SELECT * FROM requests WHERE employee_id = ?
@@ -118,11 +92,11 @@ export function listRequests(
     .all(employeeId) as RequestRow[];
   return rows
     .filter((row) => {
-      if (filter.status && row.status !== filter.status) return false;
-      if (filter.category && row.category !== filter.category) return false;
-      if (filter.scope === "open" && !openStatuses.has(row.status)) return false;
-      if (filter.scope === "closed" && !closedStatuses.has(row.status)) return false;
-      if (filter.q && !includesTr(`${row.number} ${row.subject}`, filter.q)) return false;
+      if (parsed.status && row.status !== parsed.status) return false;
+      if (parsed.category && row.category !== parsed.category) return false;
+      if (parsed.scope === "open" && !openStatuses.has(row.status)) return false;
+      if (parsed.scope === "closed" && !closedStatuses.has(row.status)) return false;
+      if (parsed.q && !includesTr(`${row.number} ${row.subject}`, parsed.q)) return false;
       return true;
     })
     .map(requestListItem);
@@ -197,82 +171,7 @@ export function getRequest(db: DatabaseSync, employeeId: number, id: number) {
 }
 
 export function parseCreateRequest(body: unknown): CreateRequestInput {
-  if (!isRecord(body)) throw new HttpError(400, "Talep bilgileri eksik.");
-  const category = typeof body.category === "string" ? body.category.trim() : "";
-  const subcategory = typeof body.subcategory === "string" ? body.subcategory.trim() : "";
-  const subject = typeof body.subject === "string" ? body.subject.trim() : "";
-  const description = typeof body.description === "string" ? body.description.trim() : "";
-  const priority = typeof body.priority === "string" ? body.priority.trim() : "";
-  if (!category || !subcategory || !subject || !description || !priority) {
-    throw new HttpError(
-      400,
-      "Kategori, alt kategori, konu, açıklama ve öncelik zorunludur.",
-    );
-  }
-  const subcategories = CATEGORIES[category];
-  if (!subcategories) throw new HttpError(400, "Bilinmeyen kategori.");
-  if (!subcategories.includes(subcategory)) {
-    throw new HttpError(400, "Alt kategori seçilen kategoriye ait değil.");
-  }
-  if (!PRIORITIES.includes(priority as Priority)) {
-    throw new HttpError(400, "Öncelik Düşük, Normal veya Yüksek olmalıdır.");
-  }
-  limitText(subject, MAX_SUBJECT_LENGTH, "Konu");
-  limitText(description, MAX_DESCRIPTION_LENGTH, "Açıklama");
-  const attachments = parseAttachments(body.attachments);
-  const assistantContext =
-    typeof body.assistantContext === "string" && body.assistantContext.trim()
-      ? limitText(body.assistantContext.trim(), MAX_ASSISTANT_CONTEXT_LENGTH, "Asistan bağlamı")
-      : null;
-  let clientRequestId: string | null = null;
-  if (body.clientRequestId !== undefined && body.clientRequestId !== null) {
-    if (typeof body.clientRequestId !== "string" || !body.clientRequestId.trim()) {
-      throw new HttpError(400, "clientRequestId metin olmalıdır.");
-    }
-    clientRequestId = body.clientRequestId.trim();
-    if (clientRequestId.length > 100) {
-      throw new HttpError(400, "clientRequestId en fazla 100 karakter olabilir.");
-    }
-  }
-  return {
-    category,
-    subcategory,
-    subject,
-    description,
-    priority: priority as Priority,
-    attachments,
-    assistantContext,
-    clientRequestId,
-  };
-}
-
-function parseAttachments(value: unknown): AttachmentInput[] {
-  if (value === undefined || value === null) return [];
-  if (!Array.isArray(value)) throw new HttpError(400, "Ekler liste olmalıdır.");
-  return value.map((item) => {
-    if (!isRecord(item)) throw new HttpError(400, "Ek bilgisi eksik.");
-    const name = typeof item.name === "string" ? item.name.trim() : "";
-    if (name) limitText(name, MAX_FILE_NAME_LENGTH, "Dosya adı");
-    const mimeType = typeof item.mimeType === "string" ? item.mimeType : "";
-    const sizeBytes = item.sizeBytes;
-    const allowed = ATTACHMENT_MIME_TYPES.includes(
-      mimeType as (typeof ATTACHMENT_MIME_TYPES)[number],
-    );
-    if (
-      !name ||
-      !allowed ||
-      typeof sizeBytes !== "number" ||
-      !Number.isInteger(sizeBytes) ||
-      sizeBytes < 0 ||
-      sizeBytes > MAX_ATTACHMENT_BYTES
-    ) {
-      throw new HttpError(
-        400,
-        "Dosyalar PDF, PNG veya JPG olmalı ve 5 MB sınırını aşmamalıdır.",
-      );
-    }
-    return { name, mimeType, sizeBytes };
-  });
+  return parseInput(createRequestSchema, body, "Talep bilgileri eksik.");
 }
 
 function nextRequestNumber(db: DatabaseSync, year: number): string {
@@ -358,12 +257,10 @@ export function addRequestMessage(
   db: DatabaseSync,
   employee: Employee,
   requestId: number,
-  text: string,
+  body: unknown,
   now: Now,
 ) {
-  const message = text.trim();
-  if (!message) throw new HttpError(400, "Mesaj boş olamaz.");
-  limitText(message, MAX_MESSAGE_LENGTH, "Mesaj");
+  const { text: message } = parseInput(requestMessageSchema, body, "Mesaj boş olamaz.");
   return transaction(db, () => {
     const current = db
       .prepare("SELECT id, status FROM requests WHERE id = ? AND employee_id = ?")

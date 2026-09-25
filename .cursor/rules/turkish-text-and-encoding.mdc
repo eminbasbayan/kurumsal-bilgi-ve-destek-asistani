@@ -1,0 +1,33 @@
+---
+description: Turkish text, UTF-8 encoding, and locale handling across the whole repository
+alwaysApply: true
+---
+
+# Turkish text and encoding
+
+All user-facing copy, error messages, seed data, and test names are Turkish. Files are UTF-8 without BOM.
+
+## Shell (Windows PowerShell 5.1)
+
+PowerShell 5.1 reads BOM-less UTF-8 as ANSI, so `Get-Content` shows `boş` as `bo�Y`. That is a display artifact, not file corruption.
+
+- Read and edit files with the Read and StrReplace/Write tools, not shell commands.
+- If a shell read is unavoidable, pass `-Encoding UTF8`.
+- Never write source files with `Set-Content`, `Out-File`, or `>`; they re-encode and corrupt Turkish characters.
+
+## Locale-aware string handling
+
+Default casing breaks Turkish `I/ı` and `İ/i`:
+
+```ts
+// ❌ "İzin".toLowerCase() === "i̇zin" (dotted i + combining mark)
+row.subject.toLowerCase().includes(query.toLowerCase());
+
+// ✅ back-end/src/shared/http.ts
+includesTr(row.subject, query);
+// or value.toLocaleLowerCase("tr-TR")
+```
+
+- Format dates for display with the `tr-TR` locale.
+- Use the exact Turkish domain terms from `PROJE_TANIMI.md` (statuses, priorities, section names); do not translate or paraphrase them in code, UI, or API messages.
+- Identifiers, types, and code comments stay in English.

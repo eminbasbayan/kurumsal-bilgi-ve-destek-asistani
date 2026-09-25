@@ -16,13 +16,6 @@ export function requiredText(value: unknown, message: string): string {
   return value.trim();
 }
 
-export function limitText(value: string, max: number, label: string): string {
-  if (value.length > max) {
-    throw new HttpError(400, `${label} en fazla ${max} karakter olabilir.`);
-  }
-  return value;
-}
-
 export function queryText(value: unknown): string | undefined {
   if (Array.isArray(value)) return queryText(value[0]);
   if (typeof value !== "string") return undefined;

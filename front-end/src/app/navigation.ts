@@ -1,7 +1,5 @@
 import type { RequestStatus } from "../types";
 
-export const STORAGE_KEY = "kurumsal-destek-react-v1";
-
 export const OPEN_STATUSES: RequestStatus[] = [
   "Yeni",
   "İnceleniyor",

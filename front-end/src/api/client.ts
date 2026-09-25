@@ -1,8 +1,13 @@
-const API_URL = (import.meta.env.VITE_API_URL?.trim() || "http://localhost:3001").replace(/\/$/, "");
+const API_URL = (
+  import.meta.env.VITE_API_URL?.trim() || "http://localhost:3001"
+).replace(/\/$/, "");
 const TOKEN_KEY = "kurumsal-destek-token";
 
 export class ApiError extends Error {
-  constructor(readonly status: number, message: string) {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
     super(message);
   }
 }
@@ -28,7 +33,11 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   headers.set("accept", "application/json");
   const token = getToken();
   if (token) headers.set("authorization", `Bearer ${token}`);
-  if (init.body && !(init.body instanceof FormData) && !headers.has("content-type")) {
+  if (
+    init.body &&
+    !(init.body instanceof FormData) &&
+    !headers.has("content-type")
+  ) {
     headers.set("content-type", "application/json");
   }
 

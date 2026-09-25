@@ -1,0 +1,41 @@
+---
+description: Express module layout, Zod validation, and error handling for the back-end API
+globs: back-end/src/**/*.ts
+alwaysApply: false
+---
+
+# Back-end API modules
+
+Canonical example: `back-end/src/modules/requests/` (`requests.routes.ts`, `requests.service.ts`, `requests.schema.ts`).
+
+## Layers
+
+- `*.routes.ts`: an exported `create<Feature>Router(db, now?)` factory. Only reads `req`, calls the service, and sets the status code. No SQL here.
+- `*.service.ts`: business logic and SQL. Takes `db`, the `Employee` from `employeeOf(res)`, and `now`.
+- `*.schema.ts`: Zod schemas for request bodies and query filters, parsed with `parseInput` from `shared/validate.ts`.
+- Register new routers in `src/app.ts`. Any route mounted after `requireAuth` is private.
+
+## Validation
+
+```ts
+// ❌ manual checks scattered in the route
+if (typeof req.body.text !== "string" || !req.body.text.trim()) throw new HttpError(400, "...");
+
+// ✅ schema + parseInput; the first Zod issue message becomes the 400 response
+const { text } = parseInput(requestMessageSchema, body, "Mesaj boş olamaz.");
+```
+
+- Every Zod message is a Turkish sentence shown to the employee.
+- Take limits, statuses, priorities, categories, and MIME types from `src/config/constants.ts`. Do not hard-code them in schemas.
+
+## Errors and handlers
+
+- Throw `HttpError(status, "Türkçe mesaj")`; `middleware/errorHandler.ts` turns it into `{ error }`. Unknown errors become a generic 500.
+- Use 404 (not 403) for records that belong to another employee, as `parseId` and `loadDetail` do.
+- Express 4 does not catch rejected promises. Keep handlers synchronous (`node:sqlite` is sync). If you ever need `async`, wrap it and forward errors with `next(error)`.
+
+## When you add or change an endpoint
+
+1. Update `src/docs/openapi.ts` (paths, schemas, limits, error responses).
+2. Add the path to the Swagger coverage list and a behavior test in `test/api.test.ts`.
+3. Do not add code to the legacy root files in `src/` (`domain.ts`, `db.ts`, `http.ts`, `sql.ts`, `constants.ts`, `assistant.ts`).

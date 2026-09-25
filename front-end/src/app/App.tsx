@@ -28,7 +28,14 @@ export default function App() {
 
   const profileQuery = useQuery({
     queryKey: ["profile", authRevision],
-    queryFn: getProfile,
+    queryFn: async () => {
+      try {
+        return await getProfile();
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 401) clearToken();
+        throw error;
+      }
+    },
     enabled: authenticated,
     retry: false,
   });
@@ -46,15 +53,8 @@ export default function App() {
     return () => window.removeEventListener("hashchange", update);
   }, []);
 
-  useEffect(() => {
-    if (profileQuery.error instanceof ApiError && profileQuery.error.status === 401) {
-      clearToken();
-      queryClient.clear();
-      setAuthRevision((value) => value + 1);
-    }
-  }, [profileQuery.error, queryClient]);
-
   const signedIn = (employee: Employee) => {
+    queryClient.clear();
     queryClient.setQueryData(["profile", authRevision + 1], employee);
     setAuthRevision((value) => value + 1);
     go("home");
@@ -71,7 +71,11 @@ export default function App() {
   if (!authenticated) return <LoginPage onLogin={signedIn} />;
 
   if (profileQuery.isPending) {
-    return <main className="content"><p className="muted">Oturum doğrulanıyor…</p></main>;
+    return (
+      <main className="content">
+        <p className="muted">Oturum doğrulanıyor…</p>
+      </main>
+    );
   }
 
   if (profileQuery.isError || !profileQuery.data) {

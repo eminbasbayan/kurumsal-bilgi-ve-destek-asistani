@@ -15,7 +15,7 @@ Read `PROJE_TANIMI.md` before changes that affect product behavior, navigation, 
 - The current scope contains only the employee experience. Do not introduce administrator or support-agent screens unless the user explicitly requests them.
 - Label fictional users, documents, messages, requests, and assistant behavior clearly as demo or sample content.
 - Do not present unavailable authentication, AI, file storage, notifications, or live support integrations as working services.
-- Keep request counts, status labels, notifications, timelines, messages, and detail views consistent with the same underlying client-side records.
+- Keep request counts, status labels, notifications, timelines, messages, and detail views consistent with the same API records. The front-end reads them through TanStack Query; do not keep a second client-side copy.
 - Use these request statuses exactly: `Yeni`, `İnceleniyor`, `Kullanıcıdan Bilgi Bekleniyor`, `Devam Ediyor`, `Çözüldü`, `Kapatıldı`.
 
 ## Technical baseline
@@ -25,23 +25,23 @@ Read `PROJE_TANIMI.md` before changes that affect product behavior, navigation, 
 - Use Radix UI Themes as the application component foundation and Radix Icons for interface icons. Prefer Radix components for controls, overlays, menus, tabs, badges, avatars, and tooltips; keep their keyboard interaction and focus behavior intact while styling them with the project tokens.
 - Import `@radix-ui/themes/styles.css` once at the application entry point and wrap the application in a Radix `Theme`. Do not mix in a second general-purpose component library.
 - Follow the existing package scripts and conventions. Prefer existing dependencies; add a dependency only when it provides clear value for the requested feature.
-- Keep domain data and state separate from presentation components. Derive counters and filtered lists from records instead of duplicating values.
+- Keep domain data and state separate from presentation components. Derive counters and filtered lists from query results instead of duplicating values.
 - Prefer small components with clear responsibilities. Introduce shared components only when multiple screens need the same behavior or visual pattern.
-- Keep mock data deterministic and centralized so it is not duplicated on reload.
+- Demo users, documents, and requests live in the back-end seed. Do not add a second copy under `front-end/src`.
 
-For substantial UI work, a useful structure is:
+The current front-end layout is:
 
 ```text
 src/
-├── app/          Application shell, navigation, routes, providers
+├── app/          Application shell, navigation, routes
+├── api/          HTTP calls to the back-end
 ├── components/   Reusable visual components
-├── features/     Assistant, requests, notifications, profile
-├── data/         Clearly labelled demo records and document sources
-├── types/        Shared domain types
+├── pages/        Route screens
+├── types.ts      Shared domain types
 └── styles/       Global styles and design tokens
 ```
 
-Adapt this structure to the current codebase; do not reorganize working code solely to match the example.
+Do not reorganize working code solely to match this layout.
 
 ## Design implementation
 

@@ -1,7 +1,8 @@
 import { Router } from "express";
 import type { DatabaseSync } from "node:sqlite";
-import { HttpError, isRecord } from "../../shared/http.js";
 import { employeeOf, parseId, type Now } from "../../shared/types.js";
+import { parseInput } from "../../shared/validate.js";
+import { conversationSchema, feedbackSchema } from "./assistant.schema.js";
 import {
   addConversationMessage,
   createConversation,
@@ -16,8 +17,7 @@ export function createConversationsRouter(db: DatabaseSync, now: Now): Router {
     res.json({ conversations: listConversations(db, employeeOf(res).id) });
   });
   router.post("/", (req, res) => {
-    const title =
-      isRecord(req.body) && typeof req.body.title === "string" ? req.body.title : undefined;
+    const { title } = parseInput(conversationSchema, req.body, "Sohbet başlığı geçersiz.");
     res.status(201).json(createConversation(db, employeeOf(res).id, title, now));
   });
   router.get("/:id", (req, res) => {
@@ -26,14 +26,12 @@ export function createConversationsRouter(db: DatabaseSync, now: Now): Router {
     );
   });
   router.post("/:id/messages", (req, res) => {
-    if (!isRecord(req.body)) throw new HttpError(400, "Soru boş olamaz.");
-    const text = typeof req.body.text === "string" ? req.body.text : "";
     res.status(201).json(
       addConversationMessage(
         db,
         employeeOf(res).id,
         parseId(req.params.id, "Sohbet bulunamadı."),
-        text,
+        req.body,
         now,
       ),
     );
@@ -44,15 +42,13 @@ export function createConversationsRouter(db: DatabaseSync, now: Now): Router {
 export function createAssistantRouter(db: DatabaseSync): Router {
   const router = Router();
   router.patch("/messages/:id/feedback", (req, res) => {
-    if (!isRecord(req.body) || typeof req.body.helpful !== "boolean") {
-      throw new HttpError(400, "Değerlendirme true veya false olmalıdır.");
-    }
+    const { helpful } = parseInput(feedbackSchema, req.body, "Değerlendirme true veya false olmalıdır.");
     res.json(
       setMessageFeedback(
         db,
         employeeOf(res).id,
         parseId(req.params.id, "Mesaj bulunamadı."),
-        req.body.helpful,
+        helpful,
       ),
     );
   });

@@ -1,0 +1,30 @@
+---
+description: React pages, TanStack Query cache, and API client conventions for the employee portal
+globs: front-end/src/**/*.ts, front-end/src/**/*.tsx
+alwaysApply: false
+---
+
+# Front-end state and API
+
+Design, color, typography, and accessibility rules live in `.codex/skills/frontend-development/SKILL.md`. Read it for any UI change.
+
+## Structure
+
+- Use named exports (`export function RequestsPage`). Only `src/app/App.tsx` has a default export.
+- Shared domain types go in `src/types.ts`. HTTP functions go in `src/api/<feature>.ts` and call `api()` from `src/api/client.ts`.
+- Add a route by extending `readRoute` in `src/app/navigation.ts` and the `pages` map in `App.tsx`. Navigate with `go("...")`. Do not add a router library.
+
+## Server state
+
+`QueryClientProvider` is in `src/main.tsx` (`staleTime: 30_000`, `retry: 1`, `refetchOnWindowFocus: false`). Pages read with `useQuery` and write with `useMutation`.
+
+- Reuse the existing keys: `["profile", authRevision]`, `["notifications"]`, `["categories"]`, `["requests", "summary"]`, `["requests", filters]`, `["requests", "counts"]`, `["request", id]`, `["conversations"]`, `["conversation", id]`, `["source", id]`.
+- A mutation updates every related cache together. Creating a request invalidates `["requests"]` and `["notifications"]`. A new message writes `["request", id]` and invalidates `["requests"]`.
+- Show the API's Turkish `ApiError` message in the existing `form-error` alert. A 401 from `getProfile` clears the token and returns to login.
+- `localStorage` stores only `kurumsal-destek-token` and `portal-appearance`. Do not persist requests, messages, or notifications there. A suggested assistant question passes through `sessionStorage` key `assistant-question`.
+
+## Safety
+
+- Render user text as JSX children. Never use `dangerouslySetInnerHTML`.
+- Attachments send metadata only (`name`, `mimeType`, `sizeBytes`). Do not upload file bytes.
+- Mark demo-only behavior in the UI (login, attachments not stored, rule-based assistant).

@@ -1,0 +1,25 @@
+---
+description: node:test conventions for back-end API tests
+globs: back-end/test/**/*.ts
+alwaysApply: false
+---
+
+# Back-end tests
+
+Tests use the built-in `node:test` and `node:assert/strict` through `tsx`. Run them with `npm test` in `back-end/`. Do not add Jest, Vitest, or Supertest.
+
+- Build the app with `createApp(db, now)` on a temp database (`mkdtempSync` + `openDatabase` + `migrateAndSeed`), and clean it up in `after`/`finally`.
+- Pass a deterministic clock (the suite increments seconds from `2026-09-25T12:00:00Z`) so ordering and `updatedAt` assertions are stable.
+- Call endpoints through the local `api(path, init)` helper; it adds the bearer token and JSON headers.
+- The `API` suite runs with `concurrency: false` and shares one session and database. Later tests see earlier writes, so assert on records you created rather than on absolute counts.
+- Name tests with a short Turkish sentence describing the behavior, e.g. `test("boş mesaj reddedilir", ...)`.
+- For validation, assert both the status and the Turkish `error` text:
+
+```ts
+const res = await api("/api/requests/1/messages", { method: "POST", body: JSON.stringify({ text: " " }) });
+assert.equal(res.status, 400);
+assert.match(String(res.body?.error), /Mesaj boş olamaz/);
+```
+
+- Cover the business rules from `PROJE_TANIMI.md` section 14 that the endpoint touches: counters, duplicate submission (`clientRequestId`), ownership (404 for other employees), and status/timeline consistency.
+- Every new path in `src/docs/openapi.ts` must also appear in the Swagger coverage test.

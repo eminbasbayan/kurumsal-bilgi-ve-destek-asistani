@@ -1,9 +1,11 @@
 import type { DatabaseSync } from "node:sqlite";
-import { DEFAULT_CONVERSATION_TITLE, MAX_QUESTION_LENGTH } from "../../config/constants.js";
+import { DEFAULT_CONVERSATION_TITLE } from "../../config/constants.js";
 import { insertedId, transaction } from "../../db/sql.js";
-import { HttpError, limitText } from "../../shared/http.js";
+import { HttpError } from "../../shared/http.js";
+import { parseInput } from "../../shared/validate.js";
 import type { Now } from "../../shared/types.js";
 import { getSource, listSources } from "../sources/sources.service.js";
+import { questionSchema } from "./assistant.schema.js";
 import { replyToQuestion } from "./reply.js";
 
 type ConversationMessageRow = {
@@ -101,12 +103,10 @@ export function addConversationMessage(
   db: DatabaseSync,
   employeeId: number,
   conversationId: number,
-  text: string,
+  body: unknown,
   now: Now,
 ) {
-  const question = text.trim();
-  if (!question) throw new HttpError(400, "Soru boş olamaz.");
-  limitText(question, MAX_QUESTION_LENGTH, "Soru");
+  const { text: question } = parseInput(questionSchema, body, "Soru boş olamaz.");
   return transaction(db, () => {
     const conversation = db
       .prepare("SELECT id, title FROM conversations WHERE id = ? AND employee_id = ?")

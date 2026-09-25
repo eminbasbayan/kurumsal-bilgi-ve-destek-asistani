@@ -1,6 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Button, Card, Dialog, IconButton, TextArea, Tooltip, Badge } from "@radix-ui/themes";
+import {
+  Button,
+  Card,
+  Dialog,
+  IconButton,
+  TextArea,
+  Tooltip,
+  Badge,
+} from "@radix-ui/themes";
 import {
   ChatBubbleIcon,
   CheckCircledIcon,
@@ -35,7 +43,9 @@ export function AssistantPage({
   escalate: (context: string) => void;
 }) {
   const queryClient = useQueryClient();
-  const [input, setInput] = useState(sessionStorage.getItem("assistant-question") || "");
+  const [input, setInput] = useState(
+    sessionStorage.getItem("assistant-question") || "",
+  );
   const [conversationId, setConversationId] = useState<number>();
   const [sourceId, setSourceId] = useState<string>();
 
@@ -78,7 +88,11 @@ export function AssistantPage({
           ? {
               ...current,
               updatedAt: result.assistantMessage.createdAt,
-              messages: [...current.messages, result.userMessage, result.assistantMessage],
+              messages: [
+                ...current.messages,
+                result.userMessage,
+                result.assistantMessage,
+              ],
             }
           : current,
       );
@@ -92,21 +106,25 @@ export function AssistantPage({
       setAssistantFeedback(id, helpful),
     onSuccess: (updated) => {
       if (!conversationId) return;
-      queryClient.setQueryData<Conversation>(["conversation", conversationId], (current) =>
-        current
-          ? {
-              ...current,
-              messages: current.messages.map((message) =>
-                message.id === updated.id ? updated : message,
-              ),
-            }
-          : current,
+      queryClient.setQueryData<Conversation>(
+        ["conversation", conversationId],
+        (current) =>
+          current
+            ? {
+                ...current,
+                messages: current.messages.map((message) =>
+                  message.id === updated.id ? updated : message,
+                ),
+              }
+            : current,
       );
     },
   });
 
   const messages = conversation.data?.messages ?? [];
-  const last = [...messages].reverse().find((message) => message.role === "assistant");
+  const last = [...messages]
+    .reverse()
+    .find((message) => message.role === "assistant");
   const submit = (value?: string) => {
     const question = (value ?? input).trim();
     if (!question || send.isPending) return;
@@ -127,11 +145,17 @@ export function AssistantPage({
         title="Bilgi Asistanı"
         description="Sorunuzu doğal biçimde yazın; kurumsal kaynaklara dayalı yanıt alın."
       />
-      {error && <div className="form-error" role="alert">{error}</div>}
+      {error && (
+        <div className="form-error" role="alert">
+          {error}
+        </div>
+      )}
       <div className="assistant-layout">
         <Card className="chat-card">
           <div className="chat-head">
-            <span className="chat-icon"><ChatBubbleIcon /></span>
+            <span className="chat-icon">
+              <ChatBubbleIcon />
+            </span>
             <div>
               <h2>Kurumsal Bilgi Asistanı</h2>
               <p>Kaynaklı yanıtlar · Demo</p>
@@ -140,15 +164,27 @@ export function AssistantPage({
           </div>
           <div className="chat-stream" aria-live="polite">
             {conversation.isPending && conversationId ? (
-              <div className="chat-welcome"><p>Konuşma yükleniyor…</p></div>
+              <div className="chat-welcome">
+                <p>Konuşma yükleniyor…</p>
+              </div>
             ) : !messages.length ? (
               <div className="chat-welcome">
-                <span className="chat-icon"><ChatBubbleIcon /></span>
+                <span className="chat-icon">
+                  <ChatBubbleIcon />
+                </span>
                 <h2>Size nasıl yardımcı olabilirim?</h2>
-                <p>Kurumsal süreçler hakkında sorunuzu yazın veya önerilerden birini seçin.</p>
+                <p>
+                  Kurumsal süreçler hakkında sorunuzu yazın veya önerilerden
+                  birini seçin.
+                </p>
                 <div className="suggestions">
                   {SUGGESTIONS.map((question) => (
-                    <Button key={question} variant="soft" color="gray" onClick={() => submit(question)}>
+                    <Button
+                      key={question}
+                      variant="soft"
+                      color="gray"
+                      onClick={() => submit(question)}
+                    >
                       {question}
                     </Button>
                   ))}
@@ -160,12 +196,16 @@ export function AssistantPage({
                   key={message.id}
                   message={message}
                   onSource={(id) => setSourceId(id)}
-                  onFeedback={(helpful) => feedback.mutate({ id: message.id, helpful })}
+                  onFeedback={(helpful) =>
+                    feedback.mutate({ id: message.id, helpful })
+                  }
                 />
               ))
             )}
             {send.isPending && (
-              <div className="chat-row assistant"><div className="bubble">Yanıt hazırlanıyor…</div></div>
+              <div className="chat-row assistant">
+                <div className="bubble">Yanıt hazırlanıyor…</div>
+              </div>
             )}
           </div>
           <form
@@ -185,19 +225,26 @@ export function AssistantPage({
               <PaperPlaneIcon /> Gönder
             </Button>
           </form>
-          <p className="chat-disclaimer">Yanıtlar örnek dokümanlara dayanır. Kritik işlemlerde ilgili birimden doğrulama alın.</p>
+          <p className="chat-disclaimer">
+            Yanıtlar örnek dokümanlara dayanır. Kritik işlemlerde ilgili
+            birimden doğrulama alın.
+          </p>
         </Card>
 
         <aside className="assistant-aside">
           <Card>
             <p className="eyebrow">DESTEK GEREKİYOR MU?</p>
             <h2>Yanıt yeterli olmadıysa</h2>
-            <p>Sorunuzu ve asistan yanıtını destek talebine aktarabilirsiniz.</p>
+            <p>
+              Sorunuzu ve asistan yanıtını destek talebine aktarabilirsiniz.
+            </p>
             <Button
               variant="soft"
               disabled={!last}
               onClick={() => {
-                const question = [...messages].reverse().find((message) => message.role === "user");
+                const question = [...messages]
+                  .reverse()
+                  .find((message) => message.role === "user");
                 escalate(
                   `${question?.text ?? ""}\n\n${last?.text ?? ""}${last?.source ? `\nKaynak: ${last.source.title}` : ""}`,
                 );
@@ -209,8 +256,17 @@ export function AssistantPage({
 
           <Card>
             <div className="panel-title">
-              <div><h3>Önceki sohbetler</h3><p>Demo API’de kayıtlı konuşmalar</p></div>
-              <Button size="1" variant="ghost" onClick={() => setConversationId(undefined)}>Yeni</Button>
+              <div>
+                <h3>Önceki sohbetler</h3>
+                <p>Demo API’de kayıtlı konuşmalar</p>
+              </div>
+              <Button
+                size="1"
+                variant="ghost"
+                onClick={() => setConversationId(undefined)}
+              >
+                Yeni
+              </Button>
             </div>
             {conversations.isPending ? (
               <p className="muted">Sohbetler yükleniyor…</p>
@@ -232,23 +288,45 @@ export function AssistantPage({
 
           <Card>
             <h3>Bilgi alanları</h3>
-            {["İnsan Kaynakları", "Bilgi Teknolojileri", "Finans ve Masraflar", "İşyeri Hizmetleri"].map((area) => (
-              <p className="knowledge" key={area}><CheckCircledIcon /> {area}</p>
+            {[
+              "İnsan Kaynakları",
+              "Bilgi Teknolojileri",
+              "Finans ve Masraflar",
+              "İşyeri Hizmetleri",
+            ].map((area) => (
+              <p className="knowledge" key={area}>
+                <CheckCircledIcon /> {area}
+              </p>
             ))}
           </Card>
         </aside>
       </div>
 
-      <Dialog.Root open={Boolean(sourceId)} onOpenChange={(open) => !open && setSourceId(undefined)}>
+      <Dialog.Root
+        open={Boolean(sourceId)}
+        onOpenChange={(open) => !open && setSourceId(undefined)}
+      >
         <Dialog.Content maxWidth="560px">
           <Dialog.Title>{source.data?.title ?? "Kaynak"}</Dialog.Title>
-          <Dialog.Description>{source.data?.section ?? "Kaynak bilgisi yükleniyor."}</Dialog.Description>
+          <Dialog.Description>
+            {source.data?.section ?? "Kaynak bilgisi yükleniyor."}
+          </Dialog.Description>
           <div className="source-body">
             <Badge>DEMO KAYNAK</Badge>
-            {source.isPending ? <p>Kaynak yükleniyor…</p> : <blockquote>{source.data?.excerpt}</blockquote>}
-            {source.data && <p>Son güncelleme: {formatDateTime(source.data.updatedAt)}</p>}
+            {source.isPending ? (
+              <p>Kaynak yükleniyor…</p>
+            ) : (
+              <blockquote>{source.data?.excerpt}</blockquote>
+            )}
+            {source.data && (
+              <p>Son güncelleme: {formatDateTime(source.data.updatedAt)}</p>
+            )}
           </div>
-          <Dialog.Close><Button variant="soft" color="gray">Kapat</Button></Dialog.Close>
+          <Dialog.Close>
+            <Button variant="soft" color="gray">
+              Kapat
+            </Button>
+          </Dialog.Close>
         </Dialog.Content>
       </Dialog.Root>
     </>
@@ -273,22 +351,41 @@ function Message({
         {message.role === "assistant" && (
           <div className="message-tools">
             {message.source && (
-              <Button size="1" variant="soft" onClick={() => onSource(message.source!.id)}>
+              <Button
+                size="1"
+                variant="soft"
+                onClick={() => onSource(message.source!.id)}
+              >
                 <FileIcon /> Kaynağı aç
               </Button>
             )}
             <Tooltip content="Yanıtı kopyala">
-              <IconButton size="1" variant="ghost" aria-label="Yanıtı kopyala" onClick={() => navigator.clipboard?.writeText(message.text)}>
+              <IconButton
+                size="1"
+                variant="ghost"
+                aria-label="Yanıtı kopyala"
+                onClick={() => navigator.clipboard?.writeText(message.text)}
+              >
                 <ClipboardCopyIcon />
               </IconButton>
             </Tooltip>
             <Tooltip content="Faydalı">
-              <IconButton size="1" variant={message.helpful === true ? "soft" : "ghost"} aria-label="Faydalı" onClick={() => onFeedback(true)}>
+              <IconButton
+                size="1"
+                variant={message.helpful === true ? "soft" : "ghost"}
+                aria-label="Faydalı"
+                onClick={() => onFeedback(true)}
+              >
                 <CheckCircledIcon />
               </IconButton>
             </Tooltip>
             <Tooltip content="Faydalı değil">
-              <IconButton size="1" variant={message.helpful === false ? "soft" : "ghost"} aria-label="Faydalı değil" onClick={() => onFeedback(false)}>
+              <IconButton
+                size="1"
+                variant={message.helpful === false ? "soft" : "ghost"}
+                aria-label="Faydalı değil"
+                onClick={() => onFeedback(false)}
+              >
                 <CrossCircledIcon />
               </IconButton>
             </Tooltip>

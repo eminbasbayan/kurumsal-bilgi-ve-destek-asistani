@@ -1,6 +1,6 @@
 import { Router } from "express";
 import type { DatabaseSync } from "node:sqlite";
-import { HttpError, isRecord, queryText } from "../../shared/http.js";
+import { queryText } from "../../shared/http.js";
 import { employeeOf, parseId, type Now } from "../../shared/types.js";
 import {
   addRequestMessage,
@@ -39,19 +39,8 @@ export function createRequestsRouter(db: DatabaseSync, now: Now): Router {
   });
 
   router.post("/:id/messages", (req, res) => {
-    if (!isRecord(req.body)) throw new HttpError(400, "Mesaj boş olamaz.");
-    const text = typeof req.body.text === "string" ? req.body.text : "";
-    res
-      .status(201)
-      .json(
-        addRequestMessage(
-          db,
-          employeeOf(res),
-          parseId(req.params.id, "Talep bulunamadı."),
-          text,
-          now,
-        ),
-      );
+    const id = parseId(req.params.id, "Talep bulunamadı.");
+    res.status(201).json(addRequestMessage(db, employeeOf(res), id, req.body, now));
   });
 
   return router;
