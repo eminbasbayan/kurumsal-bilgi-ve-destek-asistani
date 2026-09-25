@@ -25,7 +25,7 @@ export function sendConversationMessage(
   id: number,
   text: string,
 ): Promise<{ userMessage: ConversationMessage; assistantMessage: ConversationMessage }> {
-  return api(`/api/conversations/${id}/messages`, {
+  return api<{ userMessage: ConversationMessage; assistantMessage: ConversationMessage }>(`/api/conversations/${id}/messages`, {
     method: "POST",
     body: JSON.stringify({ text }),
   });
