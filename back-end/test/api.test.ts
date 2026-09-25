@@ -322,4 +322,140 @@ test("asistan yanıtı kaydedilir ve değerlendirilir", async () => {
   const stored = await api(`/api/conversations/${id}`);
   assert.equal((stored.body as { messages: unknown[] }).messages.length, 4);
 });
+
+test("metin sınırları kaydı büyütmez ve clientRequestId aynı talebi döndürür", async () => {
+  const count = () =>
+    Number(
+      (db.prepare("SELECT COUNT(*) AS count FROM requests").get() as { count: number }).count,
+    );
+  const draft = (extra: Record<string, unknown>) => ({
+    category: "İnsan Kaynakları",
+    subcategory: "İzinler",
+    subject: "Kısa konu",
+    description: "Kısa açıklama",
+    priority: "Normal",
+    ...extra,
+  });
+  const send = (extra: Record<string, unknown>) =>
+    api("/api/requests", { method: "POST", body: JSON.stringify(draft(extra)) });
+
+  const before = count();
+  const accepted = await send({ subject: "k".repeat(100), clientRequestId: "sinir-konu" });
+  assert.equal(accepted.status, 201);
+  const requestId = (accepted.body as { id: number }).id;
+  const duplicate = await send({ subject: "başka konu", clientRequestId: "sinir-konu" });
+  assert.equal(duplicate.status, 200);
+  assert.equal((duplicate.body as { id: number; subject: string }).id, requestId);
+  assert.equal((duplicate.body as { subject: string }).subject, "k".repeat(100));
+  assert.equal(count(), before + 1);
+
+  const longSubject = await send({ subject: "k".repeat(101), clientRequestId: "sinir-konu-uzun" });
+  assert.equal(longSubject.status, 400);
+  assert.equal((longSubject.body as { error: string }).error, "Konu en fazla 100 karakter olabilir.");
+  assert.equal(count(), before + 1);
+
+  const description = await send({
+    description: "a".repeat(2000),
+    clientRequestId: "sinir-aciklama",
+  });
+  assert.equal(description.status, 201);
+  const longDescription = await send({
+    description: "a".repeat(2001),
+    clientRequestId: "sinir-aciklama-uzun",
+  });
+  assert.equal(longDescription.status, 400);
+  assert.equal(
+    (longDescription.body as { error: string }).error,
+    "Açıklama en fazla 2000 karakter olabilir.",
+  );
+
+  const context = await send({
+    assistantContext: "b".repeat(4000),
+    clientRequestId: "sinir-baglam",
+  });
+  assert.equal(context.status, 201);
+  const longContext = await send({
+    assistantContext: "b".repeat(4001),
+    clientRequestId: "sinir-baglam-uzun",
+  });
+  assert.equal(longContext.status, 400);
+  assert.equal(
+    (longContext.body as { error: string }).error,
+    "Asistan bağlamı en fazla 4000 karakter olabilir.",
+  );
+
+  const file = await send({
+    clientRequestId: "sinir-dosya",
+    attachments: [{ name: "d".repeat(255), mimeType: "image/png", sizeBytes: 10 }],
+  });
+  assert.equal(file.status, 201);
+  const longFile = await send({
+    clientRequestId: "sinir-dosya-uzun",
+    attachments: [{ name: "d".repeat(256), mimeType: "image/png", sizeBytes: 10 }],
+  });
+  assert.equal(longFile.status, 400);
+  assert.equal((longFile.body as { error: string }).error, "Dosya adı en fazla 255 karakter olabilir.");
+  assert.equal(count(), before + 4);
+
+  const message = await api(`/api/requests/${requestId}/messages`, {
+    method: "POST",
+    body: JSON.stringify({ text: "m".repeat(2000) }),
+  });
+  assert.equal(message.status, 201);
+  const longMessage = await api(`/api/requests/${requestId}/messages`, {
+    method: "POST",
+    body: JSON.stringify({ text: "m".repeat(2001) }),
+  });
+  assert.equal(longMessage.status, 400);
+  assert.equal((longMessage.body as { error: string }).error, "Mesaj en fazla 2000 karakter olabilir.");
+
+  const conversation = await api("/api/conversations", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+  const conversationId = (conversation.body as { id: number }).id;
+  const question = await api(`/api/conversations/${conversationId}/messages`, {
+    method: "POST",
+    body: JSON.stringify({ text: "s".repeat(1000) }),
+  });
+  assert.equal(question.status, 201);
+  const longQuestion = await api(`/api/conversations/${conversationId}/messages`, {
+    method: "POST",
+    body: JSON.stringify({ text: "s".repeat(1001) }),
+  });
+  assert.equal(longQuestion.status, 400);
+  assert.equal((longQuestion.body as { error: string }).error, "Soru en fazla 1000 karakter olabilir.");
+});
+});
+
+test("CORS verilen origin ve varsayılan adresi kullanır", async () => {
+  const corsDir = mkdtempSync(join(tmpdir(), "kda-cors-"));
+  const database = openDatabase(join(corsDir, "app.sqlite"));
+  const customServer = createApp(database, () => new Date(), "http://portal.test").listen(0);
+  const defaultServer = createApp(database).listen(0);
+  try {
+    if (!customServer.listening) await once(customServer, "listening");
+    if (!defaultServer.listening) await once(defaultServer, "listening");
+    const customPort = (customServer.address() as AddressInfo).port;
+    const defaultPort = (defaultServer.address() as AddressInfo).port;
+    const allowed = await fetch(`http://127.0.0.1:${customPort}/api-docs.json`, {
+      headers: { Origin: "http://portal.test" },
+    });
+    assert.equal(allowed.headers.get("access-control-allow-origin"), "http://portal.test");
+    const fallback = await fetch(`http://127.0.0.1:${defaultPort}/api-docs.json`, {
+      headers: { Origin: "http://localhost:5173" },
+    });
+    assert.equal(fallback.headers.get("access-control-allow-origin"), "http://localhost:5173");
+  } finally {
+    await Promise.all([
+      new Promise<void>((resolve, reject) => {
+        customServer.close((error) => (error ? reject(error) : resolve()));
+      }),
+      new Promise<void>((resolve, reject) => {
+        defaultServer.close((error) => (error ? reject(error) : resolve()));
+      }),
+    ]);
+    database.close();
+    rmSync(corsDir, { recursive: true, force: true });
+  }
 });

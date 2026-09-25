@@ -3,7 +3,12 @@ import {
   ATTACHMENT_MIME_TYPES,
   CATEGORIES,
   CLOSED_STATUSES,
+  MAX_ASSISTANT_CONTEXT_LENGTH,
   MAX_ATTACHMENT_BYTES,
+  MAX_DESCRIPTION_LENGTH,
+  MAX_FILE_NAME_LENGTH,
+  MAX_MESSAGE_LENGTH,
+  MAX_SUBJECT_LENGTH,
   OPEN_STATUSES,
   PRIORITIES,
   REQUEST_STATUSES,
@@ -12,7 +17,7 @@ import {
   type RequestStatus,
 } from "../../config/constants.js";
 import { insertedId, transaction } from "../../db/sql.js";
-import { HttpError, includesTr, isRecord } from "../../shared/http.js";
+import { HttpError, includesTr, isRecord, limitText } from "../../shared/http.js";
 import type { Employee, Now } from "../../shared/types.js";
 
 type RequestRow = {
@@ -212,10 +217,12 @@ export function parseCreateRequest(body: unknown): CreateRequestInput {
   if (!PRIORITIES.includes(priority as Priority)) {
     throw new HttpError(400, "Öncelik Düşük, Normal veya Yüksek olmalıdır.");
   }
+  limitText(subject, MAX_SUBJECT_LENGTH, "Konu");
+  limitText(description, MAX_DESCRIPTION_LENGTH, "Açıklama");
   const attachments = parseAttachments(body.attachments);
   const assistantContext =
     typeof body.assistantContext === "string" && body.assistantContext.trim()
-      ? body.assistantContext.trim()
+      ? limitText(body.assistantContext.trim(), MAX_ASSISTANT_CONTEXT_LENGTH, "Asistan bağlamı")
       : null;
   let clientRequestId: string | null = null;
   if (body.clientRequestId !== undefined && body.clientRequestId !== null) {
@@ -245,6 +252,7 @@ function parseAttachments(value: unknown): AttachmentInput[] {
   return value.map((item) => {
     if (!isRecord(item)) throw new HttpError(400, "Ek bilgisi eksik.");
     const name = typeof item.name === "string" ? item.name.trim() : "";
+    if (name) limitText(name, MAX_FILE_NAME_LENGTH, "Dosya adı");
     const mimeType = typeof item.mimeType === "string" ? item.mimeType : "";
     const sizeBytes = item.sizeBytes;
     const allowed = ATTACHMENT_MIME_TYPES.includes(
@@ -355,6 +363,7 @@ export function addRequestMessage(
 ) {
   const message = text.trim();
   if (!message) throw new HttpError(400, "Mesaj boş olamaz.");
+  limitText(message, MAX_MESSAGE_LENGTH, "Mesaj");
   return transaction(db, () => {
     const current = db
       .prepare("SELECT id, status FROM requests WHERE id = ? AND employee_id = ?")

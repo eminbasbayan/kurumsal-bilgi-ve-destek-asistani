@@ -4,6 +4,12 @@ import {
   DEMO_EMAIL,
   DEMO_LOGIN_MESSAGE,
   DEMO_PASSWORD,
+  MAX_ASSISTANT_CONTEXT_LENGTH,
+  MAX_DESCRIPTION_LENGTH,
+  MAX_FILE_NAME_LENGTH,
+  MAX_MESSAGE_LENGTH,
+  MAX_QUESTION_LENGTH,
+  MAX_SUBJECT_LENGTH,
   PRIORITIES,
   REQUEST_STATUSES,
 } from "../config/constants.js";
@@ -91,7 +97,7 @@ export const openApiDocument = {
         type: "object",
         required: ["name", "mimeType", "sizeBytes"],
         properties: {
-          name: { type: "string", example: "ekran.png" },
+          name: { type: "string", maxLength: MAX_FILE_NAME_LENGTH, example: "ekran.png" },
           mimeType: { type: "string", enum: [...ATTACHMENT_MIME_TYPES] },
           sizeBytes: { type: "integer", maximum: 5 * 1024 * 1024, example: 1200 },
         },
@@ -103,10 +109,14 @@ export const openApiDocument = {
         properties: {
           category: { type: "string", enum: categoryNames },
           subcategory: { type: "string", description: categoryHelp },
-          subject: { type: "string", example: "VPN bağlantısı kurulmuyor" },
-          description: { type: "string", example: "Ev ağından bağlanırken oturum kapanıyor." },
+          subject: { type: "string", maxLength: MAX_SUBJECT_LENGTH, example: "VPN bağlantısı kurulmuyor" },
+          description: {
+            type: "string",
+            maxLength: MAX_DESCRIPTION_LENGTH,
+            example: "Ev ağından bağlanırken oturum kapanıyor.",
+          },
           priority: { type: "string", enum: [...PRIORITIES] },
-          assistantContext: { type: "string" },
+          assistantContext: { type: "string", maxLength: MAX_ASSISTANT_CONTEXT_LENGTH },
           clientRequestId: {
             type: "string",
             maxLength: 100,
@@ -118,12 +128,12 @@ export const openApiDocument = {
       MessageRequest: {
         type: "object",
         required: ["text"],
-        properties: { text: { type: "string", example: "Windows 11 kullanıyorum." } },
+        properties: { text: { type: "string", maxLength: MAX_MESSAGE_LENGTH, example: "Windows 11 kullanıyorum." } },
       },
       QuestionRequest: {
         type: "object",
         required: ["text"],
-        properties: { text: { type: "string", example: "VPN bağlantısını nasıl kurarım?" } },
+        properties: { text: { type: "string", maxLength: MAX_QUESTION_LENGTH, example: "VPN bağlantısını nasıl kurarım?" } },
       },
       ConversationRequest: {
         type: "object",

@@ -29,6 +29,13 @@ export const CATEGORIES: Record<string, readonly string[]> = {
 };
 
 export const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
+export const MAX_SUBJECT_LENGTH = 100;
+export const MAX_DESCRIPTION_LENGTH = 2000;
+export const MAX_MESSAGE_LENGTH = 2000;
+export const MAX_QUESTION_LENGTH = 1000;
+export const MAX_ASSISTANT_CONTEXT_LENGTH = 4000;
+export const MAX_FILE_NAME_LENGTH = 255;
+export const DEFAULT_CORS_ORIGIN = "http://localhost:5173";
 
 export const ATTACHMENT_MIME_TYPES = [
   "application/pdf",

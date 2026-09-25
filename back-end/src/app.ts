@@ -14,12 +14,17 @@ import { createCategoriesRouter } from "./modules/categories/categories.routes.j
 import { createNotificationsRouter } from "./modules/notifications/notifications.routes.js";
 import { createRequestsRouter } from "./modules/requests/requests.routes.js";
 import { createSourcesRouter } from "./modules/sources/sources.routes.js";
+import { DEFAULT_CORS_ORIGIN } from "./config/constants.js";
 import type { Now } from "./shared/types.js";
 
-export function createApp(db: DatabaseSync, now: Now = () => new Date()): express.Express {
+export function createApp(
+  db: DatabaseSync,
+  now: Now = () => new Date(),
+  corsOrigin = DEFAULT_CORS_ORIGIN,
+): express.Express {
   const app = express();
   app.disable("x-powered-by");
-  app.use(cors({ origin: "http://localhost:5173" }));
+  app.use(cors({ origin: corsOrigin }));
   app.use(express.json());
   mountDocs(app);
 

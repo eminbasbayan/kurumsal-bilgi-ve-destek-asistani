@@ -1,7 +1,7 @@
 import type { DatabaseSync } from "node:sqlite";
-import { DEFAULT_CONVERSATION_TITLE } from "../../config/constants.js";
+import { DEFAULT_CONVERSATION_TITLE, MAX_QUESTION_LENGTH } from "../../config/constants.js";
 import { insertedId, transaction } from "../../db/sql.js";
-import { HttpError } from "../../shared/http.js";
+import { HttpError, limitText } from "../../shared/http.js";
 import type { Now } from "../../shared/types.js";
 import { getSource, listSources } from "../sources/sources.service.js";
 import { replyToQuestion } from "./reply.js";
@@ -106,6 +106,7 @@ export function addConversationMessage(
 ) {
   const question = text.trim();
   if (!question) throw new HttpError(400, "Soru boş olamaz.");
+  limitText(question, MAX_QUESTION_LENGTH, "Soru");
   return transaction(db, () => {
     const conversation = db
       .prepare("SELECT id, title FROM conversations WHERE id = ? AND employee_id = ?")
