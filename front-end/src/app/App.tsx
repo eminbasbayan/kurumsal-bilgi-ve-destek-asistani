@@ -1,6 +1,9 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
+import { getProfile, logout as logoutApi } from "../api/auth";
+import { ApiError, clearToken, hasToken } from "../api/client";
+import { listNotifications } from "../api/notifications";
 import { AppShell } from "../components/AppShell";
-import { profile } from "../data";
 import { AssistantPage } from "../pages/AssistantPage";
 import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
@@ -9,98 +12,75 @@ import { NotificationsPage } from "../pages/NotificationsPage";
 import { ProfilePage } from "../pages/ProfilePage";
 import { RequestDetailPage } from "../pages/RequestDetailPage";
 import { RequestsPage } from "../pages/RequestsPage";
-import type { RequestDraft, SupportRequest } from "../types";
-import { STORAGE_KEY, go, readRoute, type AppRoute } from "./navigation";
-import { initialStore, type AppStore } from "./store";
+import type { Employee } from "../types";
+import { go, readRoute, type AppRoute } from "./navigation";
 import "../styles/app.css";
 import "../styles/extra.css";
 import "../styles/pages.css";
 import "../styles/dark.css";
 
 export default function App() {
-  const [store, setStore] = useState<AppStore>(initialStore);
+  const queryClient = useQueryClient();
   const [current, setCurrent] = useState<AppRoute>(readRoute);
   const [assistantContext, setAssistantContext] = useState("");
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
-  }, [store]);
+  const [authRevision, setAuthRevision] = useState(0);
+  const authenticated = hasToken();
+
+  const profileQuery = useQuery({
+    queryKey: ["profile", authRevision],
+    queryFn: getProfile,
+    enabled: authenticated,
+    retry: false,
+  });
+
+  const notificationsQuery = useQuery({
+    queryKey: ["notifications"],
+    queryFn: listNotifications,
+    enabled: authenticated && profileQuery.isSuccess,
+  });
+
   useEffect(() => {
     const update = () => setCurrent(readRoute());
     window.addEventListener("hashchange", update);
     if (!location.hash) go("home");
     return () => window.removeEventListener("hashchange", update);
   }, []);
-  const logout = () => setStore((currentStore) => ({ ...currentStore, loggedIn: false }));
-  const create = (draft: RequestDraft) => {
-    const id = Math.max(...store.requests.map((item) => item.id)) + 1;
-    const number = `DST-2026-${1042 + id - 10}`;
-    const stamp = new Date().toLocaleString("tr-TR");
-    const item: SupportRequest = {
-      ...draft,
-      id,
-      number,
-      status: "Yeni",
-      createdAt: stamp,
-      updatedAt: stamp,
-      team: `${draft.category} Ekibi`,
-      messages: [],
-      timeline: [{ label: "Talep oluşturuldu", date: stamp }],
-    };
-    setStore((currentStore) => ({
-      ...currentStore,
-      requests: [item, ...currentStore.requests],
-      notifications: [
-        {
-          id: Date.now(),
-          title: "Talebiniz oluşturuldu",
-          text: `${number} numaralı talebiniz kaydedildi.`,
-          date: "Şimdi",
-          read: false,
-          requestId: id,
-        },
-        ...currentStore.notifications,
-      ],
-    }));
-    setAssistantContext("");
-    go(`request/${id}`);
+
+  useEffect(() => {
+    if (profileQuery.error instanceof ApiError && profileQuery.error.status === 401) {
+      clearToken();
+      queryClient.clear();
+      setAuthRevision((value) => value + 1);
+    }
+  }, [profileQuery.error, queryClient]);
+
+  const signedIn = (employee: Employee) => {
+    queryClient.setQueryData(["profile", authRevision + 1], employee);
+    setAuthRevision((value) => value + 1);
+    go("home");
   };
-  const addMessage = (id: number, text: string) =>
-    setStore((currentStore) => ({
-      ...currentStore,
-      requests: currentStore.requests.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              updatedAt: "Şimdi",
-              messages: [
-                ...item.messages,
-                {
-                  id: Date.now(),
-                  author: profile.name,
-                  role: "employee",
-                  text,
-                  date: "Şimdi",
-                },
-              ],
-              timeline: [
-                ...item.timeline,
-                { label: "Mesaj gönderildi", date: "Şimdi" },
-              ],
-            }
-          : item,
-      ),
-    }));
-  if (!store.loggedIn)
-    return (
-      <LoginPage
-        onLogin={() => {
-          setStore((currentStore) => ({ ...currentStore, loggedIn: true }));
-          go("home");
-        }}
-      />
-    );
+
+  const logout = async () => {
+    await logoutApi().catch(() => undefined);
+    queryClient.clear();
+    setAssistantContext("");
+    setAuthRevision((value) => value + 1);
+    go("home");
+  };
+
+  if (!authenticated) return <LoginPage onLogin={signedIn} />;
+
+  if (profileQuery.isPending) {
+    return <main className="content"><p className="muted">Oturum doğrulanıyor…</p></main>;
+  }
+
+  if (profileQuery.isError || !profileQuery.data) {
+    return <LoginPage onLogin={signedIn} />;
+  }
+
+  const profile = profileQuery.data;
   const pages: Record<string, ReactNode> = {
-    home: <HomePage requests={store.requests} />,
+    home: <HomePage profile={profile} />,
     assistant: (
       <AssistantPage
         escalate={(context) => {
@@ -109,43 +89,23 @@ export default function App() {
         }}
       />
     ),
-    new: <NewRequestPage context={assistantContext} create={create} />,
-    requests: <RequestsPage items={store.requests} />,
-    detail: (
-      <RequestDetailPage
-        item={store.requests.find((item) => item.id === current.id)}
-        addMessage={addMessage}
+    new: (
+      <NewRequestPage
+        context={assistantContext}
+        onCreated={() => setAssistantContext("")}
       />
     ),
-    notifications: (
-      <NotificationsPage
-        items={store.notifications}
-        read={(id, requestId) => {
-          setStore((currentStore) => ({
-            ...currentStore,
-            notifications: currentStore.notifications.map((item) =>
-              item.id === id ? { ...item, read: true } : item,
-            ),
-          }));
-          if (requestId) go(`request/${requestId}`);
-        }}
-        readAll={() =>
-          setStore((currentStore) => ({
-            ...currentStore,
-            notifications: currentStore.notifications.map((item) => ({
-              ...item,
-              read: true,
-            })),
-          }))
-        }
-      />
-    ),
-    profile: <ProfilePage logout={logout} />,
+    requests: <RequestsPage />,
+    detail: <RequestDetailPage id={current.id} />,
+    notifications: <NotificationsPage />,
+    profile: <ProfilePage profile={profile} logout={logout} />,
   };
+
   return (
     <AppShell
       current={current.page}
-      unread={store.notifications.filter((item) => !item.read).length}
+      profile={profile}
+      unread={notificationsQuery.data?.unread ?? 0}
       logout={logout}
     >
       {pages[current.page] || pages.home}

@@ -10,20 +10,22 @@ import {
   PlusIcon,
   ReaderIcon,
 } from "@radix-ui/react-icons";
-import { profile } from "../data";
+import type { Employee } from "../types";
 import { go, PAGE_TITLES } from "../app/navigation";
 import { ThemeToggleButton } from "./ThemeToggleButton";
 
 export function AppShell({
   children,
   current,
+  profile,
   unread,
   logout,
 }: {
   children: ReactNode;
   current: string;
+  profile: Employee;
   unread: number;
-  logout: () => void;
+  logout: () => void | Promise<void>;
 }) {
   const [menu, setMenu] = useState(false);
   const active = current === "detail" ? "requests" : current;
@@ -64,11 +66,7 @@ export function AppShell({
         </div>
       </aside>
       {menu && (
-        <button
-          className="scrim"
-          aria-label="Menüyü kapat"
-          onClick={() => setMenu(false)}
-        />
+        <button className="scrim" aria-label="Menüyü kapat" onClick={() => setMenu(false)} />
       )}
       <div className="main-wrap">
         <div className="topbar">
@@ -97,7 +95,6 @@ export function AppShell({
                 {unread > 0 && <i className="bell-dot" />}
               </IconButton>
             </Tooltip>
-            {/* Dark/Light mode toggle */}
             <ThemeToggleButton />
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
@@ -114,13 +111,12 @@ export function AppShell({
                   <PersonIcon /> Profil
                 </DropdownMenu.Item>
                 <DropdownMenu.Separator />
-                <DropdownMenu.Item color="red" onSelect={logout}>
+                <DropdownMenu.Item color="red" onSelect={() => void logout()}>
                   <ExitIcon /> Çıkış yap
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu.Root>
           </div>
-     
         </div>
         <main className="content">{children}</main>
       </div>
