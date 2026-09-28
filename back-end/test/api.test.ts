@@ -79,7 +79,7 @@ test("çok konulu soruda metindeki ilk konu yanıtlanır", () => {
   const izinFirst = replyToQuestion("izin ve vpn", sources);
   assert.equal(izinFirst.source?.id, "izin");
   assert.match(izinFirst.text, /üç iş günü/);
-  assert.match(izinFirst.text, /Sorunuzda vpn de geçiyor; onu ayrı sorarsanız kaynaklı yanıt verebilirim/);
+  assert.match(izinFirst.text, /Sorunuzda VPN de geçiyor; onu ayrı sorarsanız kaynaklı yanıt verebilirim/);
   assert.doesNotMatch(izinFirst.text, /çok faktörlü/);
 
   const three = replyToQuestion("bordro, sonra masraf ve vpn", sources);
@@ -87,7 +87,7 @@ test("çok konulu soruda metindeki ilk konu yanıtlanır", () => {
   assert.match(three.text, /ilk iş günü/);
   assert.match(
     three.text,
-    /Sorunuzda masraf ve vpn de geçiyor; onları ayrı sorarsanız kaynaklı yanıt verebilirim/,
+    /Sorunuzda masraf ve VPN de geçiyor; onları ayrı sorarsanız kaynaklı yanıt verebilirim/,
   );
   assert.doesNotMatch(three.text, /on iş günü/);
   assert.doesNotMatch(three.text, /çok faktörlü/);

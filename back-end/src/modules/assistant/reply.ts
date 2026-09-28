@@ -10,6 +10,13 @@ const TOPIC_IDS = ["izin", "vpn", "bordro", "masraf"] as const;
 
 type TopicId = (typeof TOPIC_IDS)[number];
 
+const TOPIC_LABELS: Record<TopicId, string> = {
+  izin: "izin",
+  vpn: "VPN",
+  bordro: "bordro",
+  masraf: "masraf",
+};
+
 const ANSWERS: Record<TopicId, string> = {
   izin: "Yıllık izin talebinizi planlanan başlangıç tarihinden en az üç iş günü önce çalışan portalından iletmeniz gerekir. Yönetici onayından sonra izin bakiyeniz güncellenir.",
   vpn: "Kurumsal VPN için şirket cihazındaki güncel istemciyi açın, kurumsal hesabınızla giriş yapın ve çok faktörlü doğrulamayı tamamlayın. Sorun sürerse BT Destek talebi oluşturun.",
@@ -64,7 +71,7 @@ export function replyToQuestion(
   const primary = matches[0];
   if (!primary) return { text: NOT_FOUND };
 
-  const others = matches.slice(1).map((item) => item.id);
+  const others = matches.slice(1).map((item) => TOPIC_LABELS[item.id]);
   const note = otherTopicsNote(others);
   return {
     text: note ? `${primary.text} ${note}` : primary.text,
