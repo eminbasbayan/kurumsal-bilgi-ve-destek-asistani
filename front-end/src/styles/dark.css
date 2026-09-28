@@ -39,6 +39,11 @@ html[data-appearance="dark"] .login-side {
   background: var(--color-bg);
 }
 
+html[data-appearance="dark"] .hero .hero-badge {
+  background-color: var(--color-selected-bg);
+  color: var(--color-ink);
+}
+
 html[data-appearance="dark"] .topbar {
   background: var(--portal-panel);
   border-bottom-color: var(--color-line);

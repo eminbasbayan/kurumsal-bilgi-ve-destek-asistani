@@ -224,6 +224,10 @@
   line-height: 1.65;
   margin-bottom: 20px;
 }
+.hero .hero-badge {
+  background-color: #dbeafe;
+  color: var(--color-primary-hover);
+}
 .hero-art {
   font-size: 130px;
   font-weight: 700;
