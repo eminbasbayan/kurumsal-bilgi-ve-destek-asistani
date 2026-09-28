@@ -29,6 +29,9 @@ import {
 import { PageHeader } from "../components/PageHeader";
 import type { Conversation, ConversationMessage } from "../types";
 import { formatDateTime } from "../utils/date";
+import type { AssistantHandoff } from "./requestHandoff";
+
+export type { AssistantHandoff } from "./requestHandoff";
 
 const SUGGESTIONS = [
   "Yıllık izin nasıl kullanılır?",
@@ -36,17 +39,6 @@ const SUGGESTIONS = [
   "Bordroma nereden ulaşırım?",
   "Masraf belgesi nasıl yüklenir?",
 ];
-
-export type AssistantSource = {
-  title: string;
-  section: string;
-};
-
-export type AssistantHandoff = {
-  question: string;
-  answer: string;
-  sources: AssistantSource[];
-};
 
 export function AssistantPage({
   escalate,
@@ -269,6 +261,7 @@ export function AssistantPage({
                   sources: assistant.source
                     ? [
                         {
+                          id: assistant.source.id,
                           title: assistant.source.title,
                           section: assistant.source.section,
                         },
