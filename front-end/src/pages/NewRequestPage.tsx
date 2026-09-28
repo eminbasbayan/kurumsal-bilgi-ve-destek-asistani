@@ -18,7 +18,22 @@ import { listCategories } from "../api/categories";
 import { createRequest } from "../api/requests";
 import { go } from "../app/navigation";
 import { PageHeader } from "../components/PageHeader";
-import type { Priority, RequestDraft } from "../types";
+import type { Attachment, Priority, RequestDraft } from "../types";
+
+const ACCEPTED_FILE_TYPES = ["application/pdf", "image/png", "image/jpeg"];
+const MAX_FILE_BYTES = 5 * 1024 * 1024;
+
+function formatFileSize(sizeBytes: number): string {
+  if (sizeBytes < 1024) return `${sizeBytes.toLocaleString("tr-TR")} B`;
+  const kilobytes = sizeBytes / 1024;
+  const value = kilobytes < 1024 ? kilobytes : kilobytes / 1024;
+  const unit = kilobytes < 1024 ? "KB" : "MB";
+  return `${value.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} ${unit}`;
+}
+
+function attachmentIdentity(attachment: Attachment): string {
+  return `${attachment.name}\u0000${attachment.mimeType}\u0000${attachment.sizeBytes}`;
+}
 
 function suggestedCategory(context: string): [string, string] {
   const normalized = context.toLocaleLowerCase("tr-TR");
@@ -41,6 +56,7 @@ export function NewRequestPage({
   const queryClient = useQueryClient();
   const suggested = suggestedCategory(context);
   const clientRequestId = useRef(crypto.randomUUID());
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const categories = useQuery({
     queryKey: ["categories"],
     queryFn: listCategories,
@@ -86,12 +102,14 @@ export function NewRequestPage({
   };
 
   const files = (list: FileList | null) => {
-    const selected = Array.from(list || []);
+    const selected = Array.from(list ?? []);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (selected.length === 0) return;
     if (
       selected.some(
         (file) =>
-          file.size > 5 * 1024 * 1024 ||
-          !["application/pdf", "image/png", "image/jpeg"].includes(file.type),
+          file.size > MAX_FILE_BYTES ||
+          !ACCEPTED_FILE_TYPES.includes(file.type),
       )
     ) {
       setError(
@@ -104,13 +122,34 @@ export function NewRequestPage({
       return;
     }
     setError("");
+    setDraft((current) => {
+      const seen = new Set(current.attachments.map(attachmentIdentity));
+      const additions: Attachment[] = [];
+      for (const file of selected) {
+        const attachment = {
+          name: file.name,
+          mimeType: file.type,
+          sizeBytes: file.size,
+        };
+        const identity = attachmentIdentity(attachment);
+        if (seen.has(identity)) continue;
+        seen.add(identity);
+        additions.push(attachment);
+      }
+      if (additions.length === 0) return current;
+      return {
+        ...current,
+        attachments: [...current.attachments, ...additions],
+      };
+    });
+  };
+
+  const removeAttachment = (identity: string) => {
     setDraft((current) => ({
       ...current,
-      attachments: selected.map((file) => ({
-        name: file.name,
-        mimeType: file.type,
-        sizeBytes: file.size,
-      })),
+      attachments: current.attachments.filter(
+        (attachment) => attachmentIdentity(attachment) !== identity,
+      ),
     }));
   };
 
@@ -234,26 +273,48 @@ export function NewRequestPage({
               ))}
             </div>
           </fieldset>
-          <label className="field">
-            Ek dosyalar
+          <div className="field">
+            <label htmlFor="request-attachments">Ek dosyalar</label>
             <div className="file-picker">
               <FileIcon />
               <span>Dosyaları seçmek için tıklayın</span>
               <small>PDF, PNG veya JPG · En fazla 5 MB</small>
               <input
+                ref={fileInputRef}
+                id="request-attachments"
                 type="file"
                 accept=".pdf,.png,.jpg,.jpeg"
                 multiple
                 onChange={(event) => files(event.target.files)}
               />
             </div>
-            {draft.attachments.map((attachment) => (
-              <span className="file-chip" key={attachment.name}>
-                <FileIcon />
-                {attachment.name}
-              </span>
-            ))}
-          </label>
+            {draft.attachments.length > 0 && (
+              <ul className="file-list">
+                {draft.attachments.map((attachment) => {
+                  const identity = attachmentIdentity(attachment);
+                  return (
+                    <li className="file-chip" key={identity}>
+                      <FileIcon />
+                      <span className="file-name">{attachment.name}</span>
+                      <span className="file-size">
+                        {formatFileSize(attachment.sizeBytes)}
+                      </span>
+                      <IconButton
+                        type="button"
+                        size="1"
+                        variant="ghost"
+                        color="gray"
+                        aria-label={`${attachment.name} dosyasını kaldır`}
+                        onClick={() => removeAttachment(identity)}
+                      >
+                        <Cross2Icon />
+                      </IconButton>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
           {draft.assistantContext && (
             <div className="context">
               <ChatBubbleIcon />
