@@ -4,6 +4,7 @@ import {
   DEMO_EMAIL,
   DEMO_LOGIN_MESSAGE,
   DEMO_PASSWORD,
+  DEMO_SUPPORT_ACCOUNTS,
   MAX_ASSISTANT_CONTEXT_LENGTH,
   MAX_DESCRIPTION_LENGTH,
   MAX_FILE_NAME_LENGTH,
@@ -12,6 +13,8 @@ import {
   MAX_SUBJECT_LENGTH,
   PRIORITIES,
   REQUEST_STATUSES,
+  TIMELINE_EVENT_TYPES,
+  USER_ROLES,
 } from "../config/constants.js";
 
 const categoryNames = Object.keys(CATEGORIES);
@@ -21,6 +24,12 @@ const categoryHelp = Object.entries(CATEGORIES)
 
 const errorSchema = { $ref: "#/components/schemas/Error" };
 const bearer = [{ bearerAuth: [] }];
+const supportAccounts = DEMO_SUPPORT_ACCOUNTS.map(
+  (account) => `${account.email} (${account.team})`,
+).join(", ");
+const statusCounts = Object.fromEntries(
+  REQUEST_STATUSES.map((status) => [status, { type: "integer" }]),
+);
 
 function json(schema: object, example?: unknown) {
   return {
@@ -46,6 +55,7 @@ export const openApiDocument = {
     description: [
       "Çalışan portalının demo API'si. Gerçek kimlik dizini, canlı yapay zekâ veya dosya deposu yoktur.",
       `Denemek için önce Giriş yapın. E-posta: ${DEMO_EMAIL}. Parola: ${DEMO_PASSWORD}.`,
+      `Demo destek personeli hesapları aynı parolayı kullanır: ${supportAccounts}.`,
       DEMO_LOGIN_MESSAGE,
       "Dönen token değerini sağ üstteki Authorize alanına yapıştırın. Diğer uçlar bu belirteci ister.",
     ].join(" "),
@@ -57,6 +67,7 @@ export const openApiDocument = {
     { name: "Bildirimler", description: "Talep bildirimleri" },
     { name: "Kaynaklar", description: "Asistanın dayandığı örnek belgeler" },
     { name: "Asistan", description: "Kural tabanlı bilgi asistanı" },
+    { name: "Destek Personeli", description: "Demo destek personeli kuyruğu ve talep yönetimi" },
   ],
   components: {
     securitySchemes: {
@@ -83,6 +94,8 @@ export const openApiDocument = {
           email: { type: "string" },
           employeeNo: { type: "string" },
           location: { type: "string" },
+          role: { type: "string", enum: [...USER_ROLES] },
+          team: { type: "string", nullable: true },
         },
       },
       LoginRequest: {
@@ -143,6 +156,139 @@ export const openApiDocument = {
         type: "object",
         required: ["helpful"],
         properties: { helpful: { type: "boolean", example: true } },
+      },
+      SupportRequestListItem: {
+        type: "object",
+        properties: {
+          id: { type: "integer" },
+          number: { type: "string" },
+          subject: { type: "string" },
+          description: { type: "string" },
+          category: { type: "string" },
+          subcategory: { type: "string" },
+          priority: { type: "string", enum: [...PRIORITIES] },
+          status: { type: "string", enum: [...REQUEST_STATUSES] },
+          team: { type: "string" },
+          createdAt: { type: "string" },
+          updatedAt: { type: "string" },
+          assistantContext: { type: "string", nullable: true },
+          employee: {
+            type: "object",
+            properties: {
+              id: { type: "integer" },
+              name: { type: "string" },
+              department: { type: "string" },
+            },
+          },
+          assignee: {
+            type: "object",
+            nullable: true,
+            properties: { id: { type: "integer" }, name: { type: "string" } },
+          },
+        },
+      },
+      SupportTimelineItem: {
+        type: "object",
+        properties: {
+          id: { type: "integer" },
+          label: { type: "string" },
+          actor: { type: "string" },
+          createdAt: { type: "string" },
+          detail: { type: "string", nullable: true },
+          eventType: { type: "string", enum: [...TIMELINE_EVENT_TYPES] },
+          visibility: { type: "string", enum: ["public", "internal"] },
+          actorId: { type: "integer", nullable: true },
+          fromStatus: { type: "string", nullable: true, enum: [...REQUEST_STATUSES] },
+          toStatus: { type: "string", nullable: true, enum: [...REQUEST_STATUSES] },
+        },
+      },
+      InternalNote: {
+        type: "object",
+        properties: {
+          id: { type: "integer" },
+          author: {
+            type: "object",
+            properties: { id: { type: "integer" }, name: { type: "string" } },
+          },
+          text: { type: "string" },
+          createdAt: { type: "string" },
+        },
+      },
+      SupportRequestDetail: {
+        allOf: [
+          { $ref: "#/components/schemas/SupportRequestListItem" },
+          {
+            type: "object",
+            properties: {
+              employee: {
+                type: "object",
+                properties: {
+                  id: { type: "integer" },
+                  name: { type: "string" },
+                  department: { type: "string" },
+                  title: { type: "string" },
+                  email: { type: "string" },
+                },
+              },
+              contentStored: { type: "boolean", enum: [false] },
+              attachments: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "integer" },
+                    name: { type: "string" },
+                    mimeType: { type: "string" },
+                    sizeBytes: { type: "integer" },
+                  },
+                },
+              },
+              messages: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "integer" },
+                    author: { type: "string" },
+                    role: { type: "string", enum: ["employee", "support"] },
+                    text: { type: "string" },
+                    createdAt: { type: "string" },
+                  },
+                },
+              },
+              timeline: {
+                type: "array",
+                items: { $ref: "#/components/schemas/SupportTimelineItem" },
+              },
+              internalNotes: {
+                type: "array",
+                items: { $ref: "#/components/schemas/InternalNote" },
+              },
+            },
+          },
+        ],
+      },
+      StaffMember: {
+        type: "object",
+        properties: {
+          id: { type: "integer" },
+          name: { type: "string" },
+          initials: { type: "string" },
+          title: { type: "string" },
+          team: { type: "string" },
+          openAssigned: { type: "integer" },
+        },
+      },
+      SupportSummary: {
+        type: "object",
+        properties: {
+          team: { type: "string" },
+          open: { type: "integer" },
+          unassigned: { type: "integer" },
+          mine: { type: "integer" },
+          waiting: { type: "integer" },
+          byStatus: { type: "object", properties: statusCounts },
+        },
       },
     },
   },
@@ -206,7 +352,7 @@ export const openApiDocument = {
         tags: ["Talepler"],
         summary: "Açık, bekleyen ve tamamlanan sayıları ile son talepler",
         security: bearer,
-        responses: { "200": { description: "Özet" }, "401": error("Oturum gerekli.") },
+        responses: { "200": { description: "Özet" }, "401": error("Oturum gerekli."), "403": error("Bu işlem için yetkiniz yok.") },
       },
     },
     "/api/requests": {
@@ -220,7 +366,7 @@ export const openApiDocument = {
           { name: "category", in: "query", schema: { type: "string", enum: categoryNames } },
           { name: "scope", in: "query", schema: { type: "string", enum: ["all", "open", "closed"] } },
         ],
-        responses: { "200": { description: "Talep listesi" }, "400": error("Geçersiz süzgeç."), "401": error("Oturum gerekli.") },
+        responses: { "200": { description: "Talep listesi" }, "400": error("Geçersiz süzgeç."), "401": error("Oturum gerekli."), "403": error("Bu işlem için yetkiniz yok.") },
       },
       post: {
         tags: ["Talepler"],
@@ -233,6 +379,7 @@ export const openApiDocument = {
           "200": { description: "Aynı clientRequestId ile daha önce oluşturulan talep" },
           "400": error("Zorunlu alan veya ek kuralı karşılanmadı."),
           "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
         },
       },
     },
@@ -245,6 +392,7 @@ export const openApiDocument = {
         responses: {
           "200": { description: "Talep, yazışma, geçmiş ve ek üstverisi" },
           "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
           "404": error("Talep bulunamadı."),
         },
       },
@@ -261,6 +409,7 @@ export const openApiDocument = {
           "201": { description: "Güncellenmiş talep" },
           "400": error("Mesaj boş olamaz."),
           "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
           "404": error("Talep bulunamadı."),
         },
       },
@@ -270,7 +419,7 @@ export const openApiDocument = {
         tags: ["Bildirimler"],
         summary: "Bildirimleri ve okunmamış sayıyı getir",
         security: bearer,
-        responses: { "200": { description: "Bildirim listesi" }, "401": error("Oturum gerekli.") },
+        responses: { "200": { description: "Bildirim listesi" }, "401": error("Oturum gerekli."), "403": error("Bu işlem için yetkiniz yok.") },
       },
     },
     "/api/notifications/{id}/read": {
@@ -282,6 +431,7 @@ export const openApiDocument = {
         responses: {
           "200": { description: "Güncellenmiş bildirim" },
           "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
           "404": error("Bildirim bulunamadı."),
         },
       },
@@ -291,7 +441,7 @@ export const openApiDocument = {
         tags: ["Bildirimler"],
         summary: "Tüm bildirimleri okundu işaretle",
         security: bearer,
-        responses: { "200": { description: "Okunmamış sayı sıfırlanır" }, "401": error("Oturum gerekli.") },
+        responses: { "200": { description: "Okunmamış sayı sıfırlanır" }, "401": error("Oturum gerekli."), "403": error("Bu işlem için yetkiniz yok.") },
       },
     },
     "/api/sources": {
@@ -299,7 +449,7 @@ export const openApiDocument = {
         tags: ["Kaynaklar"],
         summary: "Örnek kaynak belgelerini listele",
         security: bearer,
-        responses: { "200": { description: "Kaynak listesi" }, "401": error("Oturum gerekli.") },
+        responses: { "200": { description: "Kaynak listesi" }, "401": error("Oturum gerekli."), "403": error("Bu işlem için yetkiniz yok.") },
       },
     },
     "/api/sources/{id}": {
@@ -313,6 +463,7 @@ export const openApiDocument = {
         responses: {
           "200": { description: "Belge adı, bölüm ve metin" },
           "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
           "404": error("Kaynak bulunamadı."),
         },
       },
@@ -322,14 +473,14 @@ export const openApiDocument = {
         tags: ["Asistan"],
         summary: "Sohbetleri listele",
         security: bearer,
-        responses: { "200": { description: "Sohbet listesi" }, "401": error("Oturum gerekli.") },
+        responses: { "200": { description: "Sohbet listesi" }, "401": error("Oturum gerekli."), "403": error("Bu işlem için yetkiniz yok.") },
       },
       post: {
         tags: ["Asistan"],
         summary: "Yeni sohbet aç",
         security: bearer,
         requestBody: { required: false, content: json({ $ref: "#/components/schemas/ConversationRequest" }) },
-        responses: { "201": { description: "Sohbet oluşturuldu" }, "401": error("Oturum gerekli.") },
+        responses: { "201": { description: "Sohbet oluşturuldu" }, "401": error("Oturum gerekli."), "403": error("Bu işlem için yetkiniz yok.") },
       },
     },
     "/api/conversations/{id}": {
@@ -341,6 +492,7 @@ export const openApiDocument = {
         responses: {
           "200": { description: "Sohbet" },
           "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
           "404": error("Sohbet bulunamadı."),
         },
       },
@@ -358,6 +510,7 @@ export const openApiDocument = {
           "201": { description: "Kullanıcı sorusu ve asistan yanıtı" },
           "400": error("Soru boş olamaz."),
           "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
           "404": error("Sohbet bulunamadı."),
         },
       },
@@ -373,7 +526,87 @@ export const openApiDocument = {
           "200": { description: "Değerlendirilmiş yanıt" },
           "400": error("Yalnızca asistan yanıtı değerlendirilebilir."),
           "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
           "404": error("Mesaj bulunamadı."),
+        },
+      },
+    },
+    "/api/support/summary": {
+      get: {
+        tags: ["Destek Personeli"],
+        summary: "Ekip özetini getir",
+        description: "Açık, atanmamış, bana atanmış ve kullanıcıdan bilgi bekleyen sayılar ekibin talep kayıtlarından hesaplanır.",
+        security: bearer,
+        responses: {
+          "200": { description: "Ekip özeti", content: json({ $ref: "#/components/schemas/SupportSummary" }) },
+          "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
+        },
+      },
+    },
+    "/api/support/requests": {
+      get: {
+        tags: ["Destek Personeli"],
+        summary: "Ekip kuyruğunu veya bana atananları listele",
+        description: "Yalnızca personelin ekibindeki talepler döner. Sıralama oluşturulma zamanı artan, sonra id artandır. status verilirse scope yok sayılır.",
+        security: bearer,
+        parameters: [
+          { name: "queue", in: "query", schema: { type: "string", enum: ["team", "mine"], default: "team" }, description: "Varsayılan team." },
+          { name: "scope", in: "query", schema: { type: "string", enum: ["all", "open", "closed"], default: "open" }, description: "Varsayılan open. status verilirse yok sayılır." },
+          { name: "status", in: "query", schema: { type: "string", enum: [...REQUEST_STATUSES] } },
+          { name: "priority", in: "query", schema: { type: "string", enum: [...PRIORITIES] } },
+          { name: "unassigned", in: "query", schema: { type: "string", enum: ["true"] }, description: "Yalnızca true kabul edilir." },
+          { name: "q", in: "query", schema: { type: "string" }, description: "Talep numarası, konu veya çalışan adı. Türkçe harf duyarsız." },
+        ],
+        responses: {
+          "200": {
+            description: "Talep listesi",
+            content: json({
+              type: "object",
+              properties: {
+                requests: { type: "array", items: { $ref: "#/components/schemas/SupportRequestListItem" } },
+              },
+            }),
+          },
+          "400": error("Geçersiz süzgeç."),
+          "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
+        },
+      },
+    },
+    "/api/support/requests/{id}": {
+      get: {
+        tags: ["Destek Personeli"],
+        summary: "Ekip talebinin detayını getir",
+        description: "Tüm durum geçmişini ve iç notları içerir. Başka ekibin talebi bulunamadı sayılır.",
+        security: bearer,
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" }, example: 2 }],
+        responses: {
+          "200": { description: "Talep detayı", content: json({ $ref: "#/components/schemas/SupportRequestDetail" }) },
+          "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
+          "404": error("Talep bulunamadı."),
+        },
+      },
+    },
+    "/api/support/staff": {
+      get: {
+        tags: ["Destek Personeli"],
+        summary: "Aynı ekipteki destek personelini listele",
+        description: "Personelin kendisi dahildir. Sıralama ada göredir.",
+        security: bearer,
+        responses: {
+          "200": {
+            description: "Ekip arkadaşları",
+            content: json({
+              type: "object",
+              properties: {
+                staff: { type: "array", items: { $ref: "#/components/schemas/StaffMember" } },
+              },
+            }),
+          },
+          "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
         },
       },
     },

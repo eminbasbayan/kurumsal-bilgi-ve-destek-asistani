@@ -3,7 +3,7 @@ import express from "express";
 import type { DatabaseSync } from "node:sqlite";
 import { mountDocs } from "./docs/swagger.js";
 import { errorHandler, notFound } from "./middleware/errorHandler.js";
-import { requireAuth } from "./middleware/auth.js";
+import { requireAuth, requireRole } from "./middleware/auth.js";
 import { createAssistantRouter, createConversationsRouter } from "./modules/assistant/assistant.routes.js";
 import {
   createPrivateAuthRouter,
@@ -14,6 +14,7 @@ import { createCategoriesRouter } from "./modules/categories/categories.routes.j
 import { createNotificationsRouter } from "./modules/notifications/notifications.routes.js";
 import { createRequestsRouter } from "./modules/requests/requests.routes.js";
 import { createSourcesRouter } from "./modules/sources/sources.routes.js";
+import { createSupportRouter } from "./modules/support/support.routes.js";
 import { DEFAULT_CORS_ORIGIN } from "./config/constants.js";
 import type { Now } from "./shared/types.js";
 
@@ -28,16 +29,17 @@ export function createApp(
   app.use(express.json());
   mountDocs(app);
 
-  app.use("/api/auth", createPublicAuthRouter(db));
-  app.use("/api", requireAuth(db));
+  app.use("/api/auth", createPublicAuthRouter(db, now));
+  app.use("/api", requireAuth(db, now));
   app.use("/api/auth", createPrivateAuthRouter(db));
   app.use("/api", createProfileRouter());
   app.use("/api/categories", createCategoriesRouter());
-  app.use("/api/requests", createRequestsRouter(db, now));
-  app.use("/api/notifications", createNotificationsRouter(db));
-  app.use("/api/sources", createSourcesRouter(db));
-  app.use("/api/conversations", createConversationsRouter(db, now));
-  app.use("/api/assistant", createAssistantRouter(db));
+  app.use("/api/requests", requireRole("employee"), createRequestsRouter(db, now));
+  app.use("/api/notifications", requireRole("employee"), createNotificationsRouter(db));
+  app.use("/api/sources", requireRole("employee"), createSourcesRouter(db));
+  app.use("/api/conversations", requireRole("employee"), createConversationsRouter(db, now));
+  app.use("/api/assistant", requireRole("employee"), createAssistantRouter(db));
+  app.use("/api/support", requireRole("support"), createSupportRouter(db, now));
   app.use("/api", notFound);
   app.use(errorHandler);
   return app;

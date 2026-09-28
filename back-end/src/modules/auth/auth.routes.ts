@@ -6,12 +6,12 @@ import { HttpError } from "../../shared/http.js";
 import { parseInput } from "../../shared/validate.js";
 import { loginSchema } from "./auth.schema.js";
 import { createToken, verifyPassword } from "../../shared/passwords.js";
-import { employeeOf } from "../../shared/types.js";
+import { employeeOf, type Now } from "../../shared/types.js";
 import { createSession, deleteSession, findEmployeeByEmail } from "./auth.service.js";
 
 const SESSION_MS = 7 * 24 * 60 * 60 * 1000;
 
-export function createPublicAuthRouter(db: DatabaseSync): Router {
+export function createPublicAuthRouter(db: DatabaseSync, now: Now): Router {
   const router = Router();
   router.post("/login", (req, res) => {
     const { email, password } = parseInput(loginSchema, req.body, "E-posta ve parola zorunludur.");
@@ -20,8 +20,8 @@ export function createPublicAuthRouter(db: DatabaseSync): Router {
       throw new HttpError(401, "E-posta veya parola hatalı.");
     }
     const token = createToken();
-    const expiresAt = new Date(Date.now() + SESSION_MS).toISOString();
-    createSession(db, employee.id, token, expiresAt);
+    const expiresAt = new Date(now().getTime() + SESSION_MS).toISOString();
+    createSession(db, employee.id, token, expiresAt, now);
     const { passwordHash: _passwordHash, ...profile } = employee;
     res.json({
       token,

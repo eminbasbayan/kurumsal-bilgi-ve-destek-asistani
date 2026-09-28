@@ -121,7 +121,13 @@ test("örnek veri boş veritabanına bir kez yazılır", () => {
     const requests = db.prepare("SELECT COUNT(*) AS count FROM requests").get() as {
       count: number;
     };
-    assert.equal(Number(employees.count), 1);
+    const support = db
+      .prepare("SELECT COUNT(*) AS count FROM employees WHERE role = 'support'")
+      .get() as { count: number };
+    const version = db.prepare("PRAGMA user_version").get() as { user_version: number };
+    assert.equal(Number(employees.count), 4);
+    assert.equal(Number(support.count), 3);
+    assert.equal(version.user_version, 1);
     assert.equal(Number(requests.count), 10);
   } finally {
     db.close();
