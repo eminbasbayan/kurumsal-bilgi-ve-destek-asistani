@@ -6,9 +6,11 @@ import {
   DEMO_PASSWORD,
   DEMO_SUPPORT_ACCOUNTS,
   MAX_ASSISTANT_CONTEXT_LENGTH,
+  MAX_CLOSE_REASON_LENGTH,
   MAX_DESCRIPTION_LENGTH,
   MAX_FILE_NAME_LENGTH,
   MAX_MESSAGE_LENGTH,
+  MAX_NOTE_LENGTH,
   MAX_QUESTION_LENGTH,
   MAX_SUBJECT_LENGTH,
   PRIORITIES,
@@ -290,6 +292,30 @@ export const openApiDocument = {
           byStatus: { type: "object", properties: statusCounts },
         },
       },
+      AssignRequest: {
+        type: "object",
+        required: ["assigneeId", "expectedUpdatedAt"],
+        properties: {
+          assigneeId: { type: "integer", minimum: 1 },
+          expectedUpdatedAt: { type: "string", minLength: 1 },
+        },
+      },
+      StatusChangeRequest: {
+        type: "object",
+        required: ["status", "expectedUpdatedAt"],
+        properties: {
+          status: { type: "string", enum: [...REQUEST_STATUSES] },
+          reason: { type: "string", maxLength: MAX_CLOSE_REASON_LENGTH },
+          expectedUpdatedAt: { type: "string", minLength: 1 },
+        },
+      },
+      NoteRequest: {
+        type: "object",
+        required: ["text"],
+        properties: {
+          text: { type: "string", minLength: 1, maxLength: MAX_NOTE_LENGTH },
+        },
+      },
     },
   },
   paths: {
@@ -401,7 +427,8 @@ export const openApiDocument = {
       post: {
         tags: ["Talepler"],
         summary: "Talebe çalışan mesajı ekle",
-        description: "Son güncelleme yenilenir. Otomatik destek yanıtı üretilmez ve durum değişmez.",
+        description:
+          "Son güncelleme yenilenir. Otomatik destek yanıtı üretilmez. Durum Kullanıcıdan Bilgi Bekleniyor ise aynı işlemde İnceleniyor olur; geçmişe önce Mesaj gönderildi, ardından aktörü Sistem olan Durum güncellendi: İnceleniyor satırı yazılır ve bu otomatik geçiş için bildirim oluşmaz. Kapatıldı durumundaki talebe mesaj eklenemez. Çözüldü durumunda mesaj eklenebilir.",
         security: bearer,
         parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" }, example: 2 }],
         requestBody: { required: true, content: json({ $ref: "#/components/schemas/MessageRequest" }) },
@@ -411,6 +438,7 @@ export const openApiDocument = {
           "401": error("Oturum gerekli."),
           "403": error("Bu işlem için yetkiniz yok."),
           "404": error("Talep bulunamadı."),
+          "409": error("Kapatılmış talebe mesaj eklenemez."),
         },
       },
     },
@@ -607,6 +635,99 @@ export const openApiDocument = {
           },
           "401": error("Oturum gerekli."),
           "403": error("Bu işlem için yetkiniz yok."),
+        },
+      },
+    },
+    "/api/support/requests/{id}/claim": {
+      post: {
+        tags: ["Destek Personeli"],
+        summary: "Atanmamış talebi üstlen",
+        description:
+          "Yalnızca atanmamış açık talep üstlenilir. Koşullu güncelleme assignee boşken başarılı olur. İşlem kaydı iç kullanımdır ve çalışana görünmez. Bildirim oluşmaz.",
+        security: bearer,
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        responses: {
+          "200": { description: "Güncellenmiş talep", content: json({ $ref: "#/components/schemas/SupportRequestDetail" }) },
+          "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
+          "404": error("Talep bulunamadı."),
+          "409": error("Kapatılmış talepte işlem yapılamaz."),
+        },
+      },
+    },
+    "/api/support/requests/{id}/assign": {
+      post: {
+        tags: ["Destek Personeli"],
+        summary: "Talebi aynı ekipteki personele ata",
+        description:
+          "Ekipteki her destek personeli atayabilir. expectedUpdatedAt talebin görülen güncelleme zamanıdır. İşlem kaydı iç kullanımdır. Bildirim oluşmaz.",
+        security: bearer,
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        requestBody: { required: true, content: json({ $ref: "#/components/schemas/AssignRequest" }) },
+        responses: {
+          "200": { description: "Güncellenmiş talep", content: json({ $ref: "#/components/schemas/SupportRequestDetail" }) },
+          "400": error("Talep yalnızca aynı ekipteki destek personeline atanabilir."),
+          "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
+          "404": error("Talep bulunamadı."),
+          "409": error("Talep siz işlem yaparken güncellendi. Güncel hâlini görüntüleyip tekrar deneyin."),
+        },
+      },
+    },
+    "/api/support/requests/{id}/status": {
+      post: {
+        tags: ["Destek Personeli"],
+        summary: "Talep durumunu değiştir",
+        description:
+          "Yalnızca talebe atanan personel, izin verilen geçişlerle durum değiştirir. Kapatıldı için gerekçe zorunludur ve çalışana durum geçmişinde görünür. Çalışana bildirim oluşur.",
+        security: bearer,
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        requestBody: { required: true, content: json({ $ref: "#/components/schemas/StatusChangeRequest" }) },
+        responses: {
+          "200": { description: "Güncellenmiş talep", content: json({ $ref: "#/components/schemas/SupportRequestDetail" }) },
+          "400": error("Kapatma gerekçesi zorunludur."),
+          "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
+          "404": error("Talep bulunamadı."),
+          "409": error("Bu işlem yalnızca talebe atanan personel tarafından yapılabilir."),
+        },
+      },
+    },
+    "/api/support/requests/{id}/messages": {
+      post: {
+        tags: ["Destek Personeli"],
+        summary: "Çalışana demo destek mesajı yaz",
+        description:
+          "Yalnızca talebe atanan personel mesaj yazar. Mesaj çalışanın yazışmasında destek ekibi mesajı olarak görünür ve çalışana bildirim oluşur. Demo mesajdır; canlı destek yanıtı değildir.",
+        security: bearer,
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        requestBody: { required: true, content: json({ $ref: "#/components/schemas/MessageRequest" }) },
+        responses: {
+          "201": { description: "Güncellenmiş talep", content: json({ $ref: "#/components/schemas/SupportRequestDetail" }) },
+          "400": error("Mesaj boş olamaz."),
+          "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
+          "404": error("Talep bulunamadı."),
+          "409": error("Bu işlem yalnızca talebe atanan personel tarafından yapılabilir."),
+        },
+      },
+    },
+    "/api/support/requests/{id}/notes": {
+      post: {
+        tags: ["Destek Personeli"],
+        summary: "İç not ekle",
+        description:
+          "Ekipteki her destek personeli iç not ekleyebilir. Not ve işlem kaydı çalışana görünmez; bildirim oluşmaz ve son güncelleme zamanı değişmez.",
+        security: bearer,
+        parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
+        requestBody: { required: true, content: json({ $ref: "#/components/schemas/NoteRequest" }) },
+        responses: {
+          "201": { description: "Güncellenmiş talep", content: json({ $ref: "#/components/schemas/SupportRequestDetail" }) },
+          "400": error("Not boş olamaz."),
+          "401": error("Oturum gerekli."),
+          "403": error("Bu işlem için yetkiniz yok."),
+          "404": error("Talep bulunamadı."),
+          "409": error("Kapatılmış talepte işlem yapılamaz."),
         },
       },
     },

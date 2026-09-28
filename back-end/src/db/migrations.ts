@@ -21,7 +21,9 @@ function userVersion(db: DatabaseSync): number {
 }
 
 function ensureSupportStaff(db: DatabaseSync): void {
-  const existing = db.prepare("SELECT id FROM employees WHERE email = ?");
+  const existing = db.prepare(
+    "SELECT id FROM employees WHERE email = ? AND role = 'support'",
+  );
   const insert = db.prepare(
     `INSERT INTO employees
       (name, initials, title, department, email, employee_no, location, password_hash, role, team)
@@ -53,7 +55,9 @@ function assignDemoRequest(
   team: string,
   assigneeName: string,
 ): void {
-  const staff = db.prepare("SELECT id FROM employees WHERE email = ?").get(email) as
+  const staff = db
+    .prepare("SELECT id FROM employees WHERE email = ? AND role = 'support'")
+    .get(email) as
     | { id: number }
     | undefined;
   if (!staff) return;
@@ -113,8 +117,8 @@ function migrateV1(db: DatabaseSync): void {
 }
 
 export function runMigrations(db: DatabaseSync): void {
-  if (userVersion(db) >= 1) return;
   transaction(db, () => {
+    if (userVersion(db) >= 1) return;
     migrateV1(db);
     db.exec("PRAGMA user_version = 1");
   });

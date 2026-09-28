@@ -2,9 +2,11 @@ import type { DatabaseSync } from "node:sqlite";
 import {
   CLOSED_STATUSES,
   OPEN_STATUSES,
+  SYSTEM_ACTOR,
   teamFor,
   type Priority,
   type RequestStatus,
+  type TimelineEventType,
 } from "../../config/constants.js";
 import { insertedId, transaction } from "../../db/sql.js";
 import { HttpError, includesTr } from "../../shared/http.js";
@@ -174,6 +176,56 @@ export function getRequest(db: DatabaseSync, employeeId: number, id: number) {
   return loadDetail(db, employeeId, id);
 }
 
+export function insertTimeline(
+  db: DatabaseSync,
+  entry: {
+    requestId: number;
+    label: string;
+    actor: string;
+    createdAt: string;
+    eventType: TimelineEventType;
+    actorId: number | null;
+    fromStatus?: RequestStatus | null;
+    toStatus?: RequestStatus | null;
+    visibility?: "public" | "internal";
+    detail?: string | null;
+  },
+): void {
+  db.prepare(
+    `INSERT INTO request_timeline (
+      request_id, label, actor, created_at, event_type, actor_id,
+      from_status, to_status, visibility, detail
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  ).run(
+    entry.requestId,
+    entry.label,
+    entry.actor,
+    entry.createdAt,
+    entry.eventType,
+    entry.actorId,
+    entry.fromStatus ?? null,
+    entry.toStatus ?? null,
+    entry.visibility ?? "public",
+    entry.detail ?? null,
+  );
+}
+
+export function insertNotification(
+  db: DatabaseSync,
+  entry: {
+    employeeId: number;
+    title: string;
+    text: string;
+    createdAt: string;
+    requestId: number | null;
+  },
+): void {
+  db.prepare(
+    `INSERT INTO notifications (employee_id, title, text, created_at, read, request_id)
+     VALUES (?, ?, ?, ?, 0, ?)`,
+  ).run(entry.employeeId, entry.title, entry.text, entry.createdAt, entry.requestId);
+}
+
 export function parseCreateRequest(body: unknown): CreateRequestInput {
   return parseInput(createRequestSchema, body, "Talep bilgileri eksik.");
 }
@@ -244,16 +296,21 @@ export function createRequest(
     for (const file of input.attachments) {
       insertAttachment.run(id, file.name, file.mimeType, file.sizeBytes);
     }
-    db.prepare(
-      `INSERT INTO request_timeline
-        (request_id, label, actor, created_at, event_type, actor_id)
-       VALUES (?, 'Talep oluşturuldu', ?, ?, 'created', ?)`,
-    ).run(id, employee.name, stamp, employee.id);
-    db.prepare(
-      `INSERT INTO notifications
-        (employee_id, title, text, created_at, read, request_id)
-       VALUES (?, 'Talebiniz oluşturuldu', ?, ?, 0, ?)`,
-    ).run(employee.id, `${number} numaralı talebiniz kaydedildi.`, stamp, id);
+    insertTimeline(db, {
+      requestId: id,
+      label: "Talep oluşturuldu",
+      actor: employee.name,
+      createdAt: stamp,
+      eventType: "created",
+      actorId: employee.id,
+    });
+    insertNotification(db, {
+      employeeId: employee.id,
+      title: "Talebiniz oluşturuldu",
+      text: `${number} numaralı talebiniz kaydedildi.`,
+      createdAt: stamp,
+      requestId: id,
+    });
     return { created: true, request: loadDetail(db, employee.id, id) };
   });
 }
@@ -269,19 +326,46 @@ export function addRequestMessage(
   return transaction(db, () => {
     const current = db
       .prepare("SELECT id, status FROM requests WHERE id = ? AND employee_id = ?")
-      .get(requestId, employee.id) as { id: number; status: string } | undefined;
+      .get(requestId, employee.id) as { id: number; status: RequestStatus } | undefined;
     if (!current) throw new HttpError(404, "Talep bulunamadı.");
+    if (current.status === "Kapatıldı") {
+      throw new HttpError(409, "Kapatılmış talebe mesaj eklenemez.");
+    }
     const stamp = now().toISOString();
-    db.prepare("UPDATE requests SET updated_at = ? WHERE id = ?").run(stamp, current.id);
+    const replyMovesToReview = current.status === "Kullanıcıdan Bilgi Bekleniyor";
+    if (replyMovesToReview) {
+      db.prepare("UPDATE requests SET updated_at = ?, status = 'İnceleniyor' WHERE id = ?").run(
+        stamp,
+        current.id,
+      );
+    } else {
+      db.prepare("UPDATE requests SET updated_at = ? WHERE id = ?").run(stamp, current.id);
+    }
     db.prepare(
       `INSERT INTO request_messages (request_id, author, role, text, created_at)
        VALUES (?, ?, 'employee', ?, ?)`,
     ).run(current.id, employee.name, message, stamp);
-    db.prepare(
-      `INSERT INTO request_timeline
-        (request_id, label, actor, created_at, event_type, actor_id)
-       VALUES (?, 'Mesaj gönderildi', ?, ?, 'employee_message', ?)`,
-    ).run(current.id, employee.name, stamp, employee.id);
+    insertTimeline(db, {
+      requestId: current.id,
+      label: "Mesaj gönderildi",
+      actor: employee.name,
+      createdAt: stamp,
+      eventType: "employee_message",
+      actorId: employee.id,
+    });
+    if (replyMovesToReview) {
+      insertTimeline(db, {
+        requestId: current.id,
+        label: "Durum güncellendi: İnceleniyor",
+        actor: SYSTEM_ACTOR,
+        createdAt: stamp,
+        eventType: "status_change",
+        actorId: null,
+        fromStatus: "Kullanıcıdan Bilgi Bekleniyor",
+        toStatus: "İnceleniyor",
+        visibility: "public",
+      });
+    }
     return loadDetail(db, employee.id, current.id);
   });
 }

@@ -3,13 +3,18 @@ import type { DatabaseSync } from "node:sqlite";
 import { queryText } from "../../shared/http.js";
 import { employeeOf, parseId, type Now } from "../../shared/types.js";
 import {
+  addInternalNote,
+  addSupportMessage,
+  assignRequest,
+  changeRequestStatus,
+  claimRequest,
   getSupportRequest,
   listSupportRequests,
   listSupportStaff,
   supportSummary,
 } from "./support.service.js";
 
-export function createSupportRouter(db: DatabaseSync, _now: Now): Router {
+export function createSupportRouter(db: DatabaseSync, now: Now): Router {
   const router = Router();
 
   router.get("/summary", (_req, res) => {
@@ -36,6 +41,31 @@ export function createSupportRouter(db: DatabaseSync, _now: Now): Router {
   router.get("/requests/:id", (req, res) => {
     const id = parseId(req.params.id, "Talep bulunamadı.");
     res.json(getSupportRequest(db, employeeOf(res), id));
+  });
+
+  router.post("/requests/:id/claim", (req, res) => {
+    const id = parseId(req.params.id, "Talep bulunamadı.");
+    res.json(claimRequest(db, employeeOf(res), id, now));
+  });
+
+  router.post("/requests/:id/assign", (req, res) => {
+    const id = parseId(req.params.id, "Talep bulunamadı.");
+    res.json(assignRequest(db, employeeOf(res), id, req.body, now));
+  });
+
+  router.post("/requests/:id/status", (req, res) => {
+    const id = parseId(req.params.id, "Talep bulunamadı.");
+    res.json(changeRequestStatus(db, employeeOf(res), id, req.body, now));
+  });
+
+  router.post("/requests/:id/messages", (req, res) => {
+    const id = parseId(req.params.id, "Talep bulunamadı.");
+    res.status(201).json(addSupportMessage(db, employeeOf(res), id, req.body, now));
+  });
+
+  router.post("/requests/:id/notes", (req, res) => {
+    const id = parseId(req.params.id, "Talep bulunamadı.");
+    res.status(201).json(addInternalNote(db, employeeOf(res), id, req.body, now));
   });
 
   return router;

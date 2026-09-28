@@ -3,16 +3,19 @@ import {
   CLOSED_STATUSES,
   OPEN_STATUSES,
   REQUEST_STATUSES,
+  STATUS_TRANSITIONS,
   type Priority,
   type RequestStatus,
   type TimelineEventType,
 } from "../../config/constants.js";
+import { transaction } from "../../db/sql.js";
 import { HttpError, includesTr } from "../../shared/http.js";
 import { parseInput } from "../../shared/validate.js";
 import type {
   Attachment,
   Employee,
   InternalNote,
+  Now,
   PersonRef,
   RequestMessage,
   StaffMember,
@@ -21,7 +24,14 @@ import type {
   SupportSummary,
   SupportTimelineItem,
 } from "../../shared/types.js";
-import { supportListFilterSchema } from "./support.schema.js";
+import { requestMessageSchema } from "../requests/requests.schema.js";
+import { insertNotification, insertTimeline } from "../requests/requests.service.js";
+import {
+  assignRequestSchema,
+  noteSchema,
+  statusChangeSchema,
+  supportListFilterSchema,
+} from "./support.schema.js";
 
 type SupportRequestRow = {
   id: number;
@@ -303,4 +313,251 @@ export function listSupportStaff(db: DatabaseSync, employee: Employee): StaffMem
       openAssigned: openAssigned.get(member.id) ?? 0,
     }))
     .sort((a, b) => a.name.localeCompare(b.name, "tr-TR"));
+}
+
+const STALE = "Talep siz işlem yaparken güncellendi. Güncel hâlini görüntüleyip tekrar deneyin.";
+const CLOSED = "Kapatılmış talepte işlem yapılamaz.";
+const NOT_ASSIGNEE = "Bu işlem yalnızca talebe atanan personel tarafından yapılabilir.";
+
+type TeamRequest = {
+  id: number;
+  number: string;
+  status: RequestStatus;
+  updated_at: string;
+  employee_id: number;
+  assignee_id: number | null;
+};
+
+function loadTeamRequest(db: DatabaseSync, employee: Employee, id: number): TeamRequest {
+  const team = teamOf(employee);
+  const row = db
+    .prepare(
+      `SELECT id, number, status, updated_at, employee_id, assignee_id
+       FROM requests WHERE id = ? AND team = ?`,
+    )
+    .get(id, team) as TeamRequest | undefined;
+  if (!row) throw new HttpError(404, "Talep bulunamadı.");
+  return row;
+}
+
+function assertCurrent(row: TeamRequest, expectedUpdatedAt: string): void {
+  if (row.updated_at !== expectedUpdatedAt) throw new HttpError(409, STALE);
+}
+
+function assertNotClosed(row: TeamRequest): void {
+  if (row.status === "Kapatıldı") throw new HttpError(409, CLOSED);
+}
+
+function assertAssignedTo(row: TeamRequest, employee: Employee): void {
+  if (row.assignee_id !== employee.id) throw new HttpError(409, NOT_ASSIGNEE);
+}
+
+function statusNotification(number: string, status: RequestStatus): { title: string; text: string } {
+  if (status === "Kullanıcıdan Bilgi Bekleniyor") {
+    return {
+      title: "Bilgi bekleniyor",
+      text: `${number} numaralı talebiniz için sizden ek bilgi bekleniyor.`,
+    };
+  }
+  if (status === "Çözüldü") {
+    return { title: "Talebiniz çözüldü", text: `${number} numaralı talebiniz çözüldü.` };
+  }
+  if (status === "Kapatıldı") {
+    return { title: "Talebiniz kapatıldı", text: `${number} numaralı talebiniz kapatıldı.` };
+  }
+  return {
+    title: "Talebiniz güncellendi",
+    text: `${number} numaralı talebinizin durumu "${status}" olarak güncellendi.`,
+  };
+}
+
+export function claimRequest(
+  db: DatabaseSync,
+  employee: Employee,
+  id: number,
+  now: Now,
+): SupportRequestDetail {
+  return transaction(db, () => {
+    const row = loadTeamRequest(db, employee, id);
+    assertNotClosed(row);
+    if (row.assignee_id === employee.id) throw new HttpError(409, "Talep zaten size atanmış.");
+    if (row.assignee_id !== null) throw new HttpError(409, "Talep başka bir personele atanmış.");
+    const stamp = now().toISOString();
+    const updated = db
+      .prepare(
+        `UPDATE requests SET assignee_id = ?, updated_at = ?
+         WHERE id = ? AND assignee_id IS NULL`,
+      )
+      .run(employee.id, stamp, row.id);
+    if (Number(updated.changes) !== 1) {
+      const again = loadTeamRequest(db, employee, id);
+      if (again.assignee_id === employee.id) throw new HttpError(409, "Talep zaten size atanmış.");
+      throw new HttpError(409, "Talep başka bir personele atanmış.");
+    }
+    insertTimeline(db, {
+      requestId: row.id,
+      label: "Talep üstlenildi",
+      actor: employee.name,
+      createdAt: stamp,
+      eventType: "assignment",
+      actorId: employee.id,
+      visibility: "internal",
+    });
+    return getSupportRequest(db, employee, row.id);
+  });
+}
+
+export function assignRequest(
+  db: DatabaseSync,
+  employee: Employee,
+  id: number,
+  body: unknown,
+  now: Now,
+): SupportRequestDetail {
+  const input = parseInput(assignRequestSchema, body, "Atanacak personel seçilmelidir.");
+  return transaction(db, () => {
+    const team = teamOf(employee);
+    const row = loadTeamRequest(db, employee, id);
+    assertCurrent(row, input.expectedUpdatedAt);
+    assertNotClosed(row);
+    const target = db
+      .prepare(
+        `SELECT id, name FROM employees WHERE id = ? AND role = 'support' AND team = ?`,
+      )
+      .get(input.assigneeId, team) as { id: number; name: string } | undefined;
+    if (!target) {
+      throw new HttpError(400, "Talep yalnızca aynı ekipteki destek personeline atanabilir.");
+    }
+    if (row.assignee_id === target.id) throw new HttpError(409, "Talep zaten bu personele atanmış.");
+    const stamp = now().toISOString();
+    db.prepare("UPDATE requests SET assignee_id = ?, updated_at = ? WHERE id = ?").run(
+      target.id,
+      stamp,
+      row.id,
+    );
+    insertTimeline(db, {
+      requestId: row.id,
+      label: `Talep atandı: ${target.name}`,
+      actor: employee.name,
+      createdAt: stamp,
+      eventType: "assignment",
+      actorId: employee.id,
+      visibility: "internal",
+    });
+    return getSupportRequest(db, employee, row.id);
+  });
+}
+
+export function changeRequestStatus(
+  db: DatabaseSync,
+  employee: Employee,
+  id: number,
+  body: unknown,
+  now: Now,
+): SupportRequestDetail {
+  const input = parseInput(statusChangeSchema, body, "Bilinmeyen talep durumu.");
+  return transaction(db, () => {
+    const row = loadTeamRequest(db, employee, id);
+    assertCurrent(row, input.expectedUpdatedAt);
+    assertNotClosed(row);
+    assertAssignedTo(row, employee);
+    if (row.status === input.status) throw new HttpError(409, "Talep zaten bu durumda.");
+    if (!STATUS_TRANSITIONS[row.status].includes(input.status)) {
+      throw new HttpError(409, `"${row.status}" durumundan "${input.status}" durumuna geçilemez.`);
+    }
+    const stamp = now().toISOString();
+    db.prepare("UPDATE requests SET status = ?, updated_at = ? WHERE id = ?").run(
+      input.status,
+      stamp,
+      row.id,
+    );
+    insertTimeline(db, {
+      requestId: row.id,
+      label: `Durum güncellendi: ${input.status}`,
+      actor: employee.name,
+      createdAt: stamp,
+      eventType: "status_change",
+      actorId: employee.id,
+      fromStatus: row.status,
+      toStatus: input.status,
+      visibility: "public",
+      detail: input.reason,
+    });
+    const notice = statusNotification(row.number, input.status);
+    insertNotification(db, {
+      employeeId: row.employee_id,
+      title: notice.title,
+      text: notice.text,
+      createdAt: stamp,
+      requestId: row.id,
+    });
+    return getSupportRequest(db, employee, row.id);
+  });
+}
+
+export function addSupportMessage(
+  db: DatabaseSync,
+  employee: Employee,
+  id: number,
+  body: unknown,
+  now: Now,
+): SupportRequestDetail {
+  const { text } = parseInput(requestMessageSchema, body, "Mesaj boş olamaz.");
+  return transaction(db, () => {
+    const row = loadTeamRequest(db, employee, id);
+    assertNotClosed(row);
+    assertAssignedTo(row, employee);
+    const stamp = now().toISOString();
+    db.prepare("UPDATE requests SET updated_at = ? WHERE id = ?").run(stamp, row.id);
+    db.prepare(
+      `INSERT INTO request_messages (request_id, author, role, text, created_at)
+       VALUES (?, ?, 'support', ?, ?)`,
+    ).run(row.id, employee.name, text, stamp);
+    insertTimeline(db, {
+      requestId: row.id,
+      label: "Destek ekibi yanıt verdi",
+      actor: employee.name,
+      createdAt: stamp,
+      eventType: "support_message",
+      actorId: employee.id,
+      visibility: "public",
+    });
+    insertNotification(db, {
+      employeeId: row.employee_id,
+      title: "Destek ekibinden yeni mesaj",
+      text: `${row.number} numaralı talebinize destek ekibinden yeni bir mesaj geldi.`,
+      createdAt: stamp,
+      requestId: row.id,
+    });
+    return getSupportRequest(db, employee, row.id);
+  });
+}
+
+export function addInternalNote(
+  db: DatabaseSync,
+  employee: Employee,
+  id: number,
+  body: unknown,
+  now: Now,
+): SupportRequestDetail {
+  const { text } = parseInput(noteSchema, body, "Not boş olamaz.");
+  return transaction(db, () => {
+    const row = loadTeamRequest(db, employee, id);
+    assertNotClosed(row);
+    const stamp = now().toISOString();
+    db.prepare(
+      `INSERT INTO request_internal_notes (request_id, author_id, text, created_at)
+       VALUES (?, ?, ?, ?)`,
+    ).run(row.id, employee.id, text, stamp);
+    insertTimeline(db, {
+      requestId: row.id,
+      label: "İç not eklendi",
+      actor: employee.name,
+      createdAt: stamp,
+      eventType: "internal_note",
+      actorId: employee.id,
+      visibility: "internal",
+    });
+    return getSupportRequest(db, employee, row.id);
+  });
 }

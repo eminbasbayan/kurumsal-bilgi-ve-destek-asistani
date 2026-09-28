@@ -9,7 +9,7 @@ export const defaultDatabasePath = fileURLToPath(
   new URL("../../data/app.sqlite", import.meta.url),
 );
 
-const SCHEMA = `
+export const SCHEMA = `
 CREATE TABLE IF NOT EXISTS employees (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
