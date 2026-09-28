@@ -8,7 +8,11 @@ import { join } from "node:path";
 import { after, before, describe, test } from "node:test";
 import { DEMO_EMAIL, DEMO_PASSWORD, DEMO_SUPPORT_ACCOUNTS, REQUEST_STATUSES } from "../src/config/constants.js";
 import { createApp } from "../src/app.js";
-import { migrateAndSeed, openDatabase } from "../src/db/database.js";
+import { SCHEMA, migrateAndSeed, openDatabase } from "../src/db/database.js";
+import { runMigrations } from "../src/db/migrations.js";
+import { seedIfEmpty } from "../src/db/seed.js";
+import { findEmployeeByEmail } from "../src/modules/auth/auth.service.js";
+import { addRequestMessage, createRequest } from "../src/modules/requests/requests.service.js";
 
 const SESSION_MS = 7 * 24 * 60 * 60 * 1000;
 const start = Date.parse("2026-09-25T12:00:00.000Z");
@@ -63,6 +67,55 @@ describe("destek personeli", { concurrency: false }, () => {
     return requests.map((item) => item.number);
   }
 
+  function tick() {
+    nowMs += 1000;
+  }
+
+  type SupportDetail = {
+    id: number;
+    number: string;
+    status: string;
+    team: string;
+    updatedAt: string;
+    assignee: { id: number; name: string } | null;
+    messages: { author: string; role: string; text: string }[];
+    timeline: {
+      id: number;
+      label: string;
+      actor: string;
+      detail: string | null;
+      eventType: string;
+      visibility: string;
+      actorId: number | null;
+      fromStatus: string | null;
+      toStatus: string | null;
+    }[];
+    internalNotes: { text: string }[];
+  };
+
+  type EmployeeNotice = {
+    id: number;
+    title: string;
+    text: string;
+    read: boolean;
+    requestId: number | null;
+  };
+
+  async function supportDetail(id: number, email: string) {
+    const result = await api(`/api/support/requests/${id}`, {}, tokens[email] ?? "");
+    assert.equal(result.status, 200, String(id));
+    return result.body as SupportDetail;
+  }
+
+  async function employeeNotifications() {
+    const result = await api("/api/notifications", {}, tokens[DEMO_EMAIL] ?? "");
+    assert.equal(result.status, 200);
+    return {
+      unread: Number(result.body?.unread),
+      notifications: result.body?.notifications as EmployeeNotice[],
+    };
+  }
+
   before(async () => {
     if (!server.listening) await once(server, "listening");
     const address = server.address() as AddressInfo;
@@ -100,8 +153,6 @@ describe("destek personeli", { concurrency: false }, () => {
   });
 
   test("çalışan destek uçlarına erişemez", async () => {
-    // Write paths are not implemented in this revision. requireRole on /api/support
-    // still rejects them before routing.
     const calls = [
       ["GET", "/api/support/summary"],
       ["GET", "/api/support/requests"],
@@ -202,6 +253,9 @@ describe("destek personeli", { concurrency: false }, () => {
     const badPriority = await list("priority=Acil");
     assert.equal(badPriority.status, 400);
     assert.equal(badPriority.body?.error, "Bilinmeyen öncelik.");
+    const badScope = await list("scope=nope");
+    assert.equal(badScope.status, 400);
+    assert.equal(badScope.body?.error, "Kapsam all, open veya closed olmalıdır.");
   });
 
   test("başka ekibin talebi ve bilinmeyen talep 404 döner", async () => {
@@ -392,8 +446,578 @@ describe("destek personeli", { concurrency: false }, () => {
       "/api/support/requests",
       "/api/support/requests/{id}",
       "/api/support/staff",
+      "/api/support/requests/{id}/claim",
+      "/api/support/requests/{id}/assign",
+      "/api/support/requests/{id}/status",
+      "/api/support/requests/{id}/messages",
+      "/api/support/requests/{id}/notes",
     ]) {
       assert.ok(document.paths[path], path);
+    }
+  });
+
+  test("personel atanmamış talebi üstlenir; ikinci üstlenme 409 döner", async () => {
+    const token = tokens[ahmetAccount.email] ?? "";
+    tick();
+    const claimed = await api("/api/support/requests/6/claim", { method: "POST" }, token);
+    assert.equal(claimed.status, 200);
+    const body = claimed.body as SupportDetail;
+    assert.equal(body.assignee?.name, "Ahmet Kaya");
+    assert.equal(body.assignee?.id, profiles[ahmetAccount.email]?.id);
+    const claimRow = body.timeline.find((item) => item.label === "Talep üstlenildi");
+    assert.ok(claimRow);
+    assert.equal(claimRow.eventType, "assignment");
+    assert.equal(claimRow.visibility, "internal");
+    assert.equal(claimRow.actor, "Ahmet Kaya");
+    assert.equal(claimRow.actorId, profiles[ahmetAccount.email]?.id);
+
+    const again = await api("/api/support/requests/6/claim", { method: "POST" }, token);
+    assert.equal(again.status, 409);
+    assert.equal(again.body?.error, "Talep zaten size atanmış.");
+
+    const employeeView = await api("/api/requests/6", {}, tokens[DEMO_EMAIL] ?? "");
+    assert.equal(employeeView.status, 200);
+    assert.equal(JSON.stringify(employeeView.body).includes("Talep üstlenildi"), false);
+  });
+
+  test("talep yalnızca aynı ekipteki destek personeline atanır", async () => {
+    const token = tokens[ahmetAccount.email] ?? "";
+    const current = await supportDetail(6, ahmetAccount.email);
+    const assign = (assigneeId: number) =>
+      api(
+        "/api/support/requests/6/assign",
+        {
+          method: "POST",
+          body: JSON.stringify({ assigneeId, expectedUpdatedAt: current.updatedAt }),
+        },
+        token,
+      );
+    for (const assigneeId of [profiles[zeynepAccount.email]?.id, profiles[DEMO_EMAIL]?.id, 9999]) {
+      const denied = await assign(Number(assigneeId));
+      assert.equal(denied.status, 400, String(assigneeId));
+      assert.equal(denied.body?.error, "Talep yalnızca aynı ekipteki destek personeline atanabilir.");
+    }
+    tick();
+    const assigned = await assign(Number(profiles[elifAccount.email]?.id));
+    assert.equal(assigned.status, 200);
+    const body = assigned.body as SupportDetail;
+    assert.equal(body.assignee?.name, "Elif Demir");
+    const row = body.timeline.find((item) => item.label === "Talep atandı: Elif Demir");
+    assert.ok(row);
+    assert.equal(row.eventType, "assignment");
+    assert.equal(row.visibility, "internal");
+    assert.equal(row.actorId, profiles[ahmetAccount.email]?.id);
+  });
+
+  test("eski expectedUpdatedAt ile atama ve durum değişikliği 409 döner", async () => {
+    const token = tokens[ahmetAccount.email] ?? "";
+    const before = await supportDetail(3, ahmetAccount.email);
+    tick();
+    const moved = await api(
+      "/api/support/requests/3/status",
+      {
+        method: "POST",
+        body: JSON.stringify({ status: "İnceleniyor", expectedUpdatedAt: before.updatedAt }),
+      },
+      token,
+    );
+    assert.equal(moved.status, 200);
+    const stale = before.updatedAt;
+    const assign = await api(
+      "/api/support/requests/3/assign",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          assigneeId: profiles[elifAccount.email]?.id,
+          expectedUpdatedAt: stale,
+        }),
+      },
+      token,
+    );
+    assert.equal(assign.status, 409);
+    assert.equal(
+      assign.body?.error,
+      "Talep siz işlem yaparken güncellendi. Güncel hâlini görüntüleyip tekrar deneyin.",
+    );
+    const status = await api(
+      "/api/support/requests/3/status",
+      {
+        method: "POST",
+        body: JSON.stringify({ status: "Çözüldü", expectedUpdatedAt: stale }),
+      },
+      token,
+    );
+    assert.equal(status.status, 409);
+    assert.equal(
+      status.body?.error,
+      "Talep siz işlem yaparken güncellendi. Güncel hâlini görüntüleyip tekrar deneyin.",
+    );
+  });
+
+  test("atanmamış ya da başkasına atanmış talepte durum ve mesaj 409 döner", async () => {
+    const unassigned = await supportDetail(10, zeynepAccount.email);
+    assert.equal(unassigned.assignee, null);
+    const zeynep = tokens[zeynepAccount.email] ?? "";
+    const waitingStatus = await api(
+      "/api/support/requests/10/status",
+      {
+        method: "POST",
+        body: JSON.stringify({ status: "Devam Ediyor", expectedUpdatedAt: unassigned.updatedAt }),
+      },
+      zeynep,
+    );
+    assert.equal(waitingStatus.status, 409);
+    assert.equal(
+      waitingStatus.body?.error,
+      "Bu işlem yalnızca talebe atanan personel tarafından yapılabilir.",
+    );
+    const waitingMessage = await api(
+      "/api/support/requests/10/messages",
+      { method: "POST", body: JSON.stringify({ text: "Ek bilgi" }) },
+      zeynep,
+    );
+    assert.equal(waitingMessage.status, 409);
+    assert.equal(
+      waitingMessage.body?.error,
+      "Bu işlem yalnızca talebe atanan personel tarafından yapılabilir.",
+    );
+
+    const others = await supportDetail(6, ahmetAccount.email);
+    const ahmet = tokens[ahmetAccount.email] ?? "";
+    const foreignStatus = await api(
+      "/api/support/requests/6/status",
+      {
+        method: "POST",
+        body: JSON.stringify({ status: "İnceleniyor", expectedUpdatedAt: others.updatedAt }),
+      },
+      ahmet,
+    );
+    assert.equal(foreignStatus.status, 409);
+    assert.equal(
+      foreignStatus.body?.error,
+      "Bu işlem yalnızca talebe atanan personel tarafından yapılabilir.",
+    );
+    const foreignMessage = await api(
+      "/api/support/requests/6/messages",
+      { method: "POST", body: JSON.stringify({ text: "Ek bilgi" }) },
+      ahmet,
+    );
+    assert.equal(foreignMessage.status, 409);
+    assert.equal(
+      foreignMessage.body?.error,
+      "Bu işlem yalnızca talebe atanan personel tarafından yapılabilir.",
+    );
+  });
+
+  test("geçerli durum geçişi kaydedilir, bildirim oluşur ve son durum kaydıyla uyumludur", async () => {
+    const token = tokens[ahmetAccount.email] ?? "";
+    const before = await supportDetail(3, ahmetAccount.email);
+    assert.equal(before.status, "İnceleniyor");
+    const notesBefore = await employeeNotifications();
+    tick();
+    const changed = await api(
+      "/api/support/requests/3/status",
+      {
+        method: "POST",
+        body: JSON.stringify({ status: "Çözüldü", expectedUpdatedAt: before.updatedAt }),
+      },
+      token,
+    );
+    assert.equal(changed.status, 200);
+    const body = changed.body as SupportDetail;
+    assert.equal(body.status, "Çözüldü");
+    const last = body.timeline.filter((item) => item.eventType === "status_change").at(-1);
+    assert.equal(last?.toStatus, body.status);
+    assert.equal(last?.fromStatus, "İnceleniyor");
+    assert.equal(last?.label, "Durum güncellendi: Çözüldü");
+    assert.equal(last?.visibility, "public");
+    assert.equal(last?.actor, "Ahmet Kaya");
+    assert.equal(last?.actorId, profiles[ahmetAccount.email]?.id);
+    assert.equal(last?.detail, null);
+
+    const notesAfter = await employeeNotifications();
+    const created = notesAfter.notifications.filter(
+      (item) => !notesBefore.notifications.some((prev) => prev.id === item.id),
+    );
+    assert.equal(created.length, 1);
+    assert.equal(created[0]?.title, "Talebiniz çözüldü");
+    assert.equal(created[0]?.text, "DST-2026-1038 numaralı talebiniz çözüldü.");
+    assert.equal(created[0]?.requestId, 3);
+    assert.equal(created[0]?.read, false);
+
+    const employeeView = await api("/api/requests/3", {}, tokens[DEMO_EMAIL] ?? "");
+    const timeline = (employeeView.body as { timeline: { label: string; actor: string }[] }).timeline;
+    assert.equal(timeline.at(-1)?.label, "Durum güncellendi: Çözüldü");
+    assert.equal(timeline.at(-1)?.actor, "Ahmet Kaya");
+  });
+
+  test("geçersiz geçiş ve aynı duruma geçiş 409 döner", async () => {
+    const elif = tokens[elifAccount.email] ?? "";
+    const open = await supportDetail(6, elifAccount.email);
+    assert.equal(open.status, "Yeni");
+    const invalid = await api(
+      "/api/support/requests/6/status",
+      {
+        method: "POST",
+        body: JSON.stringify({ status: "Devam Ediyor", expectedUpdatedAt: open.updatedAt }),
+      },
+      elif,
+    );
+    assert.equal(invalid.status, 409);
+    assert.equal(invalid.body?.error, `"Yeni" durumundan "Devam Ediyor" durumuna geçilemez.`);
+    const same = await api(
+      "/api/support/requests/6/status",
+      {
+        method: "POST",
+        body: JSON.stringify({ status: "Yeni", expectedUpdatedAt: open.updatedAt }),
+      },
+      elif,
+    );
+    assert.equal(same.status, 409);
+    assert.equal(same.body?.error, "Talep zaten bu durumda.");
+
+    const closed = await supportDetail(9, ahmetAccount.email);
+    assert.equal(closed.status, "Kapatıldı");
+    const fromClosed = await api(
+      "/api/support/requests/9/status",
+      {
+        method: "POST",
+        body: JSON.stringify({ status: "İnceleniyor", expectedUpdatedAt: closed.updatedAt }),
+      },
+      tokens[ahmetAccount.email] ?? "",
+    );
+    assert.equal(fromClosed.status, 409);
+    assert.equal(fromClosed.body?.error, "Kapatılmış talepte işlem yapılamaz.");
+  });
+
+  test("Kapatıldı için gerekçe zorunludur ve çalışana görünür", async () => {
+    const elif = tokens[elifAccount.email] ?? "";
+    const open = await supportDetail(6, elifAccount.email);
+    const missing = await api(
+      "/api/support/requests/6/status",
+      {
+        method: "POST",
+        body: JSON.stringify({ status: "Kapatıldı", expectedUpdatedAt: open.updatedAt }),
+      },
+      elif,
+    );
+    assert.equal(missing.status, 400);
+    assert.equal(missing.body?.error, "Kapatma gerekçesi zorunludur.");
+    const tooLong = await api(
+      "/api/support/requests/6/status",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          status: "Kapatıldı",
+          reason: "a".repeat(501),
+          expectedUpdatedAt: open.updatedAt,
+        }),
+      },
+      elif,
+    );
+    assert.equal(tooLong.status, 400);
+    assert.equal(tooLong.body?.error, "Gerekçe en fazla 500 karakter olabilir.");
+
+    const reason = "Yinelenen kayıt olduğu için kapatıldı.";
+    tick();
+    const closed = await api(
+      "/api/support/requests/6/status",
+      {
+        method: "POST",
+        body: JSON.stringify({ status: "Kapatıldı", reason, expectedUpdatedAt: open.updatedAt }),
+      },
+      elif,
+    );
+    assert.equal(closed.status, 200);
+    const body = closed.body as SupportDetail;
+    assert.equal(body.status, "Kapatıldı");
+    const row = body.timeline.find((item) => item.label === "Durum güncellendi: Kapatıldı");
+    assert.equal(row?.detail, reason);
+    assert.equal(row?.visibility, "public");
+
+    const employeeView = await api("/api/requests/6", {}, tokens[DEMO_EMAIL] ?? "");
+    const timeline = (employeeView.body as { timeline: { label: string; detail: string | null }[] }).timeline;
+    assert.equal(timeline.find((item) => item.label === "Durum güncellendi: Kapatıldı")?.detail, reason);
+  });
+
+  test("personel mesajı çalışana görünür ve bildirim oluşturur", async () => {
+    const token = tokens[ahmetAccount.email] ?? "";
+    const empty = await api(
+      "/api/support/requests/2/messages",
+      { method: "POST", body: JSON.stringify({ text: " " }) },
+      token,
+    );
+    assert.equal(empty.status, 400);
+    assert.equal(empty.body?.error, "Mesaj boş olamaz.");
+    const long = await api(
+      "/api/support/requests/2/messages",
+      { method: "POST", body: JSON.stringify({ text: "a".repeat(2001) }) },
+      token,
+    );
+    assert.equal(long.status, 400);
+    assert.equal(long.body?.error, "Mesaj en fazla 2000 karakter olabilir.");
+
+    const before = await employeeNotifications();
+    tick();
+    const text = "İşletim sistemi bilgisini aldık.";
+    const sent = await api(
+      "/api/support/requests/2/messages",
+      { method: "POST", body: JSON.stringify({ text }) },
+      token,
+    );
+    assert.equal(sent.status, 201);
+    const body = sent.body as SupportDetail;
+    assert.equal(body.status, "Kullanıcıdan Bilgi Bekleniyor");
+    assert.equal(body.messages.at(-1)?.role, "support");
+    assert.equal(body.messages.at(-1)?.author, "Ahmet Kaya");
+    assert.equal(body.messages.at(-1)?.text, text);
+    const timeline = body.timeline.find((item) => item.label === "Destek ekibi yanıt verdi");
+    assert.equal(timeline?.eventType, "support_message");
+    assert.equal(timeline?.visibility, "public");
+    assert.equal(timeline?.actorId, profiles[ahmetAccount.email]?.id);
+
+    const employeeView = await api("/api/requests/2", {}, tokens[DEMO_EMAIL] ?? "");
+    const messages = (employeeView.body as { messages: { role: string; author: string; text: string }[] }).messages;
+    assert.equal(messages.at(-1)?.text, text);
+    assert.equal(messages.at(-1)?.role, "support");
+    assert.equal(messages.at(-1)?.author, "Ahmet Kaya");
+
+    const after = await employeeNotifications();
+    const created = after.notifications.filter(
+      (item) => !before.notifications.some((prev) => prev.id === item.id),
+    );
+    assert.equal(created.length, 1);
+    assert.equal(created[0]?.title, "Destek ekibinden yeni mesaj");
+    assert.equal(created[0]?.text, "DST-2026-1041 numaralı talebinize destek ekibinden yeni bir mesaj geldi.");
+    assert.equal(created[0]?.requestId, 2);
+  });
+
+  test("iç not çalışana hiçbir şekilde görünmez", async () => {
+    const before = await employeeNotifications();
+    const detailBefore = await supportDetail(3, elifAccount.email);
+    const noteText = "İç not: yedek lisans anahtarı doğrulandı.";
+    tick();
+    const added = await api(
+      "/api/support/requests/3/notes",
+      { method: "POST", body: JSON.stringify({ text: noteText }) },
+      tokens[elifAccount.email] ?? "",
+    );
+    assert.equal(added.status, 201);
+    const body = added.body as SupportDetail;
+    assert.equal(body.updatedAt, detailBefore.updatedAt);
+    assert.equal(body.internalNotes.some((note) => note.text === noteText), true);
+    const internal = body.timeline.find((item) => item.label === "İç not eklendi");
+    assert.equal(internal?.visibility, "internal");
+    assert.equal(internal?.eventType, "internal_note");
+    assert.equal(internal?.actor, "Elif Demir");
+
+    const employeeView = await api("/api/requests/3", {}, tokens[DEMO_EMAIL] ?? "");
+    const raw = JSON.stringify(employeeView.body);
+    assert.equal(raw.includes(noteText), false);
+    assert.equal(raw.includes("İç not eklendi"), false);
+    const after = await employeeNotifications();
+    assert.equal(after.notifications.length, before.notifications.length);
+    assert.equal(after.unread, before.unread);
+  });
+
+  test("çalışan yanıtı bilgi bekleyen talebi İnceleniyor durumuna alır", async () => {
+    const before = await employeeNotifications();
+    const waiting = await api("/api/requests/2", {}, tokens[DEMO_EMAIL] ?? "");
+    assert.equal((waiting.body as { status: string }).status, "Kullanıcıdan Bilgi Bekleniyor");
+    tick();
+    const replied = await api(
+      "/api/requests/2/messages",
+      { method: "POST", body: JSON.stringify({ text: "Windows 11 kullanıyorum." }) },
+      tokens[DEMO_EMAIL] ?? "",
+    );
+    assert.equal(replied.status, 201);
+    const body = replied.body as {
+      status: string;
+      timeline: { label: string; actor: string }[];
+    };
+    assert.equal(body.status, "İnceleniyor");
+    const labels = body.timeline.map((item) => item.label);
+    const messageIndex = labels.lastIndexOf("Mesaj gönderildi");
+    const statusIndex = labels.lastIndexOf("Durum güncellendi: İnceleniyor");
+    assert.equal(statusIndex, messageIndex + 1);
+    assert.equal(body.timeline[statusIndex]?.actor, "Sistem");
+
+    const support = await supportDetail(2, ahmetAccount.email);
+    const statusRow = support.timeline.filter((item) => item.label === "Durum güncellendi: İnceleniyor").at(-1);
+    const messageRow = support.timeline.filter((item) => item.label === "Mesaj gönderildi").at(-1);
+    assert.ok(messageRow && statusRow);
+    assert.ok(messageRow.id < statusRow.id);
+    assert.equal(statusRow.eventType, "status_change");
+    assert.equal(statusRow.actor, "Sistem");
+    assert.equal(statusRow.actorId, null);
+    assert.equal(statusRow.fromStatus, "Kullanıcıdan Bilgi Bekleniyor");
+    assert.equal(statusRow.toStatus, "İnceleniyor");
+    assert.equal(statusRow.visibility, "public");
+
+    const after = await employeeNotifications();
+    assert.equal(after.notifications.length, before.notifications.length);
+    assert.equal(after.unread, before.unread);
+  });
+
+  test("kapatılmış talepte personel işlemleri 409 döner", async () => {
+    const closed = await supportDetail(9, ahmetAccount.email);
+    assert.equal(closed.status, "Kapatıldı");
+    const token = tokens[ahmetAccount.email] ?? "";
+    const calls = [
+      ["/claim", { method: "POST" }],
+      [
+        "/assign",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            assigneeId: profiles[elifAccount.email]?.id,
+            expectedUpdatedAt: closed.updatedAt,
+          }),
+        },
+      ],
+      [
+        "/status",
+        {
+          method: "POST",
+          body: JSON.stringify({ status: "İnceleniyor", expectedUpdatedAt: closed.updatedAt }),
+        },
+      ],
+      ["/messages", { method: "POST", body: JSON.stringify({ text: "Merhaba" }) }],
+      ["/notes", { method: "POST", body: JSON.stringify({ text: "İç not" }) }],
+    ] as const;
+    for (const [path, init] of calls) {
+      const result = await api(`/api/support/requests/9${path}`, init, token);
+      assert.equal(result.status, 409, path);
+      assert.equal(result.body?.error, "Kapatılmış talepte işlem yapılamaz.");
+    }
+  });
+
+  test("çalışan talep oluştururken durum ve atama alanlarını değiştiremez", async () => {
+    tick();
+    const created = await api(
+      "/api/requests",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          category: "Bilgi Teknolojileri",
+          subcategory: "Yazılım",
+          subject: "Durum alanı yok sayılır",
+          description: "Çalışan durum ve atama gönderemez",
+          priority: "Normal",
+          status: "Çözüldü",
+          assigneeId: profiles[ahmetAccount.email]?.id,
+          team: "İnsan Kaynakları Ekibi",
+        }),
+      },
+      tokens[DEMO_EMAIL] ?? "",
+    );
+    assert.equal(created.status, 201);
+    const body = created.body as { id: number; status: string; team: string; number: string };
+    assert.equal(body.status, "Yeni");
+    assert.equal(body.team, "BT Destek Ekibi");
+    assert.equal(body.number, "DST-2026-1043");
+    const support = await supportDetail(body.id, ahmetAccount.email);
+    assert.equal(support.status, "Yeni");
+    assert.equal(support.assignee, null);
+    assert.equal(support.team, "BT Destek Ekibi");
+  });
+
+  test("kapatılmış talepte çalışan mesajı 409 döner", async () => {
+    const denied = await api(
+      "/api/requests/5/messages",
+      { method: "POST", body: JSON.stringify({ text: "Kapatılmış talebe not" }) },
+      tokens[DEMO_EMAIL] ?? "",
+    );
+    assert.equal(denied.status, 409);
+    assert.equal(denied.body?.error, "Kapatılmış talebe mesaj eklenemez.");
+
+    tick();
+    const allowed = await api(
+      "/api/requests/4/messages",
+      { method: "POST", body: JSON.stringify({ text: "Çözülen talebe ek bilgi" }) },
+      tokens[DEMO_EMAIL] ?? "",
+    );
+    assert.equal(allowed.status, 201);
+    assert.equal((allowed.body as { status: string }).status, "Çözüldü");
+  });
+
+  test("eski veritabanı yükseltmesi mesaj geçmişini sınıflar", () => {
+    const upgradeDir = mkdtempSync(join(tmpdir(), "kda-upgrade-"));
+    const upgradeDb = openDatabase(join(upgradeDir, "old.sqlite"));
+    try {
+      upgradeDb.exec(SCHEMA);
+      seedIfEmpty(upgradeDb);
+      const version = upgradeDb.prepare("PRAGMA user_version").get() as { user_version: number };
+      assert.equal(Number(version.user_version), 0);
+      const target = upgradeDb
+        .prepare("SELECT id FROM requests WHERE number = ?")
+        .get("DST-2026-1041") as { id: number };
+      upgradeDb
+        .prepare(
+          `INSERT INTO request_timeline (request_id, label, actor, created_at)
+           VALUES (?, 'Mesaj gönderildi', 'Deniz Yılmaz', ?)`,
+        )
+        .run(target.id, "2026-09-22T12:00:00.000Z");
+      runMigrations(upgradeDb);
+      const classified = upgradeDb
+        .prepare(
+          `SELECT event_type, actor_id, visibility
+           FROM request_timeline WHERE request_id = ? AND label = 'Mesaj gönderildi'`,
+        )
+        .get(target.id) as { event_type: string; actor_id: number | null; visibility: string };
+      assert.equal(classified.event_type, "employee_message");
+      assert.equal(classified.actor_id, null);
+      assert.equal(classified.visibility, "public");
+      const migrated = upgradeDb.prepare("PRAGMA user_version").get() as { user_version: number };
+      assert.equal(Number(migrated.user_version), 1);
+      runMigrations(upgradeDb);
+      const again = upgradeDb.prepare("PRAGMA user_version").get() as { user_version: number };
+      assert.equal(Number(again.user_version), 1);
+
+      const deniz = findEmployeeByEmail(upgradeDb, DEMO_EMAIL);
+      assert.ok(deniz);
+      const created = createRequest(
+        upgradeDb,
+        deniz,
+        {
+          category: "Bilgi Teknolojileri",
+          subcategory: "Yazılım",
+          subject: "Yükseltme sonrası talep",
+          description: "Yeni satır",
+          priority: "Normal",
+          attachments: [],
+          assistantContext: null,
+          clientRequestId: "upgrade-1",
+        },
+        () => new Date("2026-09-26T12:00:00.000Z"),
+      );
+      const createdRow = upgradeDb
+        .prepare(
+          `SELECT event_type, actor_id FROM request_timeline
+           WHERE request_id = ? AND label = 'Talep oluşturuldu'`,
+        )
+        .get(created.request.id) as { event_type: string; actor_id: number | null };
+      assert.equal(createdRow.event_type, "created");
+      assert.equal(createdRow.actor_id, deniz.id);
+
+      addRequestMessage(
+        upgradeDb,
+        deniz,
+        created.request.id,
+        { text: "Yeni mesaj" },
+        () => new Date("2026-09-26T12:01:00.000Z"),
+      );
+      const messageRow = upgradeDb
+        .prepare(
+          `SELECT event_type, actor_id FROM request_timeline
+           WHERE request_id = ? AND label = 'Mesaj gönderildi'`,
+        )
+        .get(created.request.id) as { event_type: string; actor_id: number | null };
+      assert.equal(messageRow.event_type, "employee_message");
+      assert.equal(messageRow.actor_id, deniz.id);
+    } finally {
+      upgradeDb.close();
+      rmSync(upgradeDir, { recursive: true, force: true });
     }
   });
 });

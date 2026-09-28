@@ -548,6 +548,7 @@ Destek personeli, talep durumunu yalnızca Bölüm 8.1'deki durumlar arasında v
 - Tabloda olmayan bir geçiş ve talebin zaten bulunduğu duruma geçiş reddedilmelidir.
 - Kapatıldı durumuna geçişte kapatma gerekçesi zorunlu olmalıdır. Gerekçe çalışana durum geçmişinde gösterilmelidir.
 - Kapatılmış talepte destek personeli hiçbir işlem yapamamalıdır.
+- Çalışan, Kapatıldı durumundaki talebe mesaj ekleyemez. Çözüldü durumundaki talebe mesaj eklenebilir.
 - Kullanıcıdan Bilgi Bekleniyor durumundaki talebe çalışan mesaj eklediğinde talep otomatik olarak İnceleniyor durumuna geçmeli ve bu geçiş durum geçmişinde "Sistem" tarafından yapılmış olarak görünmelidir.
 
 ### 17.7. Çalışana mesaj ve iç notlar

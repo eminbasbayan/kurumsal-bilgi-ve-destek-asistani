@@ -50,6 +50,15 @@ export const DEFAULT_CONVERSATION_TITLE = "Yeni sohbet";
 export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 export type Priority = (typeof PRIORITIES)[number];
 
+export const STATUS_TRANSITIONS: Record<RequestStatus, readonly RequestStatus[]> = {
+  Yeni: ["İnceleniyor", "Kapatıldı"],
+  İnceleniyor: ["Kullanıcıdan Bilgi Bekleniyor", "Devam Ediyor", "Çözüldü"],
+  "Kullanıcıdan Bilgi Bekleniyor": ["İnceleniyor", "Devam Ediyor", "Çözüldü"],
+  "Devam Ediyor": ["İnceleniyor", "Kullanıcıdan Bilgi Bekleniyor", "Çözüldü"],
+  Çözüldü: ["Devam Ediyor", "Kapatıldı"],
+  Kapatıldı: [],
+};
+
 export const USER_ROLES = ["employee", "support"] as const;
 export type UserRole = (typeof USER_ROLES)[number];
 
