@@ -1020,4 +1020,68 @@ describe("destek personeli", { concurrency: false }, () => {
       rmSync(upgradeDir, { recursive: true, force: true });
     }
   });
+
+  test("başka ekibin talebinde yazma uçları 404 döner", async () => {
+    const token = tokens[zeynepAccount.email] ?? "";
+    const calls = [
+      ["/claim", { method: "POST" }],
+      [
+        "/assign",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            assigneeId: profiles[zeynepAccount.email]?.id,
+            expectedUpdatedAt: "2026-09-25T12:00:00.000Z",
+          }),
+        },
+      ],
+      [
+        "/status",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            status: "İnceleniyor",
+            expectedUpdatedAt: "2026-09-25T12:00:00.000Z",
+          }),
+        },
+      ],
+      ["/messages", { method: "POST", body: JSON.stringify({ text: "Merhaba" }) }],
+      ["/notes", { method: "POST", body: JSON.stringify({ text: "Not" }) }],
+    ] as const;
+    for (const [path, init] of calls) {
+      const result = await api(`/api/support/requests/6${path}`, init, token);
+      assert.equal(result.status, 404, path);
+      assert.equal(result.body?.error, "Talep bulunamadı.");
+    }
+  });
+
+  test("başka personele atanmış talep üstlenilemez", async () => {
+    const detail = await supportDetail(2, elifAccount.email);
+    assert.equal(detail.assignee?.id, profiles[ahmetAccount.email]?.id);
+    assert.notEqual(detail.status, "Kapatıldı");
+    const result = await api(
+      "/api/support/requests/2/claim",
+      { method: "POST" },
+      tokens[elifAccount.email] ?? "",
+    );
+    assert.equal(result.status, 409);
+    assert.equal(result.body?.error, "Talep başka bir personele atanmış.");
+  });
+
+  test("aynı personele tekrar atama 409 döner", async () => {
+    const detail = await supportDetail(2, ahmetAccount.email);
+    const result = await api(
+      "/api/support/requests/2/assign",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          assigneeId: profiles[ahmetAccount.email]?.id,
+          expectedUpdatedAt: detail.updatedAt,
+        }),
+      },
+      tokens[ahmetAccount.email] ?? "",
+    );
+    assert.equal(result.status, 409);
+    assert.equal(result.body?.error, "Talep zaten bu personele atanmış.");
+  });
 });
