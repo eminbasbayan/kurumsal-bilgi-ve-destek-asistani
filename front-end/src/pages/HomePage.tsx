@@ -41,7 +41,9 @@ export function HomePage({ profile }: { profile: Employee }) {
       />
       <section className="hero">
         <div>
-          <Badge variant="soft">Bilgi asistanı</Badge>
+          <Badge className="hero-badge" variant="soft">
+            Bilgi asistanı
+          </Badge>
           <h2>Bugün size nasıl yardımcı olabiliriz?</h2>
           <p>
             İzin, bordro, uzaktan erişim ve şirket süreçleriyle ilgili sorunuzu
