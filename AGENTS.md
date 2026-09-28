@@ -53,8 +53,6 @@ These apply to both apps and must stay identical. Status and priority unions liv
 - Label fictional users, documents, messages, and unavailable integrations (auth, AI, storage, notifications, live support) as demo behavior.
 - Render user text as plain content, never as markup.
 
-Known inconsistency: the category list in `back-end/src/config/constants.ts` differs from the table in `PROJE_TANIMI.md` section 7.6. The front-end loads categories from `GET /api/categories`. Do not change the list until the user says which one is authoritative.
-
 ## Front-end work
 
 1. Make changes inside `front-end/` unless the user asks for another project file.
@@ -69,7 +67,7 @@ Known inconsistency: the category list in `back-end/src/config/constants.ts` dif
 
 1. Make changes inside `back-end/` unless the user asks otherwise.
 2. Follow the module layout: `src/modules/<feature>/<feature>.routes.ts` for Express routers, `<feature>.service.ts` for logic and SQL, and `<feature>.schema.ts` for Zod input schemas parsed with `parseInput` from `src/shared/validate.ts`. Shared pieces live in `src/config/constants.ts`, `src/db/` (schema, seed, SQL helpers), `src/middleware/`, and `src/shared/`.
-3. Root-level files in `src/` (`assistant.ts`, `constants.ts`, `db.ts`, `domain.ts`, `http.ts`, `sql.ts`) are legacy re-exports or unused copies. Do not add code to them; import from the module paths instead.
+3. Import shared code from the module paths (`src/config/constants.ts`, `src/db/`, `src/shared/`, and `src/modules/`).
 4. Routers receive `db` and an injectable `now` clock through `createApp` in `src/app.ts`. Keep that pattern so tests stay deterministic.
 5. Every `/api` route except the public auth routes requires a bearer token via `requireAuth`. Throw `HttpError` with a Turkish user-facing message for client errors.
 6. Use `?` placeholders for SQL parameters and wrap multi-step writes in the `transaction` helper.

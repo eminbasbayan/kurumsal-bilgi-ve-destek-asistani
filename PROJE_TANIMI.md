@@ -192,10 +192,10 @@ Kategoriler ve alt kategoriler:
 
 | Kategori | Alt kategoriler |
 | --- | --- |
-| Bilgi Teknolojileri | VPN ve Ağ, E-posta, Yazılım Erişimi, Donanım |
-| İnsan Kaynakları | İzinler, Bordro, Özlük İşleri |
-| Finans | Masraf Talebi, Ödeme |
-| İdari İşler | Ofis Hizmetleri, Ekipman |
+| Bilgi Teknolojileri | VPN ve Uzaktan Erişim, Donanım, Yazılım, Hesap ve Yetki |
+| İnsan Kaynakları | İzinler, Yan Haklar, Özlük İşlemleri, Bordro |
+| Finans ve İdari İşler | Masraf Bildirimi, Satın Alma, Seyahat |
+| İşyeri Hizmetleri | Ofis ve Ekipman, Ulaşım, Yemek |
 
 Öncelik değerleri:
 

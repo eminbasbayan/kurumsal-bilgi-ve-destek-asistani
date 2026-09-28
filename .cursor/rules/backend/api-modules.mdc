@@ -38,4 +38,4 @@ const { text } = parseInput(requestMessageSchema, body, "Mesaj boş olamaz.");
 
 1. Update `src/docs/openapi.ts` (paths, schemas, limits, error responses).
 2. Add the path to the Swagger coverage list and a behavior test in `test/api.test.ts`.
-3. Do not add code to the legacy root files in `src/` (`domain.ts`, `db.ts`, `http.ts`, `sql.ts`, `constants.ts`, `assistant.ts`).
+3. Import shared code from the module paths (`src/config/constants.ts`, `src/db/`, and `src/shared/`).
