@@ -1,5 +1,6 @@
 import type { DatabaseSync } from "node:sqlite";
-import type { Employee } from "../../shared/types.js";
+import type { UserRole } from "../../config/constants.js";
+import type { Employee, Now } from "../../shared/types.js";
 
 type EmployeeRow = {
   id: number;
@@ -10,6 +11,8 @@ type EmployeeRow = {
   email: string;
   employee_no: string;
   location: string;
+  role: UserRole;
+  team: string | null;
   password_hash?: string;
 };
 
@@ -23,6 +26,8 @@ function employeeFrom(row: EmployeeRow): Employee {
     email: row.email,
     employeeNo: row.employee_no,
     location: row.location,
+    role: row.role,
+    team: row.team,
   };
 }
 
@@ -32,7 +37,7 @@ export function findEmployeeByEmail(
 ): (Employee & { passwordHash: string }) | undefined {
   const row = db
     .prepare(
-      `SELECT id, name, initials, title, department, email, employee_no, location, password_hash
+      `SELECT id, name, initials, title, department, email, employee_no, location, role, team, password_hash
        FROM employees WHERE email = ?`,
     )
     .get(email) as EmployeeRow | undefined;
@@ -45,8 +50,9 @@ export function createSession(
   employeeId: number,
   token: string,
   expiresAt: string,
+  now: Now,
 ): void {
-  db.prepare("DELETE FROM sessions WHERE expires_at <= ?").run(new Date().toISOString());
+  db.prepare("DELETE FROM sessions WHERE expires_at <= ?").run(now().toISOString());
   db.prepare(
     "INSERT INTO sessions (token, employee_id, expires_at) VALUES (?, ?, ?)",
   ).run(token, employeeId, expiresAt);
@@ -55,15 +61,17 @@ export function createSession(
 export function employeeForToken(
   db: DatabaseSync,
   token: string,
+  now: Now,
 ): Employee | undefined {
   const row = db
     .prepare(
-      `SELECT e.id, e.name, e.initials, e.title, e.department, e.email, e.employee_no, e.location
+      `SELECT e.id, e.name, e.initials, e.title, e.department, e.email,
+              e.employee_no, e.location, e.role, e.team
        FROM sessions s
        JOIN employees e ON e.id = s.employee_id
        WHERE s.token = ? AND s.expires_at > ?`,
     )
-    .get(token, new Date().toISOString()) as EmployeeRow | undefined;
+    .get(token, now().toISOString()) as EmployeeRow | undefined;
   return row ? employeeFrom(row) : undefined;
 }
 

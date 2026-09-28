@@ -121,14 +121,17 @@ function loadDetail(db: DatabaseSync, employeeId: number, id: number) {
   }[];
   const timeline = db
     .prepare(
-      `SELECT id, label, actor, created_at
-       FROM request_timeline WHERE request_id = ? ORDER BY id`,
+      `SELECT id, label, actor, created_at, detail
+       FROM request_timeline
+       WHERE request_id = ? AND visibility = 'public'
+       ORDER BY id`,
     )
     .all(row.id) as {
     id: number;
     label: string;
     actor: string;
     created_at: string;
+    detail: string | null;
   }[];
   const attachments = db
     .prepare(
@@ -156,6 +159,7 @@ function loadDetail(db: DatabaseSync, employeeId: number, id: number) {
       label: item.label,
       actor: item.actor,
       createdAt: item.created_at,
+      detail: item.detail,
     })),
     attachments: attachments.map((item) => ({
       id: item.id,
@@ -241,9 +245,10 @@ export function createRequest(
       insertAttachment.run(id, file.name, file.mimeType, file.sizeBytes);
     }
     db.prepare(
-      `INSERT INTO request_timeline (request_id, label, actor, created_at)
-       VALUES (?, 'Talep oluşturuldu', ?, ?)`,
-    ).run(id, employee.name, stamp);
+      `INSERT INTO request_timeline
+        (request_id, label, actor, created_at, event_type, actor_id)
+       VALUES (?, 'Talep oluşturuldu', ?, ?, 'created', ?)`,
+    ).run(id, employee.name, stamp, employee.id);
     db.prepare(
       `INSERT INTO notifications
         (employee_id, title, text, created_at, read, request_id)
@@ -273,9 +278,10 @@ export function addRequestMessage(
        VALUES (?, ?, 'employee', ?, ?)`,
     ).run(current.id, employee.name, message, stamp);
     db.prepare(
-      `INSERT INTO request_timeline (request_id, label, actor, created_at)
-       VALUES (?, 'Mesaj gönderildi', ?, ?)`,
-    ).run(current.id, employee.name, stamp);
+      `INSERT INTO request_timeline
+        (request_id, label, actor, created_at, event_type, actor_id)
+       VALUES (?, 'Mesaj gönderildi', ?, ?, 'employee_message', ?)`,
+    ).run(current.id, employee.name, stamp, employee.id);
     return loadDetail(db, employee.id, current.id);
   });
 }

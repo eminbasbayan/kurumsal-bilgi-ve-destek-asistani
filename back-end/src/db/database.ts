@@ -2,6 +2,7 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
+import { runMigrations } from "./migrations.js";
 import { seedIfEmpty } from "./seed.js";
 
 export const defaultDatabasePath = fileURLToPath(
@@ -129,4 +130,5 @@ export function openDatabase(path: string): DatabaseSync {
 export function migrateAndSeed(db: DatabaseSync): void {
   db.exec(SCHEMA);
   seedIfEmpty(db);
+  runMigrations(db);
 }

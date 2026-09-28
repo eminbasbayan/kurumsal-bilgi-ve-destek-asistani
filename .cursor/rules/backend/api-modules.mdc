@@ -31,7 +31,7 @@ const { text } = parseInput(requestMessageSchema, body, "Mesaj boş olamaz.");
 ## Errors and handlers
 
 - Throw `HttpError(status, "Türkçe mesaj")`; `middleware/errorHandler.ts` turns it into `{ error }`. Unknown errors become a generic 500.
-- Use 404 (not 403) for records that belong to another employee, as `parseId` and `loadDetail` do.
+- Use 404 for another employee's or another team's record, and 403 only for the wrong role (`requireRole`).
 - Express 4 does not catch rejected promises. Keep handlers synchronous (`node:sqlite` is sync). If you ever need `async`, wrap it and forward errors with `next(error)`.
 
 ## When you add or change an endpoint

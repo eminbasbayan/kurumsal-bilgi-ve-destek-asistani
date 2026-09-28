@@ -1,6 +1,6 @@
 # Kurumsal Bilgi ve Destek Asistanı
 
-Employee portal that combines sourced answers to corporate questions with support request creation and tracking. Only the employee experience is in scope; there are no admin or support-agent screens.
+Employee portal that combines sourced answers to corporate questions with support request creation and tracking, plus a demo support-staff role that works team queues (`PROJE_TANIMI.md` section 17). There are no admin screens.
 
 ## Sources of truth
 
@@ -33,7 +33,7 @@ npm run build    # tsc -b && vite build
 cd back-end
 npm run dev        # tsx watch, http://localhost:3001, Swagger at /api-docs
 npm run typecheck
-npm test           # node:test via tsx, test/api.test.ts
+npm test           # node:test via tsx, test/api.test.ts and test/support.test.ts
 npm run build
 ```
 
@@ -47,7 +47,8 @@ These apply to both apps and must stay identical. Status and priority unions liv
 - Priorities: `Düşük`, `Normal`, `Yüksek`.
 - New requests start in `Yeni` with one initial history entry, get a unique number, and are created only once per submission.
 - Counters, lists, detail views, notifications, messages, and status history derive from the same records. Adding a message updates the request's last-updated time.
-- Employees cannot change support-managed statuses.
+- Employees cannot change support-managed statuses, assignments, or internal notes. Only assigned support staff change status, following `STATUS_TRANSITIONS` in `constants.ts`; the one automatic change is Kullanıcıdan Bilgi Bekleniyor → İnceleniyor when the employee replies.
+- Internal notes and internal timeline rows (`visibility` `'internal'`) are never returned by employee endpoints.
 - Attachments: PDF, PNG, JPG/JPEG, max 5 MB each. Only metadata is stored; file contents are never persisted.
 - Assistant answers link to an existing source document section. When nothing matches, say so and offer a support request. Never invent documents, policies, or links.
 - Label fictional users, documents, messages, and unavailable integrations (auth, AI, storage, notifications, live support) as demo behavior.
@@ -69,14 +70,14 @@ These apply to both apps and must stay identical. Status and priority unions liv
 2. Follow the module layout: `src/modules/<feature>/<feature>.routes.ts` for Express routers, `<feature>.service.ts` for logic and SQL, and `<feature>.schema.ts` for Zod input schemas parsed with `parseInput` from `src/shared/validate.ts`. Shared pieces live in `src/config/constants.ts`, `src/db/` (schema, seed, SQL helpers), `src/middleware/`, and `src/shared/`.
 3. Import shared code from the module paths (`src/config/constants.ts`, `src/db/`, `src/shared/`, and `src/modules/`).
 4. Routers receive `db` and an injectable `now` clock through `createApp` in `src/app.ts`. Keep that pattern so tests stay deterministic.
-5. Every `/api` route except the public auth routes requires a bearer token via `requireAuth`. Throw `HttpError` with a Turkish user-facing message for client errors.
+5. Every `/api` route except the public auth routes requires a bearer token via `requireAuth`. Employee routers are mounted behind `requireRole("employee")`, `/api/support` behind `requireRole("support")`; a wrong role gets 403. Throw `HttpError` with a Turkish user-facing message for client errors.
 6. Use `?` placeholders for SQL parameters and wrap multi-step writes in the `transaction` helper.
-7. When you add or change an endpoint, update `src/docs/openapi.ts` and add or adjust a test in `test/api.test.ts`.
-8. The SQLite file defaults to `back-end/data/app.sqlite` (git-ignored) and can be overridden with `DATABASE_PATH`. Seeding runs only on an empty database. Use `:memory:` or a temp directory in tests.
-9. CORS allows a single origin: `CORS_ORIGIN`, defaulting to `http://localhost:5173`. Authentication is demo-only (`deniz.yilmaz@ornek-kurum.com` / `kurumsaldemo`); do not present it as real.
+7. When you add or change an endpoint, update `src/docs/openapi.ts` and add or adjust a test in `test/api.test.ts` (employee) or `test/support.test.ts` (support staff).
+8. The SQLite file defaults to `back-end/data/app.sqlite` (git-ignored) and can be overridden with `DATABASE_PATH`. Seeding runs only on an empty database; schema changes after that are applied by numbered migrations tracked with `PRAGMA user_version` (`src/db/migrations.ts`). Use `:memory:` or a temp directory in tests.
+9. CORS allows a single origin: `CORS_ORIGIN`, defaulting to `http://localhost:5173`. Authentication is demo-only: employee `deniz.yilmaz@ornek-kurum.com`, support staff `ahmet.kaya@`, `elif.demir@` (BT Destek Ekibi) and `zeynep.arslan@ornek-kurum.com` (İnsan Kaynakları Ekibi), all with `kurumsaldemo`. Do not present it as real.
 
 ## Boundaries
 
-- Do not add admin or support-agent roles, real integrations, or new user roles unless explicitly requested.
+- Do not add admin screens, real integrations, or roles beyond employee and support unless explicitly requested. Support staff scope is limited to `PROJE_TANIMI.md` section 17.
 - Do not add a second general-purpose UI library or an ORM without discussing it first.
 - Do not commit `node_modules/`, `dist/`, `back-end/data/`, or `.playwright-mcp/`.

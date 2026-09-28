@@ -45,7 +45,7 @@ Birincil kullanıcı, kurum bünyesinde çalışan ve aşağıdaki ihtiyaçlarda
 - Destek ekibiyle yazışmak veya istenen ek bilgiyi paylaşmak.
 - Bir talebin hangi aşamalardan geçtiğini görmek.
 
-Bu sürüm yalnızca çalışan deneyimini kapsar. Destek personeli veya yönetici ekranları kapsamda değildir.
+Birincil kullanıcı çalışandır. Bu sürüm ayrıca talepleri yöneten demo destek personeli rolünü Bölüm 17'deki sınırlarla kapsar. Yönetici ekranları kapsamda değildir.
 
 ## 5. Temel ürün ilkeleri
 
@@ -271,7 +271,7 @@ Durum geçmişi davranışları:
 - Talep detayının içinde gösterilmelidir.
 - Her kayıtta durum veya işlem açıklaması, zaman ve işlemi yapan kişi ya da ekip bulunmalıdır.
 - Kayıtlar kronolojik olarak anlaşılır biçimde sunulmalıdır.
-- Talebin mevcut durumu, durum geçmişinin son kaydıyla uyumlu olmalıdır.
+- Talebin mevcut durumu, durum geçmişindeki son durum değişikliği kaydıyla uyumlu olmalıdır.
 
 Çalışan, destek ekibinin yönettiği talep durumlarını değiştirememelidir. Bilinmeyen talep numarasında hata görünümü ve Taleplerime dönme seçeneği sunulmalıdır.
 
@@ -416,16 +416,19 @@ Her durumda kullanıcıya ne olduğu ve mümkünse bir sonraki adım açıkça a
 
 Bu ürün tanımının mevcut kapsamında aşağıdakiler yoktur:
 
-- Yönetici veya destek personeli paneli.
+- Yönetici paneli.
 - Gerçek kullanıcı dizini yönetimi.
-- Gerçek kimlik doğrulama ve yetkilendirme altyapısı.
+- Gerçek kimlik doğrulama ve yetkilendirme altyapısı (Bölüm 17'deki roller demo amaçlıdır).
 - Gerçek zamanlı yapay zekâ hizmeti.
-- Canlı destek personeli yanıt sistemi.
+- Canlı destek personeli yanıt sistemi ve otomatik destek yanıtı (demo destek personeli mesajları Bölüm 17 kapsamındadır).
 - Kurumsal belge yönetimi ve belge yayımlama süreci.
 - Gerçek dosya depolama veya dosya içeriğine sonradan erişim.
 - E-posta, SMS veya push bildirimi gönderimi.
-- Çalışanın talep durumunu doğrudan değiştirmesi.
+- Çalışanın talep durumunu doğrudan değiştirmesi (Bölüm 17.6'daki otomatik geçiş hariç).
 - Raporlama, yönetim analitiği veya hizmet seviyesi yönetimi.
+- Ekipler arası talep devri ve destek personelinin talep kategorisini, önceliğini veya ekibini değiştirmesi.
+- Destek personeline bildirim gönderimi.
+- Destek personeli hesaplarının ve ekiplerinin ürün içinden yönetimi.
 
 Bu özelliklerden biri gelecekte talep edilirse ayrı kapsam, rol, yetki, güvenlik ve veri gereksinimleriyle değerlendirilmelidir.
 
@@ -443,7 +446,7 @@ Bu özelliklerden biri gelecekte talep edilirse ayrı kapsam, rol, yetki, güven
 - [ ] Geçerli talep yalnızca bir kez oluşturulur ve benzersiz numara alır.
 - [ ] Yeni talep listede, detayda, sayaçlarda ve ilgili bildirimlerde görünür.
 - [ ] Talebe boş olmayan mesaj eklenebilir ve mesaj hemen görünür.
-- [ ] Talebin mevcut durumu ile durum geçmişinin son kaydı tutarlıdır.
+- [ ] Talebin mevcut durumu ile durum geçmişindeki son durum değişikliği kaydı tutarlıdır.
 - [ ] Arama, durum filtresi, kategori filtresi, tarih sıralaması ve filtre temizleme çalışır.
 - [ ] Tek bildirim ve tüm bildirimler okundu işaretlenebilir.
 - [ ] Okunmamış bildirim sayısı kullanıcı işlemlerine göre güncellenir.
@@ -452,6 +455,15 @@ Bu özelliklerden biri gelecekte talep edilirse ayrı kapsam, rol, yetki, güven
 - [ ] Ana işlemlerde işlevsiz düğme, boş bağlantı veya tamamlanmamış alan bulunmaz.
 - [ ] Kullanıcı girdileri güvenli metin olarak gösterilir.
 - [ ] Demo içerikler gerçek kurum verisi veya canlı hizmet gibi sunulmaz.
+- [ ] Demo destek personeli hesabıyla giriş yapılabilir; rol ve ekip profilde görünür.
+- [ ] Destek personeli yalnızca kendi ekibinin taleplerini ekip kuyruğunda ve bana atananlar listesinde görür.
+- [ ] Destek personeli atanmamış talebi üstlenebilir ve talebi aynı ekipteki başka bir personele atayabilir.
+- [ ] Durum yalnızca izin verilen geçişlerle değişir; Kapatıldı için gerekçe zorunludur.
+- [ ] Personel mesajı çalışanın yazışmalarında görünür ve çalışana bildirim oluşturur.
+- [ ] İç notlar ve atama kayıtları çalışana hiçbir yerde görünmez.
+- [ ] Her atama, durum değişikliği, mesaj ve iç not durum geçmişine kaydedilir.
+- [ ] Çalışan durum değiştirme, atama ve iç not işlemlerine erişemez; destek personeli çalışan bölümlerine erişemez.
+- [ ] Kullanıcıdan bilgi bekleyen talebe çalışan yanıt verdiğinde talep İnceleniyor durumuna geçer.
 
 ## 15. Gelecekte projede çalışacak ajanlar için talimatlar
 
@@ -463,7 +475,7 @@ Bir yapay zekâ ajanı bu projede değişiklik yapmadan önce:
 4. Yeni özellik eklerken ilgili boş, hata, yüklenme, erişilebilirlik ve mobil durumlarını birlikte ele almalıdır.
 5. Yeni bir bilgi konusu ekleniyorsa yanıt, kaynak belge, ilgili bölüm ve destek talebi kategorisi arasındaki ilişkiyi tanımlamalıdır.
 6. Gerçek entegrasyon bulunmayan bir işlevi çalışıyormuş gibi sunmamalıdır.
-7. Kullanıcı tarafından özellikle istenmedikçe yönetici paneli, gerçek entegrasyon veya yeni kullanıcı rolü ekleyerek kapsamı büyütmemelidir.
+7. Kullanıcı tarafından özellikle istenmedikçe yönetici paneli, gerçek entegrasyon veya çalışan ve demo destek personeli dışında yeni bir kullanıcı rolü ekleyerek kapsamı büyütmemelidir. Destek personeli davranışlarında Bölüm 17'deki yetki sınırlarını korumalıdır.
 8. Uygulama teknolojisiyle ilgili kararları bu ürün belgesine eklememeli; gerekiyorsa ayrı bir teknik tasarım belgesinde açıklamalıdır.
 
 ## 16. Terimler
@@ -477,3 +489,90 @@ Bir yapay zekâ ajanı bu projede değişiklik yapmadan önce:
 | Durum geçmişi | Talebin yaşam döngüsündeki işlemlerin zaman sıralı kaydı. |
 | Bildirim | Bir talebin oluşturulması veya güncellenmesiyle ilgili kullanıcı bilgilendirmesi. |
 | Demo veri | Gerçek kişi, kurum veya işlemi temsil etmeyen örnek içerik. |
+| Destek personeli | Tek bir destek ekibine bağlı, ekibinin taleplerini yöneten demo kullanıcı rolü. |
+| Ekip kuyruğu | Bir destek ekibine atanmış taleplerin listesi. |
+| Atanan personel | Talep üzerinde durum değiştirme ve mesaj gönderme yetkisi olan destek personeli. |
+| İç not | Yalnızca destek personelinin görebildiği, talebe bağlı not. |
+
+## 17. Destek Personeli (Demo)
+
+### 17.1. Amaç ve kapsam
+
+Bu bölüm, çalışan taleplerini yöneten demo destek personeli rolünü tanımlar. Rol, gerçek bir kimlik veya yetki altyapısına bağlı değildir ve demo davranışı olarak açıkça belirtilmelidir. Çalışan deneyimine ilişkin önceki bölümlerdeki kurallar geçerliliğini korur.
+
+### 17.2. Roller ve demo hesaplar
+
+- Üründe iki rol bulunmalıdır: **Çalışan** ve **Destek personeli**.
+- Her destek personeli tek bir destek ekibine bağlı olmalıdır. Ekip adları, talep kategorisinden türetilen atanan ekip adlarıyla aynı olmalıdır (örneğin BT Destek Ekibi, İnsan Kaynakları Ekibi).
+- Demo ortamında en az üç kurgusal destek personeli hesabı bulunmalıdır: iki kişi BT Destek Ekibinde, bir kişi İnsan Kaynakları Ekibinde.
+- Giriş yapan kullanıcının rolü ve varsa ekibi profil bilgisinde görülebilmelidir.
+- Destek personeli bulunmayan ekiplerin talepleri, bu sürümde hiçbir personelin kuyruğunda görünmez; bu durum demo sınırı olarak kabul edilir.
+
+### 17.3. Yetki sınırları
+
+- Çalışan yalnızca kendi taleplerini görüntüleyebilmeli ve yalnızca mesaj ekleyebilmelidir.
+- Çalışan talep durumunu değiştirememeli, talep atayamamalı ve iç notları hiçbir şekilde görememelidir.
+- Destek personeli çalışana ait talep oluşturma, Bilgi Asistanı ve bildirim bölümlerini kullanamamalıdır.
+- Destek personeli yalnızca kendi ekibine atanmış talepleri görebilmelidir. Başka ekibin talebi, var olmayan talep gibi ele alınmalıdır.
+- Yetkisiz bir işlem denendiğinde kullanıcıya açık bir hata mesajı gösterilmelidir.
+
+### 17.4. Ekip kuyruğu ve bana atananlar
+
+- Destek personeli ekibinin taleplerini tek bir kuyrukta görebilmelidir.
+- Destek personeli yalnızca kendisine atanmış talepleri ayrıca listeleyebilmelidir.
+- Kuyruk; duruma, önceliğe, atanmamış olmaya ve talep numarası, konu veya çalışan adına göre süzülebilmelidir.
+- Kuyruk varsayılan olarak açık talepleri, en eski oluşturulan talep üstte olacak biçimde göstermelidir.
+- Ekip özeti (açık, atanmamış, bana atanmış ve kullanıcıdan bilgi bekleyen talep sayıları) mevcut talep kayıtlarından hesaplanmalıdır.
+
+### 17.5. Talebi üstlenme ve atama
+
+- Destek personeli ekibindeki atanmamış bir talebi üstlenebilmelidir.
+- Destek personeli bir talebi yalnızca aynı ekipteki başka bir destek personeline veya kendisine atayabilmelidir.
+- Başka bir personele atanmış talep doğrudan üstlenilememelidir; bunun için atama işlemi kullanılmalıdır.
+- Talebin durumunu değiştirmek ve çalışana mesaj göndermek için talebin işlemi yapan personele atanmış olması gerekir.
+- İç not, talebin atandığı kişiden bağımsız olarak ekipteki her destek personeli tarafından eklenebilmelidir.
+
+### 17.6. Durum yönetimi
+
+Destek personeli, talep durumunu yalnızca Bölüm 8.1'deki durumlar arasında ve aşağıdaki geçişlere uygun olarak değiştirebilmelidir:
+
+| Mevcut durum | İzin verilen yeni durumlar |
+| --- | --- |
+| Yeni | İnceleniyor, Kapatıldı |
+| İnceleniyor | Kullanıcıdan Bilgi Bekleniyor, Devam Ediyor, Çözüldü |
+| Kullanıcıdan Bilgi Bekleniyor | İnceleniyor, Devam Ediyor, Çözüldü |
+| Devam Ediyor | İnceleniyor, Kullanıcıdan Bilgi Bekleniyor, Çözüldü |
+| Çözüldü | Devam Ediyor, Kapatıldı |
+| Kapatıldı | Yok (son durum) |
+
+- Tabloda olmayan bir geçiş ve talebin zaten bulunduğu duruma geçiş reddedilmelidir.
+- Kapatıldı durumuna geçişte kapatma gerekçesi zorunlu olmalıdır. Gerekçe çalışana durum geçmişinde gösterilmelidir.
+- Kapatılmış talepte destek personeli hiçbir işlem yapamamalıdır.
+- Kullanıcıdan Bilgi Bekleniyor durumundaki talebe çalışan mesaj eklediğinde talep otomatik olarak İnceleniyor durumuna geçmeli ve bu geçiş durum geçmişinde "Sistem" tarafından yapılmış olarak görünmelidir.
+
+### 17.7. Çalışana mesaj ve iç notlar
+
+- Atanan destek personeli çalışana mesaj gönderebilmelidir. Mesaj talebin yazışmalarında destek ekibi mesajı olarak görünmeli ve son güncelleme zamanını yenilemelidir.
+- Destek personeli yalnızca destek personelinin görebileceği iç notlar ekleyebilmelidir.
+- İç not metni ve iç not eklendiği bilgisi çalışana hiçbir ekranda, bildirimde veya sayaçta yansımamalıdır.
+- Mesaj ve iç notlar boş olamaz ve Bölüm 7.8'deki mesaj uzunluk sınırına tabidir.
+- Demo destek personeli mesajları, gerçek ve canlı bir destek hizmeti gibi sunulmamalıdır.
+
+### 17.8. Durum geçmişi ve işlem kaydı
+
+- Üstlenme, atama, durum değişikliği, çalışana mesaj ve iç not işlemlerinin her biri durum geçmişine işlem türü, zaman, işlemi yapan kişi ve görünürlük bilgisiyle kaydedilmelidir.
+- Durum değişikliği kaydı eski ve yeni durumu içermelidir.
+- Üstlenme, atama ve iç not kayıtları yalnızca destek personeline görünmelidir. Durum değişikliği ve mesaj kayıtları çalışana da görünmelidir.
+- Talebin mevcut durumu, durum geçmişindeki son durum değişikliği kaydıyla uyumlu olmalıdır. Durum değişikliği kaydı yoksa talep Yeni durumunda olmalıdır.
+- Destek personeli bir talebin tüm geçmişini, çalışan yalnızca kendisine görünen kayıtları görebilmelidir.
+
+### 17.9. Çalışan bildirimleri
+
+- Destek personeli talep durumunu değiştirdiğinde veya çalışana mesaj gönderdiğinde, talep sahibine ilgili talebe bağlı bir bildirim oluşturulmalıdır.
+- Atama, üstlenme, iç not ve otomatik durum geçişi çalışana bildirim oluşturmamalıdır.
+- Destek personeline bildirim gönderilmez.
+
+### 17.10. Eşzamanlı güncelleme
+
+- Atama ve durum değişikliği, talebin personelin gördüğü sürümüne göre yapılmalıdır. Talep bu arada güncellendiyse işlem reddedilmeli ve personelden güncel hâli görüntülemesi istenmelidir.
+- Aynı talebi iki personel aynı anda üstlenmeye çalışırsa yalnızca biri başarılı olmalıdır.

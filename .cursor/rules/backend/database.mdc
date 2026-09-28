@@ -11,7 +11,7 @@ Schema lives in `back-end/src/db/database.ts`, demo data in `back-end/src/db/see
 ## Queries
 
 - Always use `?` placeholders. Never interpolate user input into SQL.
-- Scope every employee-owned read by `employee_id`. Before an update that uses only `id`, first confirm ownership:
+- Scope every employee-owned read by `employee_id`, and every support-staff read by `requests.team = staff team`. Before an update that uses only `id`, first confirm ownership or team:
 
 ```ts
 // ✅ notifications.service.ts pattern
@@ -28,12 +28,14 @@ db.prepare("UPDATE notifications SET read = 1 WHERE id = ?").run(id);
 
 A request write must keep its related records in step in the same transaction:
 
-- New request: `status = 'Yeni'`, a `Talep oluşturuldu` timeline row, and a notification.
-- New message: update `requests.updated_at`, and add the message and a timeline row.
-- Employees never change `status`; no endpoint should expose that.
+- New request: `status = 'Yeni'`, a `Talep oluşturuldu` timeline row (`event_type` 'created', `visibility` 'public'), and a notification.
+- New message: update `requests.updated_at`, and add the message and a public timeline row. A support message also adds an employee notification.
+- Status change: update status and `updated_at`, add a public 'status_change' row with `from_status`/`to_status` labelled `Durum güncellendi: <status>`, and an employee notification (except the automatic change).
+- Claim/assign/internal note: internal timeline rows only; internal notes live in `request_internal_notes`.
+- Employees never change status directly; only `POST /api/support/requests/:id/status` and the automatic reply transition do.
 
 ## Schema changes
 
-- There is no migration system: `CREATE TABLE IF NOT EXISTS` does not alter existing tables. After a schema change, tell the user to delete `back-end/data/app.sqlite` locally, or add an explicit `ALTER TABLE`.
+- `SCHEMA` in `database.ts` is the v0 baseline. Every later change is a numbered migration in `src/db/migrations.ts`, run in a transaction and recorded with `PRAGMA user_version`. Never edit an applied migration; add a new one.
 - `CHECK` constraints repeat the status and priority lists from `src/config/constants.ts`. Change both together.
-- `seedIfEmpty` runs only when `employees` is empty. Keep seed data idempotent and clearly fictional (`ornek-kurum.com`), and keep at least 10 requests that cover every status.
+- `seedIfEmpty` runs only when `employees` is empty and writes v0-shaped data. Demo support staff are inserted by migration v1 (idempotent by email), so existing databases get them too. Keep seed data idempotent and clearly fictional (`ornek-kurum.com`), and keep at least 10 requests that cover every status.
