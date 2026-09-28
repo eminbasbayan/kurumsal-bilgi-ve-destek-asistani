@@ -4,7 +4,10 @@ import { getProfile, logout as logoutApi } from "../api/auth";
 import { ApiError, clearToken, hasToken } from "../api/client";
 import { listNotifications } from "../api/notifications";
 import { AppShell } from "../components/AppShell";
-import { AssistantPage } from "../pages/AssistantPage";
+import {
+  AssistantPage,
+  type AssistantHandoff,
+} from "../pages/AssistantPage";
 import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
 import { NewRequestPage } from "../pages/NewRequestPage";
@@ -22,7 +25,8 @@ import "../styles/dark.css";
 export default function App() {
   const queryClient = useQueryClient();
   const [current, setCurrent] = useState<AppRoute>(readRoute);
-  const [assistantContext, setAssistantContext] = useState("");
+  const [assistantHandoff, setAssistantHandoff] =
+    useState<AssistantHandoff | null>(null);
   const [authRevision, setAuthRevision] = useState(0);
   const authenticated = hasToken();
 
@@ -63,7 +67,7 @@ export default function App() {
   const logout = async () => {
     await logoutApi().catch(() => undefined);
     queryClient.clear();
-    setAssistantContext("");
+    setAssistantHandoff(null);
     setAuthRevision((value) => value + 1);
     go("home");
   };
@@ -87,16 +91,16 @@ export default function App() {
     home: <HomePage profile={profile} />,
     assistant: (
       <AssistantPage
-        escalate={(context) => {
-          setAssistantContext(context);
+        escalate={(handoff) => {
+          setAssistantHandoff(handoff);
           go("new");
         }}
       />
     ),
     new: (
       <NewRequestPage
-        context={assistantContext}
-        onCreated={() => setAssistantContext("")}
+        handoff={assistantHandoff}
+        onCreated={() => setAssistantHandoff(null)}
       />
     ),
     requests: <RequestsPage />,

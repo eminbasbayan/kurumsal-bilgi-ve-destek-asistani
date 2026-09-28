@@ -18,6 +18,7 @@ import { listCategories } from "../api/categories";
 import { createRequest } from "../api/requests";
 import { go } from "../app/navigation";
 import { PageHeader } from "../components/PageHeader";
+import type { AssistantHandoff } from "./AssistantPage";
 import type { Attachment, Priority, RequestDraft } from "../types";
 
 const ACCEPTED_FILE_TYPES = ["application/pdf", "image/png", "image/jpeg"];
@@ -35,26 +36,76 @@ function attachmentIdentity(attachment: Attachment): string {
   return `${attachment.name}\u0000${attachment.mimeType}\u0000${attachment.sizeBytes}`;
 }
 
-function suggestedCategory(context: string): [string, string] {
-  const normalized = context.toLocaleLowerCase("tr-TR");
-  if (normalized.includes("vpn"))
-    return ["Bilgi Teknolojileri", "VPN ve Uzaktan Erişim"];
-  if (normalized.includes("bordro")) return ["İnsan Kaynakları", "Bordro"];
-  if (normalized.includes("masraf"))
-    return ["Finans ve İdari İşler", "Masraf Bildirimi"];
-  if (context) return ["İnsan Kaynakları", "İzinler"];
-  return ["", ""];
+const SUBJECT_LIMIT = 100;
+const DESCRIPTION_LIMIT = 2000;
+
+const CATEGORY_MATCHES = [
+  { topic: "izin", category: "İnsan Kaynakları", subcategory: "İzinler" },
+  {
+    topic: "vpn",
+    category: "Bilgi Teknolojileri",
+    subcategory: "VPN ve Uzaktan Erişim",
+  },
+  { topic: "bordro", category: "İnsan Kaynakları", subcategory: "Bordro" },
+  {
+    topic: "masraf",
+    category: "Finans ve İdari İşler",
+    subcategory: "Masraf Bildirimi",
+  },
+] as const;
+
+// tr-TR maps ASCII "I" to "ı", so "IZIN" becomes "ızın" and misses "izin".
+function foldTr(value: string): string {
+  return value.toLocaleLowerCase("tr-TR").replaceAll("ı", "i");
+}
+
+function suggestedCategory(question: string, found: boolean): [string, string] {
+  if (!found) return ["", ""];
+  const folded = foldTr(question);
+  let best: (typeof CATEGORY_MATCHES)[number] | undefined;
+  let bestIndex = Number.POSITIVE_INFINITY;
+  for (const match of CATEGORY_MATCHES) {
+    const index = folded.indexOf(foldTr(match.topic));
+    if (index >= 0 && index < bestIndex) {
+      best = match;
+      bestIndex = index;
+    }
+  }
+  return best ? [best.category, best.subcategory] : ["", ""];
+}
+
+function requestFields(handoff: AssistantHandoff | null): Pick<
+  RequestDraft,
+  "category" | "subcategory" | "subject" | "description" | "assistantContext"
+> {
+  const question = handoff?.question.trim() ?? "";
+  const sources = handoff?.sources ?? [];
+  const suggested = suggestedCategory(question, sources.length > 0);
+  const contextLines = [handoff?.answer.trim() ?? ""];
+  for (const source of sources) {
+    const label = [source.title.trim(), source.section.trim()]
+      .filter(Boolean)
+      .join(" · ");
+    if (label) contextLines.push(`Kaynak: ${label}`);
+  }
+  return {
+    category: suggested[0],
+    subcategory: suggested[1],
+    subject: question.replace(/\s+/g, " ").slice(0, SUBJECT_LIMIT),
+    description: question.slice(0, DESCRIPTION_LIMIT),
+    assistantContext: contextLines.filter(Boolean).join("\n"),
+  };
 }
 
 export function NewRequestPage({
-  context,
+  handoff,
   onCreated,
 }: {
-  context: string;
+  handoff: AssistantHandoff | null;
   onCreated: () => void;
 }) {
   const queryClient = useQueryClient();
-  const suggested = suggestedCategory(context);
+  const transferred = requestFields(handoff);
   const clientRequestId = useRef(crypto.randomUUID());
   const fileInputRef = useRef<HTMLInputElement>(null);
   const categories = useQuery({
@@ -62,13 +113,9 @@ export function NewRequestPage({
     queryFn: listCategories,
   });
   const [draft, setDraft] = useState<RequestDraft>({
-    category: suggested[0],
-    subcategory: suggested[1],
-    subject: "",
-    description: "",
+    ...transferred,
     priority: "Normal",
     attachments: [],
-    assistantContext: context,
   });
   const [error, setError] = useState("");
 

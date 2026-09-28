@@ -37,10 +37,21 @@ const SUGGESTIONS = [
   "Masraf belgesi nasıl yüklenir?",
 ];
 
+export type AssistantSource = {
+  title: string;
+  section: string;
+};
+
+export type AssistantHandoff = {
+  question: string;
+  answer: string;
+  sources: AssistantSource[];
+};
+
 export function AssistantPage({
   escalate,
 }: {
-  escalate: (context: string) => void;
+  escalate: (handoff: AssistantHandoff) => void;
 }) {
   const queryClient = useQueryClient();
   const [input, setInput] = useState(
@@ -242,12 +253,28 @@ export function AssistantPage({
               variant="soft"
               disabled={!last}
               onClick={() => {
-                const question = [...messages]
-                  .reverse()
-                  .find((message) => message.role === "user");
-                escalate(
-                  `${question?.text ?? ""}\n\n${last?.text ?? ""}${last?.source ? `\nKaynak: ${last.source.title}` : ""}`,
+                const assistantIndex = messages.findLastIndex(
+                  (message) => message.role === "assistant",
                 );
+                const assistant = messages[assistantIndex];
+                if (!assistant) return;
+                const question =
+                  messages
+                    .slice(0, assistantIndex)
+                    .findLast((message) => message.role === "user")?.text ??
+                  "";
+                escalate({
+                  question,
+                  answer: assistant.text,
+                  sources: assistant.source
+                    ? [
+                        {
+                          title: assistant.source.title,
+                          section: assistant.source.section,
+                        },
+                      ]
+                    : [],
+                });
               }}
             >
               <PlusIcon /> Talep oluştur
@@ -291,7 +318,7 @@ export function AssistantPage({
             {[
               "İnsan Kaynakları",
               "Bilgi Teknolojileri",
-              "Finans ve Masraflar",
+              "Finans ve İdari İşler",
               "İşyeri Hizmetleri",
             ].map((area) => (
               <p className="knowledge" key={area}>
