@@ -6,7 +6,11 @@ export type SourceRecord = {
   updatedAt: string;
 };
 
-const ANSWERS: Record<string, string> = {
+const TOPIC_IDS = ["izin", "vpn", "bordro", "masraf"] as const;
+
+type TopicId = (typeof TOPIC_IDS)[number];
+
+const ANSWERS: Record<TopicId, string> = {
   izin: "Yıllık izin talebinizi planlanan başlangıç tarihinden en az üç iş günü önce çalışan portalından iletmeniz gerekir. Yönetici onayından sonra izin bakiyeniz güncellenir.",
   vpn: "Kurumsal VPN için şirket cihazındaki güncel istemciyi açın, kurumsal hesabınızla giriş yapın ve çok faktörlü doğrulamayı tamamlayın. Sorun sürerse BT Destek talebi oluşturun.",
   bordro:
@@ -18,24 +22,52 @@ const ANSWERS: Record<string, string> = {
 const NOT_FOUND =
   "Bu soru için örnek bilgi setimde doğrudan bir yanıt bulunmuyor. İlgili ekibin incelemesi için destek talebi oluşturabilirsiniz.";
 
+// tr-TR maps ASCII "I" to "ı", so "IZIN" becomes "ızın" and misses "izin".
+// Folding dotless ı to i keeps Turkish and ASCII case variants on one key.
+function foldTopicText(value: string): string {
+  return value.toLocaleLowerCase("tr-TR").replaceAll("ı", "i");
+}
+
+function alsoParticle(topic: string): "da" | "de" {
+  const vowels = topic.match(/[aeıioöuü]/gi);
+  const last = vowels?.at(-1)?.toLocaleLowerCase("tr-TR");
+  if (last === "a" || last === "ı" || last === "o" || last === "u") return "da";
+  return "de";
+}
+
+function otherTopicsNote(topics: readonly string[]): string {
+  const last = topics[topics.length - 1];
+  if (!last) return "";
+  const names =
+    topics.length === 1
+      ? last
+      : topics.length === 2
+        ? `${topics[0]} ve ${last}`
+        : `${topics.slice(0, -1).join(", ")} ve ${last}`;
+  const pronoun = topics.length === 1 ? "onu" : "onları";
+  return `Sorunuzda ${names} ${alsoParticle(last)} geçiyor; ${pronoun} ayrı sorarsanız kaynaklı yanıt verebilirim.`;
+}
+
 export function replyToQuestion(
   question: string,
   sources: SourceRecord[],
 ): { text: string; source?: SourceRecord } {
-  const normalized = question.toLocaleLowerCase("tr-TR");
-  const sourceId = normalized.includes("vpn")
-    ? "vpn"
-    : normalized.includes("bordro")
-      ? "bordro"
-      : normalized.includes("masraf")
-        ? "masraf"
-        : normalized.includes("izin")
-          ? "izin"
-          : undefined;
-  const source = sourceId
-    ? sources.find((item) => item.id === sourceId)
-    : undefined;
-  const text = source ? ANSWERS[source.id] : undefined;
-  if (!source || !text) return { text: NOT_FOUND };
-  return { text, source };
+  const folded = foldTopicText(question);
+  const matches = TOPIC_IDS.flatMap((id) => {
+    const index = folded.indexOf(foldTopicText(id));
+    if (index < 0) return [];
+    const source = sources.find((item) => item.id === id);
+    if (!source) return [];
+    return [{ id, index, source, text: ANSWERS[id] }];
+  }).sort((left, right) => left.index - right.index);
+
+  const primary = matches[0];
+  if (!primary) return { text: NOT_FOUND };
+
+  const others = matches.slice(1).map((item) => item.id);
+  const note = otherTopicsNote(others);
+  return {
+    text: note ? `${primary.text} ${note}` : primary.text,
+    source: primary.source,
+  };
 }

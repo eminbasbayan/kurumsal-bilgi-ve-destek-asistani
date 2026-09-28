@@ -349,7 +349,8 @@ export const openApiDocument = {
       post: {
         tags: ["Asistan"],
         summary: "Soru gönder ve kural tabanlı yanıt al",
-        description: "izin, vpn, bordro ve masraf konuları ilgili belgeye bağlanır. Eşleşme yoksa bilgi bulunamadığı söylenir.",
+        description:
+          "Soruda ilk geçen konu (izin, vpn, bordro, masraf) ilgili belgeye bağlanır. Büyük-küçük harf ile ASCII ve Türkçe yazımlar (örneğin IZIN ve İZİN) aynı konuya eşlenir. Başka konular da geçiyorsa yanıt metnine, bunların ayrı sorulursa kaynaklı yanıt verilebileceğini söyleyen kısa bir not eklenir; o konuların yanıt metni eklenmez. Eşleşme yoksa bilgi bulunamadığı söylenir.",
         security: bearer,
         parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
         requestBody: { required: true, content: json({ $ref: "#/components/schemas/QuestionRequest" }) },
