@@ -2,7 +2,6 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
-import { loadFts5 } from "./fts5.js";
 import { runMigrations } from "./migrations.js";
 import { seedIfEmpty } from "./seed.js";
 
@@ -121,10 +120,29 @@ CREATE INDEX IF NOT EXISTS idx_notifications_employee
   ON notifications (employee_id, created_at DESC);
 `;
 
+export const FTS5_MISSING_MESSAGE =
+  "Bu Node sürümünde SQLite FTS5 yok; Node 22.16+ veya 24 kullanın.";
+
+export function assertFts5Available(probe?: Pick<DatabaseSync, "exec">): void {
+  const db = probe ?? new DatabaseSync(":memory:");
+  const owns = probe === undefined;
+  try {
+    db.exec("CREATE VIRTUAL TABLE fts5_probe USING fts5(body)");
+  } catch (error) {
+    const text = error instanceof Error ? error.message : "";
+    if (text.toLowerCase().includes("no such module") && text.toLowerCase().includes("fts5")) {
+      throw new Error(FTS5_MISSING_MESSAGE);
+    }
+    throw error;
+  } finally {
+    if (owns) (db as DatabaseSync).close();
+  }
+}
+
 export function openDatabase(path: string): DatabaseSync {
   if (path !== ":memory:") mkdirSync(dirname(path), { recursive: true });
-  const db = new DatabaseSync(path, { allowExtension: true });
-  loadFts5(db);
+  assertFts5Available();
+  const db = new DatabaseSync(path);
   db.exec("PRAGMA foreign_keys = ON");
   return db;
 }

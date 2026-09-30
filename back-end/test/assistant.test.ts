@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { CATEGORIES, DEMO_EMAIL } from "../src/config/constants.js";
-import { SCHEMA, migrateAndSeed, openDatabase } from "../src/db/database.js";
+import { SCHEMA, assertFts5Available, migrateAndSeed, openDatabase } from "../src/db/database.js";
 import { LEGACY_SECTION_IDS, SOURCE_SECTIONS } from "../src/db/documents.js";
 import { runMigrations } from "../src/db/migrations.js";
 import { seedIfEmpty } from "../src/db/seed.js";
@@ -13,6 +13,19 @@ import { answerQuestion } from "../src/modules/assistant/assistant.service.js";
 import { NO_SOURCE_TEXT, QUOTE_INTRO, suggestCategory } from "../src/modules/assistant/reply.js";
 import { getSource } from "../src/modules/sources/sources.service.js";
 import { buildFtsQuery, foldTurkish, normalizeText } from "../src/shared/normalize.js";
+
+test("FTS5 yoksa açılış anlaşılır hatayla durur", () => {
+  const fake = {
+    exec() {
+      throw new Error("no such module: fts5");
+    },
+  };
+  assert.throws(
+    () => assertFts5Available(fake),
+    (error: unknown) => error instanceof Error && error.message ===
+      "Bu Node sürümünde SQLite FTS5 yok; Node 22.16+ veya 24 kullanın.",
+  );
+});
 
 test("Türkçe I ve İ aynı köke iner", () => {
   assert.equal(foldTurkish("İZİN"), "izin");

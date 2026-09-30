@@ -37,7 +37,7 @@ npm test           # node:test via tsx, test/api.test.ts and test/support.test.t
 npm run build
 ```
 
-The back-end requires Node `>=22.13` for `node:sqlite`. Run the checks for every project you changed before finishing.
+The back-end requires Node 22.16+ veya 24 for `node:sqlite` (yerleşik FTS5). Run the checks for every project you changed before finishing.
 
 ## Shared domain rules
 
