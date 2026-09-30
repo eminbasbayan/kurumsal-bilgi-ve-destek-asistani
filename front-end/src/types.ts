@@ -160,7 +160,16 @@ export type SourceDocument = {
   excerpt: string;
   updatedAt: string;
   demo: true;
+  documentId: string;
+  category: string;
+  subcategory: string;
 };
+
+export type SourceDocumentDetail = SourceDocument & {
+  body: string;
+};
+
+export type AnswerMode = "quote" | "no_source" | "generated" | "legacy";
 
 export type ConversationMessage = {
   id: number;
@@ -169,6 +178,8 @@ export type ConversationMessage = {
   createdAt: string;
   helpful: boolean | null;
   source: SourceDocument | null;
+  sources: SourceDocument[];
+  answerMode: AnswerMode | null;
 };
 
 export type ConversationSummary = {

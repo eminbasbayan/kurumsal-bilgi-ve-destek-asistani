@@ -4,14 +4,14 @@
 
 ## Gereksinimler
 
-- Node.js 22.13 veya üzeri
+- Node.js `^22.12` veya `^24` (Vitest)
 - Çalışan API. Varsayılan adres `http://localhost:3001`
 
 ## Kurulum
 
 ```bash
 cd front-end
-npm install
+npm ci
 ```
 
 API adresini değiştirmek için `VITE_API_URL` tanımlayın. Ayar yoksa varsayılan `http://localhost:3001` kullanılır. Örnek değer `front-end/.env.example` dosyasındadır.

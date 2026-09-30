@@ -26,10 +26,11 @@ import {
   sendConversationMessage,
   setAssistantFeedback,
 } from "../api/assistant";
+import { listCategories } from "../api/categories";
 import { PageHeader } from "../components/PageHeader";
-import type { Conversation, ConversationMessage } from "../types";
+import type { Conversation, ConversationMessage, SourceDocument } from "../types";
 import { formatDateTime } from "../utils/date";
-import type { AssistantHandoff } from "./requestHandoff";
+import type { AssistantHandoff, AssistantSource } from "./requestHandoff";
 
 export type { AssistantHandoff } from "./requestHandoff";
 
@@ -39,6 +40,38 @@ const SUGGESTIONS = [
   "Bordroma nereden ulaşırım?",
   "Masraf belgesi nasıl yüklenir?",
 ];
+
+function visibleSources(message: ConversationMessage): SourceDocument[] {
+  if (message.sources.length > 0) return message.sources;
+  return message.source ? [message.source] : [];
+}
+
+function toHandoffSource(source: SourceDocument): AssistantSource {
+  return {
+    id: source.id,
+    title: source.title,
+    section: source.section,
+    category: source.category,
+    subcategory: source.subcategory,
+  };
+}
+
+function handoffFor(
+  messages: readonly ConversationMessage[],
+  assistantIndex: number,
+): AssistantHandoff | null {
+  const assistant = messages[assistantIndex];
+  if (!assistant || assistant.role !== "assistant") return null;
+  const question =
+    messages
+      .slice(0, assistantIndex)
+      .findLast((message) => message.role === "user")?.text ?? "";
+  return {
+    question,
+    answer: assistant.text,
+    sources: visibleSources(assistant).map(toHandoffSource),
+  };
+}
 
 export function AssistantPage({
   escalate,
@@ -71,6 +104,11 @@ export function AssistantPage({
     queryKey: ["source", sourceId],
     queryFn: () => getSource(sourceId!),
     enabled: Boolean(sourceId),
+  });
+
+  const categories = useQuery({
+    queryKey: ["categories"],
+    queryFn: listCategories,
   });
 
   const send = useMutation({
@@ -139,7 +177,8 @@ export function AssistantPage({
     conversation.error?.message ||
     send.error?.message ||
     source.error?.message ||
-    feedback.error?.message;
+    feedback.error?.message ||
+    categories.error?.message;
 
   return (
     <>
@@ -194,13 +233,21 @@ export function AssistantPage({
                 </div>
               </div>
             ) : (
-              messages.map((message) => (
+              messages.map((message, index) => (
                 <Message
                   key={message.id}
                   message={message}
                   onSource={(id) => setSourceId(id)}
                   onFeedback={(helpful) =>
                     feedback.mutate({ id: message.id, helpful })
+                  }
+                  onRequest={
+                    message.answerMode === "no_source"
+                      ? () => {
+                          const handoff = handoffFor(messages, index);
+                          if (handoff) escalate(handoff);
+                        }
+                      : undefined
                   }
                 />
               ))
@@ -248,26 +295,8 @@ export function AssistantPage({
                 const assistantIndex = messages.findLastIndex(
                   (message) => message.role === "assistant",
                 );
-                const assistant = messages[assistantIndex];
-                if (!assistant) return;
-                const question =
-                  messages
-                    .slice(0, assistantIndex)
-                    .findLast((message) => message.role === "user")?.text ??
-                  "";
-                escalate({
-                  question,
-                  answer: assistant.text,
-                  sources: assistant.source
-                    ? [
-                        {
-                          id: assistant.source.id,
-                          title: assistant.source.title,
-                          section: assistant.source.section,
-                        },
-                      ]
-                    : [],
-                });
+                const handoff = handoffFor(messages, assistantIndex);
+                if (handoff) escalate(handoff);
               }}
             >
               <PlusIcon /> Talep oluştur
@@ -308,16 +337,15 @@ export function AssistantPage({
 
           <Card>
             <h3>Bilgi alanları</h3>
-            {[
-              "İnsan Kaynakları",
-              "Bilgi Teknolojileri",
-              "Finans ve İdari İşler",
-              "İşyeri Hizmetleri",
-            ].map((area) => (
-              <p className="knowledge" key={area}>
-                <CheckCircledIcon /> {area}
-              </p>
-            ))}
+            {categories.isPending ? (
+              <p className="muted">Bilgi alanları yükleniyor…</p>
+            ) : (
+              (categories.data?.categories ?? []).map((area) => (
+                <p className="knowledge" key={area.name}>
+                  <CheckCircledIcon /> {area.name}
+                </p>
+              ))
+            )}
           </Card>
         </aside>
       </div>
@@ -336,7 +364,7 @@ export function AssistantPage({
             {source.isPending ? (
               <p>Kaynak yükleniyor…</p>
             ) : (
-              <blockquote>{source.data?.excerpt}</blockquote>
+              <blockquote>{source.data?.body}</blockquote>
             )}
             {source.data && (
               <p>Son güncelleme: {formatDateTime(source.data.updatedAt)}</p>
@@ -357,28 +385,35 @@ function Message({
   message,
   onSource,
   onFeedback,
+  onRequest,
 }: {
   message: ConversationMessage;
   onSource: (id: string) => void;
   onFeedback: (helpful: boolean) => void;
+  onRequest?: () => void;
 }) {
+  const sources = visibleSources(message);
   return (
     <div className={`chat-row ${message.role}`}>
       <div className="bubble">
         <strong>{message.role === "user" ? "Siz" : "Bilgi Asistanı"}</strong>
-        <p>{message.text}</p>
+        <AnswerBody message={message} onRequest={onRequest} />
         <small>{formatDateTime(message.createdAt)}</small>
         {message.role === "assistant" && (
           <div className="message-tools">
-            {message.source && (
+            {sources.map((source) => (
               <Button
+                key={source.id}
                 size="1"
                 variant="soft"
-                onClick={() => onSource(message.source!.id)}
+                onClick={() => onSource(source.id)}
               >
-                <FileIcon /> Kaynağı aç
+                <FileIcon />{" "}
+                {sources.length === 1
+                  ? "Kaynağı aç"
+                  : `${source.title} · ${source.section}`}
               </Button>
-            )}
+            ))}
             <Tooltip content="Yanıtı kopyala">
               <IconButton
                 size="1"
@@ -414,4 +449,30 @@ function Message({
       </div>
     </div>
   );
+}
+
+function AnswerBody({
+  message,
+  onRequest,
+}: {
+  message: ConversationMessage;
+  onRequest?: () => void;
+}) {
+  if (message.role === "assistant" && message.answerMode === "quote") {
+    return <blockquote className="answer-quote">{message.text}</blockquote>;
+  }
+  if (message.role === "assistant" && message.answerMode === "no_source") {
+    return (
+      <div className="answer-missing">
+        <p className="eyebrow">Kaynak bulunamadı</p>
+        <p>{message.text}</p>
+        {onRequest && (
+          <Button size="1" variant="soft" onClick={onRequest}>
+            <PlusIcon /> Destek talebi oluştur
+          </Button>
+        )}
+      </div>
+    );
+  }
+  return <p>{message.text}</p>;
 }
