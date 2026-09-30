@@ -2,6 +2,7 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
+import { loadFts5 } from "./fts5.js";
 import { runMigrations } from "./migrations.js";
 import { seedIfEmpty } from "./seed.js";
 
@@ -122,7 +123,8 @@ CREATE INDEX IF NOT EXISTS idx_notifications_employee
 
 export function openDatabase(path: string): DatabaseSync {
   if (path !== ":memory:") mkdirSync(dirname(path), { recursive: true });
-  const db = new DatabaseSync(path);
+  const db = new DatabaseSync(path, { allowExtension: true });
+  loadFts5(db);
   db.exec("PRAGMA foreign_keys = ON");
   return db;
 }

@@ -145,6 +145,8 @@ Asistanın bilgi kapsamı en az şu konuları içermelidir:
 | Bordro görüntüleme | Bordronun bulunduğu alan ve erişim desteği |
 | Masraf talebi | Başvuru süresi, belge gereksinimi ve onay akışı |
 
+Bu dört konu asgari kapsamdaki örneklerdir. Asistanın dayandığı kurgusal belgelerin listesi Bölüm 18.2'dedir.
+
 Asistan davranış kuralları:
 
 - Sorunun konusuna uygun yanıt verilmelidir; her soruya aynı yanıt verilmemelidir.
@@ -357,6 +359,8 @@ Bazı taleplerde destek ekibi mesajları ve birden fazla durum geçmişi kaydı 
 
 Örnek kullanıcı, kurum, belge, mesaj ve talepler açıkça kurgusal olmalıdır.
 
+Demo bilgi dokümanları ve değerlendirme soruları açıkça kurgusaldır; kişisel veya gizli veri içermez.
+
 ## 10. Deneyim ve görsel dil
 
 Ürün bir pazarlama sitesi gibi değil, günlük kullanılan kurumsal çalışan portalı gibi hissettirmelidir.
@@ -419,7 +423,7 @@ Bu ürün tanımının mevcut kapsamında aşağıdakiler yoktur:
 - Yönetici paneli.
 - Gerçek kullanıcı dizini yönetimi.
 - Gerçek kimlik doğrulama ve yetkilendirme altyapısı (Bölüm 17'deki roller demo amaçlıdır).
-- Gerçek zamanlı yapay zekâ hizmeti.
+- Bölüm 18'de tanımlanan kaynakla sınırlı Bilgi Asistanı dışında yapay zekâ hizmeti. Serbest sohbet, kaynaksız üretim, eğitim/ince ayar ve gerçek kurum verisi kapsam dışıdır.
 - Canlı destek personeli yanıt sistemi ve otomatik destek yanıtı (demo destek personeli mesajları Bölüm 17 kapsamındadır).
 - Kurumsal belge yönetimi ve belge yayımlama süreci.
 - Gerçek dosya depolama veya dosya içeriğine sonradan erişim.
@@ -577,3 +581,39 @@ Destek personeli, talep durumunu yalnızca Bölüm 8.1'deki durumlar arasında v
 
 - Atama ve durum değişikliği, talebin personelin gördüğü sürümüne göre yapılmalıdır. Talep bu arada güncellendiyse işlem reddedilmeli ve personelden güncel hâli görüntülemesi istenmelidir.
 - Aynı talebi iki personel aynı anda üstlenmeye çalışırsa yalnızca biri başarılı olmalıdır.
+
+## 18. Kaynakla Sınırlı Bilgi Asistanı
+
+Bilgi Asistanı, Örnek Kurum'un kurgusal politika belgelerindeki kısa bölümlere dayanır. Her bölümün bir kategorisi ve alt kategorisi vardır; bunlar destek talebindeki kategorilerle aynı listedendir. Belgeler kişisel veya gizli veri içermez.
+
+Asistan, soruyu bu bölümlerle karşılaştırır ve en ilgili bölümleri seçer. Büyük-küçük harf, Türkçe ve ASCII yazım, ekler ve yaygın eş anlamlılar aynı konuya bağlanır. Yeterince güçlü bir eşleşme yoksa kaynak bulunamadı sayılır. Birden fazla konuyu içeren soruda ilgili bölümler birlikte ele alınır.
+
+Kaynak bulunduğunda yanıt, sabit bir giriş cümlesiyle birlikte en ilgili bölümün metnini olduğu gibi alıntılar. Başka ilgili kaynak varsa bunlar ayrıca belirtilir. Bu yanıtta kaynakta olmayan bilgi eklenmez.
+
+Kaynak bulunamadığında asistan bunu açıkça söyler ve destek talebi oluşturmayı önerir. Bu durumda kaynak listesi boştur.
+
+Destek talebine geçerken, bulunan kaynakların tümü aynı kategori ve alt kategorideyse bu ikili öneri olarak kullanılır. Kaynaklar farklı kategori veya alt kategorideyse öneri yapılmaz; çalışan kendisi seçer. Kaynak yoksa kategori önerisi de yoktur.
+
+Serbest sohbet, kaynaksız üretim, model eğitimi ve gerçek kurum verisi bu davranışın dışındadır.
+
+### 18.2. Belge listesi
+
+Asistanın kapsamı aşağıdaki kurgusal belgelerle sınırlıdır:
+
+- Yıllık İzin Politikası
+- Mazeret ve Hastalık İzni
+- Bordro Görüntüleme ve İtiraz
+- Yan Haklar: Yemek Kartı ve Sağlık Sigortası
+- Özlük Belgesi ve Çalışma Belgesi Talebi
+- VPN Kurulumu ve Sorun Giderme
+- Parola Sıfırlama ve Hesap Kilidi
+- Yazılım Erişim Talebi
+- Dizüstü Bilgisayar ve Donanım Arızası
+- E-posta ve Takvim Erişimi
+- Masraf Bildirimi ve Belge Kuralları
+- İş Seyahati Onayı ve Harcırah
+- Satın Alma Talebi Süreci
+- Fatura Yükleme Hataları
+- Ofis Ekipmanı ve Masa Talebi
+- Servis ve Otopark
+- Yemekhane ve Diyet Menüsü

@@ -6,108 +6,8 @@ import { join } from "node:path";
 import type { AddressInfo } from "node:net";
 import { after, before, describe, test } from "node:test";
 import type { Server } from "node:http";
-import { replyToQuestion, type SourceRecord } from "../src/modules/assistant/reply.js";
 import { createApp } from "../src/app.js";
 import { migrateAndSeed, openDatabase } from "../src/db/database.js";
-
-const sources: SourceRecord[] = [
-  {
-    id: "izin",
-    title: "Çalışan İzin Prosedürü",
-    section: "4.2 Yıllık İzin Kullanımı",
-    excerpt: "Yıllık izin talepleri planlanan başlangıç tarihinden en az üç iş günü önce iletilir.",
-    updatedAt: "2026-08-12",
-  },
-  {
-    id: "vpn",
-    title: "Uzaktan Erişim Rehberi",
-    section: "3.1 VPN Bağlantısı",
-    excerpt: "Kurumsal VPN bağlantısı için çok faktörlü kimlik doğrulama gerekir.",
-    updatedAt: "2026-09-02",
-  },
-  {
-    id: "bordro",
-    title: "Bordro ve Yan Haklar Rehberi",
-    section: "2.4 Bordro Görüntüleme",
-    excerpt: "Aylık bordrolar takip eden ayın ilk iş gününde yayımlanır.",
-    updatedAt: "2026-08-30",
-  },
-  {
-    id: "masraf",
-    title: "Masraf Yönetimi Prosedürü",
-    section: "5.3 Belge Yükleme",
-    excerpt: "Masraf belgeleri on iş günü içinde yüklenmelidir.",
-    updatedAt: "2026-07-18",
-  },
-];
-
-test("asistan bilinen konuları ilgili kaynağa bağlar", () => {
-  const izin = replyToQuestion("Yıllık izin nasıl kullanılır?", sources);
-  const vpn = replyToQuestion("VPN bağlantısını nasıl kurarım?", sources);
-  const bordro = replyToQuestion("Bordroma nereden ulaşırım?", sources);
-  const masraf = replyToQuestion("Masraf belgesi nasıl yüklenir?", sources);
-  const both = replyToQuestion("vpn ve izin", sources);
-  const unknown = replyToQuestion("Kantin menüsü", sources);
-
-  assert.equal(izin.source?.id, "izin");
-  assert.match(izin.text, /üç iş günü/);
-  assert.equal(vpn.source?.id, "vpn");
-  assert.match(vpn.text, /çok faktörlü/);
-  assert.equal(bordro.source?.id, "bordro");
-  assert.match(bordro.text, /ilk iş günü/);
-  assert.equal(masraf.source?.id, "masraf");
-  assert.match(masraf.text, /on iş günü/);
-  assert.equal(both.source?.id, "vpn");
-  assert.match(both.text, /çok faktörlü/);
-  assert.match(both.text, /Sorunuzda izin de geçiyor; onu ayrı sorarsanız kaynaklı yanıt verebilirim/);
-  assert.doesNotMatch(both.text, /üç iş günü/);
-  assert.doesNotMatch(izin.text, /ayrı sorarsanız/);
-  assert.equal(unknown.source, undefined);
-  assert.match(unknown.text, /destek talebi oluşturabilirsiniz/);
-});
-
-test("çok konulu soruda metindeki ilk konu yanıtlanır", () => {
-  const mixed = replyToQuestion(
-    "VPN bağlanamıyorum, bir de izin günlerimi nasıl görürüm?",
-    sources,
-  );
-  assert.equal(mixed.source?.id, "vpn");
-  assert.match(mixed.text, /çok faktörlü/);
-  assert.match(mixed.text, /Sorunuzda izin de geçiyor; onu ayrı sorarsanız kaynaklı yanıt verebilirim/);
-  assert.doesNotMatch(mixed.text, /üç iş günü/);
-
-  const izinFirst = replyToQuestion("izin ve vpn", sources);
-  assert.equal(izinFirst.source?.id, "izin");
-  assert.match(izinFirst.text, /üç iş günü/);
-  assert.match(izinFirst.text, /Sorunuzda VPN de geçiyor; onu ayrı sorarsanız kaynaklı yanıt verebilirim/);
-  assert.doesNotMatch(izinFirst.text, /çok faktörlü/);
-
-  const three = replyToQuestion("bordro, sonra masraf ve vpn", sources);
-  assert.equal(three.source?.id, "bordro");
-  assert.match(three.text, /ilk iş günü/);
-  assert.match(
-    three.text,
-    /Sorunuzda masraf ve VPN de geçiyor; onları ayrı sorarsanız kaynaklı yanıt verebilirim/,
-  );
-  assert.doesNotMatch(three.text, /on iş günü/);
-  assert.doesNotMatch(three.text, /çok faktörlü/);
-});
-
-test("Türkçe ve ASCII büyük harfli konular eşleşir", () => {
-  assert.equal(replyToQuestion("izin", sources).source?.id, "izin");
-  assert.equal(replyToQuestion("İzin", sources).source?.id, "izin");
-  assert.equal(replyToQuestion("İZİN", sources).source?.id, "izin");
-  const ascii = replyToQuestion("IZIN", sources);
-  assert.equal(ascii.source?.id, "izin");
-  assert.match(ascii.text, /üç iş günü/);
-  assert.doesNotMatch(ascii.text, /ayrı sorarsanız/);
-  assert.equal(replyToQuestion("BORDRO", sources).source?.id, "bordro");
-  assert.equal(replyToQuestion("VPN", sources).source?.id, "vpn");
-  assert.equal(replyToQuestion("MASRAF", sources).source?.id, "masraf");
-  assert.equal(replyToQuestion("bordroma", sources).source?.id, "bordro");
-  assert.equal(replyToQuestion("masraflar", sources).source?.id, "masraf");
-  assert.equal(replyToQuestion("izinli", sources).source?.id, "izin");
-});
 
 test("örnek veri boş veritabanına bir kez yazılır", () => {
   const dir = mkdtempSync(join(tmpdir(), "kda-seed-"));
@@ -127,7 +27,7 @@ test("örnek veri boş veritabanına bir kez yazılır", () => {
     const version = db.prepare("PRAGMA user_version").get() as { user_version: number };
     assert.equal(Number(employees.count), 4);
     assert.equal(Number(support.count), 3);
-    assert.equal(version.user_version, 1);
+    assert.equal(version.user_version, 2);
     assert.equal(Number(requests.count), 10);
   } finally {
     db.close();
@@ -349,34 +249,73 @@ test("asistan yanıtı kaydedilir ve değerlendirilir", async () => {
     body: JSON.stringify({ text: "VPN bağlantısını nasıl kurarım?" }),
   });
   assert.equal(answer.status, 201);
-  const assistant = (
-    answer.body as { assistantMessage: { id: number; source: { id: string; demo: boolean } | null } }
-  ).assistantMessage;
+  const payload = answer.body as {
+    userMessage: { source: unknown; sources: unknown[]; answerMode: unknown };
+    assistantMessage: {
+      id: number;
+      answerMode: string;
+      text: string;
+      source: { id: string; demo: boolean; documentId: string; category: string; body?: string } | null;
+      sources: { id: string; body?: string }[];
+    };
+  };
+  const assistant = payload.assistantMessage;
+  assert.equal(payload.userMessage.answerMode, null);
+  assert.deepEqual(payload.userMessage.sources, []);
+  assert.equal(payload.userMessage.source, null);
+  assert.equal(assistant.answerMode, "quote");
   assert.equal(assistant.source?.id, "vpn");
   assert.equal(assistant.source?.demo, true);
+  assert.equal(assistant.source?.documentId, "vpn-kurulum");
+  assert.equal(assistant.source?.category, "Bilgi Teknolojileri");
+  assert.equal(assistant.source?.body, undefined);
+  assert.equal(assistant.sources[0]?.id, "vpn");
+  assert.equal(assistant.sources[0]?.body, undefined);
+  assert.match(assistant.text, /İlgili politikaya göre:/);
+  assert.match(assistant.text, /çok faktörlü/);
 
   const unknown = await api(`/api/conversations/${id}/messages`, {
     method: "POST",
-    body: JSON.stringify({ text: "Kantin menüsü" }),
+    body: JSON.stringify({ text: "Hisse senedi edinebilir miyim?" }),
   });
   const missing = (
-    unknown.body as { assistantMessage: { source: unknown; text: string } }
+    unknown.body as {
+      assistantMessage: { source: unknown; sources: unknown[]; text: string; answerMode: string };
+    }
   ).assistantMessage;
+  assert.equal(missing.answerMode, "no_source");
   assert.equal(missing.source, null);
-  assert.match(missing.text, /destek talebi/);
+  assert.deepEqual(missing.sources, []);
+  assert.equal(
+    missing.text,
+    "Bu konuda doğrulanmış bir kaynak bulamadım. İstersen bir destek talebi oluşturabilirsin.",
+  );
 
   const feedback = await api(`/api/assistant/messages/${assistant.id}/feedback`, {
     method: "PATCH",
     body: JSON.stringify({ helpful: true }),
   });
   assert.equal(feedback.status, 200);
-  assert.equal((feedback.body as { helpful: boolean }).helpful, true);
+  assert.equal((feedback.body as { helpful: boolean; answerMode: string }).helpful, true);
+  assert.equal((feedback.body as { answerMode: string }).answerMode, "quote");
 
   const stored = await api(`/api/conversations/${id}`);
   assert.equal((stored.body as { messages: unknown[] }).messages.length, 4);
+
+  const listed = await api("/api/sources");
+  const sources = (listed.body as { sources: { id: string; body?: string; documentId: string }[] }).sources;
+  assert.ok(sources.length >= 45);
+  assert.equal(sources.find((item) => item.id === "vpn")?.body, undefined);
+  assert.equal(sources.find((item) => item.id === "vpn")?.documentId, "vpn-kurulum");
+  const detail = await api("/api/sources/vpn");
+  assert.equal(detail.status, 200);
+  const vpn = detail.body as { id: string; body: string; excerpt: string };
+  assert.equal(vpn.id, "vpn");
+  assert.match(vpn.body, /çok faktörlü/);
+  assert.notEqual(vpn.body, vpn.excerpt);
 });
 
-test("çok konulu soru ilk kaynağı ve diğer konu notunu döndürür", async () => {
+test("çok konulu soru birden fazla kaynağı alıntıyla döndürür", async () => {
   const created = await api("/api/conversations", {
     method: "POST",
     body: JSON.stringify({}),
@@ -386,22 +325,27 @@ test("çok konulu soru ilk kaynağı ve diğer konu notunu döndürür", async (
   const answer = await api(`/api/conversations/${id}/messages`, {
     method: "POST",
     body: JSON.stringify({
-      text: "VPN bağlanamıyorum, bir de izin günlerimi nasıl görürüm?",
+      text: "VPN çok faktörlü doğrulama ve yıllık izin başvurusu",
     }),
   });
   assert.equal(answer.status, 201);
   const assistant = (
     answer.body as {
-      assistantMessage: { text: string; source: { id: string } | null };
+      assistantMessage: {
+        text: string;
+        answerMode: string;
+        source: { id: string } | null;
+        sources: { id: string }[];
+      };
     }
   ).assistantMessage;
-  assert.equal(assistant.source?.id, "vpn");
-  assert.match(assistant.text, /çok faktörlü/);
-  assert.match(
-    assistant.text,
-    /Sorunuzda izin de geçiyor; onu ayrı sorarsanız kaynaklı yanıt verebilirim/,
-  );
-  assert.doesNotMatch(assistant.text, /üç iş günü/);
+  assert.equal(assistant.answerMode, "quote");
+  assert.equal(assistant.source?.id, assistant.sources[0]?.id);
+  const ids = assistant.sources.map((item) => item.id);
+  assert.ok(ids.includes("vpn") || ids.includes("vpn-kurulum-sorun"));
+  assert.ok(ids.includes("izin"));
+  assert.match(assistant.text, /Diğer ilgili kaynaklar/);
+  assert.doesNotMatch(assistant.text, /ayrı sorarsanız/);
 });
 
 test("metin sınırları kaydı büyütmez ve clientRequestId aynı talebi döndürür", async () => {

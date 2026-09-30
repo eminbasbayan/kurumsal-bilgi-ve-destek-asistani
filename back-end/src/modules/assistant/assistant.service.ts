@@ -4,9 +4,10 @@ import { insertedId, transaction } from "../../db/sql.js";
 import { HttpError } from "../../shared/http.js";
 import { parseInput } from "../../shared/validate.js";
 import type { Now } from "../../shared/types.js";
-import { getSource, listSources } from "../sources/sources.service.js";
+import { sourceFromRow, type SourceRecord, type SourceRow } from "../sources/sources.service.js";
 import { questionSchema } from "./assistant.schema.js";
-import { replyToQuestion } from "./reply.js";
+import { composeAnswer, type AnswerMode } from "./reply.js";
+import { searchSections } from "./search.js";
 
 type ConversationMessageRow = {
   id: number;
@@ -16,16 +17,45 @@ type ConversationMessageRow = {
   source_id: string | null;
   helpful: number | null;
   created_at: string;
+  answer_mode: AnswerMode | null;
 };
 
+const MESSAGE_COLUMNS = `id, conversation_id, role, text, source_id, helpful, created_at, answer_mode`;
+
+function sourcesForMessage(db: DatabaseSync, messageId: number): SourceRecord[] {
+  const rows = db
+    .prepare(
+      `SELECT s.id, s.title, s.section, s.excerpt, s.updated_at, s.document_id, s.category, s.subcategory
+       FROM conversation_message_sources cms
+       JOIN source_documents s ON s.id = cms.source_id
+       WHERE cms.message_id = ?
+       ORDER BY cms.rank`,
+    )
+    .all(messageId) as SourceRow[];
+  return rows.map(sourceFromRow);
+}
+
 function messageView(db: DatabaseSync, row: ConversationMessageRow) {
+  const sources = sourcesForMessage(db, row.id);
   return {
     id: row.id,
     role: row.role,
     text: row.text,
     createdAt: row.created_at,
     helpful: row.helpful === null ? null : row.helpful === 1,
-    source: row.source_id ? getSource(db, row.source_id) : null,
+    source: sources[0] ?? null,
+    sources,
+    answerMode: row.answer_mode,
+  };
+}
+
+export function answerQuestion(db: DatabaseSync, question: string) {
+  const found = searchSections(db, question);
+  const answer = composeAnswer(found);
+  return {
+    text: answer.text,
+    answerMode: answer.answerMode,
+    sources: found.map(({ body: _body, score: _score, ...source }) => source),
   };
 }
 
@@ -85,7 +115,7 @@ export function getConversation(db: DatabaseSync, employeeId: number, id: number
   const messages = (
     db
       .prepare(
-        `SELECT id, conversation_id, role, text, source_id, helpful, created_at
+        `SELECT ${MESSAGE_COLUMNS}
          FROM conversation_messages WHERE conversation_id = ? ORDER BY id`,
       )
       .all(row.id) as ConversationMessageRow[]
@@ -116,18 +146,26 @@ export function addConversationMessage(
     const userInsert = db
       .prepare(
         `INSERT INTO conversation_messages
-          (conversation_id, role, text, source_id, helpful, created_at)
-         VALUES (?, 'user', ?, NULL, NULL, ?)`,
+          (conversation_id, role, text, source_id, helpful, created_at, answer_mode)
+         VALUES (?, 'user', ?, NULL, NULL, ?, NULL)`,
       )
       .run(conversation.id, question, stamp);
-    const reply = replyToQuestion(question, listSources(db));
+    const reply = answerQuestion(db, question);
     const assistantInsert = db
       .prepare(
         `INSERT INTO conversation_messages
-          (conversation_id, role, text, source_id, helpful, created_at)
-         VALUES (?, 'assistant', ?, ?, NULL, ?)`,
+          (conversation_id, role, text, source_id, helpful, created_at, answer_mode)
+         VALUES (?, 'assistant', ?, ?, NULL, ?, ?)`,
       )
-      .run(conversation.id, reply.text, reply.source?.id ?? null, stamp);
+      .run(conversation.id, reply.text, reply.sources[0]?.id ?? null, stamp, reply.answerMode);
+    const assistantId = insertedId(assistantInsert);
+    const linkSource = db.prepare(
+      `INSERT INTO conversation_message_sources (message_id, source_id, rank)
+       VALUES (?, ?, ?)`,
+    );
+    reply.sources.forEach((source, index) => {
+      linkSource.run(assistantId, source.id, index + 1);
+    });
     const title =
       conversation.title === DEFAULT_CONVERSATION_TITLE
         ? question.slice(0, 80)
@@ -138,17 +176,11 @@ export function addConversationMessage(
       conversation.id,
     );
     const user = db
-      .prepare(
-        `SELECT id, conversation_id, role, text, source_id, helpful, created_at
-         FROM conversation_messages WHERE id = ?`,
-      )
+      .prepare(`SELECT ${MESSAGE_COLUMNS} FROM conversation_messages WHERE id = ?`)
       .get(insertedId(userInsert)) as ConversationMessageRow;
     const assistant = db
-      .prepare(
-        `SELECT id, conversation_id, role, text, source_id, helpful, created_at
-         FROM conversation_messages WHERE id = ?`,
-      )
-      .get(insertedId(assistantInsert)) as ConversationMessageRow;
+      .prepare(`SELECT ${MESSAGE_COLUMNS} FROM conversation_messages WHERE id = ?`)
+      .get(assistantId) as ConversationMessageRow;
     return {
       userMessage: messageView(db, user),
       assistantMessage: messageView(db, assistant),
@@ -179,10 +211,7 @@ export function setMessageFeedback(
     row.id,
   );
   const updated = db
-    .prepare(
-      `SELECT id, conversation_id, role, text, source_id, helpful, created_at
-       FROM conversation_messages WHERE id = ?`,
-    )
+    .prepare(`SELECT ${MESSAGE_COLUMNS} FROM conversation_messages WHERE id = ?`)
     .get(row.id) as ConversationMessageRow;
   return messageView(db, updated);
 }
