@@ -590,6 +590,8 @@ Asistan, soruyu bu bölümlerle karşılaştırır ve en ilgili bölümleri seç
 
 Kaynak bulunduğunda yanıt, sabit bir giriş cümlesiyle birlikte en ilgili bölümün metnini olduğu gibi alıntılar. Başka ilgili kaynak varsa bunlar ayrıca belirtilir. Bu yanıtta kaynakta olmayan bilgi eklenmez.
 
+Kaynak bulunduğunda yanıt, alıntı yerine bölümlerle sınırlı kısa bir Türkçe üretim de olabilir. Bu üretim yalnızca atıf yapılan bölümleri, kullanılan sırayla kaynak olarak gösterir. Üretim doğrulanamazsa yanıt alıntıya döner. Kaynak bulunamazsa üretim denenmez.
+
 Kaynak bulunamadığında asistan bunu açıkça söyler ve destek talebi oluşturmayı önerir. Bu durumda kaynak listesi boştur.
 
 Destek talebine geçerken, bulunan kaynakların tümü aynı kategori ve alt kategorideyse bu ikili öneri olarak kullanılır. Kaynaklar farklı kategori veya alt kategorideyse öneri yapılmaz; çalışan kendisi seçer. Kaynak yoksa kategori önerisi de yoktur.

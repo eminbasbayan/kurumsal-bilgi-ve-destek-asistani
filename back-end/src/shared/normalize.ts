@@ -129,12 +129,17 @@ export function expandQueryTokens(normalized: string): string[] {
   return [...tokens];
 }
 
+// "kurulu*" is a prefix of "kurulum". "olusu*" only repeats the verb "oluşur" and doubles its score.
+const BROAD_TOKENS = new Set(["kurulu"]);
+const BROAD_STEMS = new Set(["kurul", "olusu"]);
+
 function prefixClauses(term: string): string[] {
   if (!/^[a-z0-9]+$/.test(term)) return [];
-  const clauses = [`${term}*`];
+  const clauses: string[] = [];
+  if (!BROAD_TOKENS.has(term)) clauses.push(`${term}*`);
   if (term.length >= 5) {
     const stem = term.slice(0, 5);
-    if (stem !== term) clauses.push(`${stem}*`);
+    if (stem !== term && !BROAD_STEMS.has(stem)) clauses.push(`${stem}*`);
   }
   // "izin" is a 4-letter root; the 5-letter stem of "izinli" is "izinl" and misses it.
   if (term.startsWith("izin") && term !== "izin") clauses.push("izin*");
