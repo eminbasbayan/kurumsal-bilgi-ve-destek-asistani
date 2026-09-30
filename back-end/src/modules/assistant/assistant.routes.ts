@@ -9,9 +9,14 @@ import {
   getConversation,
   listConversations,
   setMessageFeedback,
+  type AssistantRuntime,
 } from "./assistant.service.js";
 
-export function createConversationsRouter(db: DatabaseSync, now: Now): Router {
+export function createConversationsRouter(
+  db: DatabaseSync,
+  now: Now,
+  assistant: AssistantRuntime,
+): Router {
   const router = Router();
   router.get("/", (_req, res) => {
     res.json({ conversations: listConversations(db, employeeOf(res).id) });
@@ -25,16 +30,19 @@ export function createConversationsRouter(db: DatabaseSync, now: Now): Router {
       getConversation(db, employeeOf(res).id, parseId(req.params.id, "Sohbet bulunamadı.")),
     );
   });
-  router.post("/:id/messages", (req, res) => {
-    res.status(201).json(
-      addConversationMessage(
-        db,
-        employeeOf(res).id,
-        parseId(req.params.id, "Sohbet bulunamadı."),
-        req.body,
-        now,
-      ),
-    );
+  router.post("/:id/messages", (req, res, next) => {
+    addConversationMessage(
+      db,
+      employeeOf(res).id,
+      parseId(req.params.id, "Sohbet bulunamadı."),
+      req.body,
+      now,
+      assistant,
+    )
+      .then((payload) => {
+        res.status(201).json(payload);
+      })
+      .catch(next);
   });
   return router;
 }

@@ -580,7 +580,7 @@ export const openApiDocument = {
         tags: ["Asistan"],
         summary: "Soru gönder ve kaynaklı yanıt al",
         description:
-          "Soru bölüm düzeyinde aranır. Yeterli eşleşme varsa answerMode quote olur: sabit giriş cümlesi, en iyi bölümün değiştirilmemiş metni ve varsa diğer ilgili kaynaklar. Eşleşme yoksa answerMode no_source olur ve sources boştur. source, sources dizisinin ilk elemanı ya da null'dur. Kullanıcı mesajında sources boş, answerMode null'dur.",
+          "Soru bölüm düzeyinde aranır. Eşleşme yoksa sağlayıcı çağrılmaz, answerMode no_source olur ve sources boştur. Eşleşme varsa ve üretim doğrulanırsa answerMode generated olur; sources yalnızca atıf yapılan bölümleri atıf sırasıyla içerir. Anahtar yoksa, hata, zaman aşımı, kota, geçersiz çıktı, yetersiz bilgi, boş veya yabancı atıf ya da hız sınırı durumunda answerMode quote olur: sabit giriş cümlesi, en iyi bölümün değiştirilmemiş metni ve varsa diğer ilgili kaynaklar. source, sources dizisinin ilk elemanı ya da null'dur. Kullanıcı mesajında sources boş, answerMode null'dur.",
         security: bearer,
         parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
         requestBody: { required: true, content: json({ $ref: "#/components/schemas/QuestionRequest" }) },

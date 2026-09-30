@@ -55,6 +55,11 @@ test("ekler için kök önek üretilir", () => {
   assert.match(buildFtsQuery("izinli") ?? "", /izin\*/);
   assert.match(buildFtsQuery("bordroma") ?? "", /bordr\*/);
   assert.match(buildFtsQuery("masraflar") ?? "", /masra\*/);
+  const board = buildFtsQuery("Yönetim kurulu kimlerden oluşur?") ?? "";
+  assert.match(board, /yonetim\*/);
+  assert.doesNotMatch(board, /(^| )kurul\*/);
+  assert.doesNotMatch(board, /(^| )kurulu\*/);
+  assert.doesNotMatch(board, /(^| )olusu\*/);
 });
 
 test("katalog kategorileri ve bölüm uzunlukları geçerli", () => {
@@ -201,6 +206,10 @@ test("kaynak bulununca alıntı, bulunamayınca no_source döner", () => {
     assert.equal(missing.answerMode, "no_source");
     assert.deepEqual(missing.sources, []);
     assert.equal(missing.text, NO_SOURCE_TEXT);
+
+    const board = answerQuestion(db, "Yönetim kurulu kimlerden oluşur?");
+    assert.equal(board.answerMode, "no_source");
+    assert.deepEqual(board.sources, []);
   } finally {
     db.close();
     rmSync(dir, { recursive: true, force: true });
