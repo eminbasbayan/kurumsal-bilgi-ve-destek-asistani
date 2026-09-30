@@ -30,7 +30,11 @@ import { listCategories } from "../api/categories";
 import { PageHeader } from "../components/PageHeader";
 import type { Conversation, ConversationMessage, SourceDocument } from "../types";
 import { formatDateTime } from "../utils/date";
-import { splitQuotedAnswer, withAssistantTimeout } from "./assistantReply";
+import {
+  ASSISTANT_TIMEOUT_MS,
+  splitQuotedAnswer,
+  withAssistantTimeout,
+} from "./assistantReply";
 import type { AssistantHandoff, AssistantSource } from "./requestHandoff";
 
 export type { AssistantHandoff } from "./requestHandoff";
@@ -76,8 +80,10 @@ function handoffFor(
 
 export function AssistantPage({
   escalate,
+  responseTimeoutMs = ASSISTANT_TIMEOUT_MS,
 }: {
   escalate: (handoff: AssistantHandoff) => void;
+  responseTimeoutMs?: number;
 }) {
   const queryClient = useQueryClient();
   const [input, setInput] = useState(
@@ -122,7 +128,7 @@ export function AssistantPage({
         }
         const result = await sendConversationMessage(id, question, signal);
         return { id, result };
-      }),
+      }, responseTimeoutMs),
     onSuccess: ({ id, result }) => {
       setConversationId(id);
       setInput("");

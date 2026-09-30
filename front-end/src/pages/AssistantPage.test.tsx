@@ -1,8 +1,7 @@
 /** @vitest-environment happy-dom */
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Theme } from "@radix-ui/themes";
-import { act } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createConversation,
@@ -61,7 +60,7 @@ const source: SourceDocument = {
   subcategory: "İzin",
 };
 
-function renderPage() {
+function renderPage(responseTimeoutMs?: number) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
@@ -71,7 +70,10 @@ function renderPage() {
   return render(
     <QueryClientProvider client={queryClient}>
       <Theme>
-        <AssistantPage escalate={() => undefined} />
+        <AssistantPage
+          escalate={() => undefined}
+          responseTimeoutMs={responseTimeoutMs}
+        />
       </Theme>
     </QueryClientProvider>,
   );
@@ -121,8 +123,12 @@ describe("Bilgi Asistanı", () => {
           resolveCreate = resolve;
         }),
     );
+    let rejectSend: (error: Error) => void = () => undefined;
     vi.mocked(sendConversationMessage).mockImplementation(
-      () => new Promise(() => undefined),
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectSend = reject;
+        }),
     );
 
     renderPage();
@@ -147,13 +153,14 @@ describe("Bilgi Asistanı", () => {
       createdAt: stamp,
       updatedAt: stamp,
     });
-    await act(async () => {
-      await Promise.resolve();
+    await waitFor(() => {
+      expect(vi.mocked(sendConversationMessage)).toHaveBeenCalledTimes(1);
     });
-    expect(vi.mocked(sendConversationMessage)).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("button", { name: "Gönder" }).hasAttribute("disabled")).toBe(
       true,
     );
+    rejectSend(new Error("test sonu"));
+    await screen.findByRole("alert");
   });
 
   it("zaman aşımında Türkçe hata gösterir ve aynı soruyu yeniden dener", async () => {
@@ -186,19 +193,14 @@ describe("Bilgi Asistanı", () => {
       });
     });
 
-    renderPage();
+    renderPage(50);
     const input = await screen.findByPlaceholderText(
       "Kurumsal süreçler hakkında bir soru yazın…",
     );
-    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
     fireEvent.change(input, { target: { value: question } });
     fireEvent.click(screen.getByRole("button", { name: "Gönder" }));
 
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(15_000);
-    });
-
-    const alert = screen.getByRole("alert");
+    const alert = await screen.findByRole("alert");
     expect(alert.textContent).toContain(
       "Asistan zamanında yanıt veremedi. Lütfen tekrar deneyin.",
     );
@@ -207,11 +209,10 @@ describe("Bilgi Asistanı", () => {
       false,
     );
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Tekrar dene" }));
+    fireEvent.click(screen.getByRole("button", { name: "Tekrar dene" }));
+    await waitFor(() => {
+      expect(vi.mocked(sendConversationMessage)).toHaveBeenCalledTimes(2);
     });
-
-    expect(vi.mocked(sendConversationMessage)).toHaveBeenCalledTimes(2);
     expect(vi.mocked(sendConversationMessage).mock.calls[1]?.[1]).toBe(question);
   });
 
