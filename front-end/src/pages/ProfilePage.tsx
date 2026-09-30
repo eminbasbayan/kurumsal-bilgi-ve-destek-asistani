@@ -10,35 +10,45 @@ export function ProfilePage({
   profile: Employee;
   logout: () => void | Promise<void>;
 }) {
+  const support = profile.role === "support";
+  const rows = [
+    ["Rol", support ? "Destek personeli" : "Çalışan"],
+    ["E-posta", profile.email],
+    ["Sicil numarası", profile.employeeNo],
+    ["Departman", profile.department],
+    ["Görev", profile.title],
+    ["Lokasyon", profile.location],
+    ...(support && profile.team ? [["Ekip", profile.team]] : []),
+  ];
   return (
     <>
       <PageHeader
         eyebrow="HESAP"
         title="Profil"
-        description="Çalışan hesabınıza ait kurumsal bilgileri görüntüleyin."
+        description={
+          support
+            ? "Destek personeli hesabınıza ait demo bilgileri görüntüleyin."
+            : "Çalışan hesabınıza ait kurumsal bilgileri görüntüleyin."
+        }
       />
       <div className="profile-grid">
         <Card className="profile-card">
           <Avatar fallback={profile.initials} size="7" radius="full" />
           <h2>{profile.name}</h2>
           <p>{profile.title}</p>
-          <Badge variant="soft">DEMO ÇALIŞAN</Badge>
+          <Badge variant="soft">
+            {support ? "DEMO DESTEK PERSONELİ" : "DEMO ÇALIŞAN"}
+          </Badge>
         </Card>
         <Card className="profile-details">
           <div className="panel-title">
             <div>
-              <h2>Çalışan bilgileri</h2>
+              <h2>{support ? "Hesap bilgileri" : "Çalışan bilgileri"}</h2>
               <p>Bu bilgiler demo API hesabından gelir ve salt okunurdur.</p>
             </div>
           </div>
           <dl>
-            {[
-              ["E-posta", profile.email],
-              ["Sicil numarası", profile.employeeNo],
-              ["Departman", profile.department],
-              ["Görev", profile.title],
-              ["Lokasyon", profile.location],
-            ].map(([label, value]) => (
+            {rows.map(([label, value]) => (
               <div key={label}>
                 <dt>{label}</dt>
                 <dd>{value}</dd>

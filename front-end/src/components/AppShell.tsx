@@ -28,15 +28,25 @@ export function AppShell({
   logout: () => void | Promise<void>;
 }) {
   const [menu, setMenu] = useState(false);
-  const active = current === "detail" ? "requests" : current;
-  const nav = [
-    { path: "home", label: "Ana Sayfa", Icon: DashboardIcon },
-    { path: "assistant", label: "Bilgi Asistanı", Icon: ChatBubbleIcon },
-    { path: "new", label: "Yeni Destek Talebi", Icon: PlusIcon },
-    { path: "requests", label: "Taleplerim", Icon: ReaderIcon },
-    { path: "notifications", label: "Bildirimler", Icon: BellIcon },
-    { path: "profile", label: "Profil", Icon: PersonIcon },
-  ] as const;
+  const support = profile.role === "support";
+  const active = current === "detail" ? (support ? "queue" : "requests") : current;
+  const workspace = support
+    ? [
+        { path: "home", label: "Ana Sayfa", Icon: DashboardIcon },
+        { path: "queue", label: "Ekip Kuyruğu", Icon: ReaderIcon },
+      ]
+    : [
+        { path: "home", label: "Ana Sayfa", Icon: DashboardIcon },
+        { path: "assistant", label: "Bilgi Asistanı", Icon: ChatBubbleIcon },
+        { path: "new", label: "Yeni Destek Talebi", Icon: PlusIcon },
+        { path: "requests", label: "Taleplerim", Icon: ReaderIcon },
+      ];
+  const account = support
+    ? [{ path: "profile", label: "Profil", Icon: PersonIcon }]
+    : [
+        { path: "notifications", label: "Bildirimler", Icon: BellIcon },
+        { path: "profile", label: "Profil", Icon: PersonIcon },
+      ];
   return (
     <div className="shell">
       <aside className={`sidebar ${menu ? "show" : ""}`}>
@@ -44,20 +54,30 @@ export function AppShell({
           <span className="brand-mark">K</span> Kurumsal Destek
         </a>
         <nav aria-label="Ana menü">
-          <p className="nav-caption">ÇALIŞMA ALANI</p>
-          {nav.map(({ path, label, Icon }, index) => (
-            <div key={path}>
-              {index === 4 && <p className="nav-caption">HESAP</p>}
-              <a
-                className={active === path ? "active" : ""}
-                href={`#/${path}`}
-                onClick={() => setMenu(false)}
-              >
-                <Icon />
-                <span>{label}</span>
-                {path === "notifications" && unread > 0 && <b>{unread}</b>}
-              </a>
-            </div>
+          <p className="nav-caption">{support ? "EKİP" : "ÇALIŞMA ALANI"}</p>
+          {workspace.map(({ path, label, Icon }) => (
+            <a
+              key={path}
+              className={active === path ? "active" : ""}
+              href={`#/${path}`}
+              onClick={() => setMenu(false)}
+            >
+              <Icon />
+              <span>{label}</span>
+            </a>
+          ))}
+          <p className="nav-caption">HESAP</p>
+          {account.map(({ path, label, Icon }) => (
+            <a
+              key={path}
+              className={active === path ? "active" : ""}
+              href={`#/${path}`}
+              onClick={() => setMenu(false)}
+            >
+              <Icon />
+              <span>{label}</span>
+              {path === "notifications" && unread > 0 && <b>{unread}</b>}
+            </a>
           ))}
         </nav>
         <div className="sidebar-bottom">
@@ -84,21 +104,23 @@ export function AppShell({
               <HamburgerMenuIcon />
             </IconButton>
             <span>
-              Çalışan portalı
+              {support ? "Destek personeli" : "Çalışan portalı"}
               <strong>{PAGE_TITLES[current] || "Kurumsal Destek"}</strong>
             </span>
           </div>
           <div className="topbar-actions">
-            <Tooltip content="Bildirimler">
-              <IconButton
-                variant="soft"
-                aria-label={`Bildirimler, ${unread} okunmamış`}
-                onClick={() => go("notifications")}
-              >
-                <BellIcon />
-                {unread > 0 && <i className="bell-dot" />}
-              </IconButton>
-            </Tooltip>
+            {!support && (
+              <Tooltip content="Bildirimler">
+                <IconButton
+                  variant="soft"
+                  aria-label={`Bildirimler, ${unread} okunmamış`}
+                  onClick={() => go("notifications")}
+                >
+                  <BellIcon />
+                  {unread > 0 && <i className="bell-dot" />}
+                </IconButton>
+              </Tooltip>
+            )}
             <ThemeToggleButton />
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
@@ -106,7 +128,9 @@ export function AppShell({
                   <Avatar fallback={profile.initials} size="2" radius="full" />
                   <span>
                     <strong>{profile.name}</strong>
-                    <small>{profile.department}</small>
+                    <small>
+                      {support && profile.team ? profile.team : profile.department}
+                    </small>
                   </span>
                 </button>
               </DropdownMenu.Trigger>

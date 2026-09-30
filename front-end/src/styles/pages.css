@@ -3,6 +3,9 @@
   grid-template-columns: minmax(0, 1fr) 300px;
   gap: 20px;
 }
+.stats.stats-four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 .detail-main {
   display: flex;
   flex-direction: column;
@@ -265,6 +268,9 @@ dd {
   display: none;
 }
 @media (max-width: 1100px) {
+  .stats.stats-four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .dashboard {
     grid-template-columns: 1fr;
   }
@@ -303,6 +309,9 @@ dd {
   .form-layout,
   .detail-layout {
     grid-template-columns: 1fr;
+  }
+  .support-detail .detail-aside {
+    order: -1;
   }
   .assistant-aside,
   .form-aside,
@@ -353,7 +362,8 @@ dd {
   .hero h2 {
     font-size: 22px;
   }
-  .stats {
+  .stats,
+  .stats.stats-four {
     grid-template-columns: 1fr;
   }
   .assistant-aside,

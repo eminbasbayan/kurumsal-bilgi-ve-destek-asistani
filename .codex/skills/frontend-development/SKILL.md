@@ -12,7 +12,7 @@ Develop the employee-facing **Kurumsal Bilgi ve Destek Asistanı** in the `front
 Read `PROJE_TANIMI.md` before changes that affect product behavior, navigation, data, terminology, or scope. Preserve these product invariants:
 
 - The product combines sourced corporate answers with support request creation and tracking.
-- The current scope contains only the employee experience. Do not introduce administrator or support-agent screens unless the user explicitly requests them.
+- Employee screens and the demo support-staff experience in `PROJE_TANIMI.md` section 17 are in scope. Do not introduce administrator screens.
 - Label fictional users, documents, messages, requests, and assistant behavior clearly as demo or sample content.
 - Do not present unavailable authentication, AI, file storage, notifications, or live support integrations as working services.
 - Keep request counts, status labels, notifications, timelines, messages, and detail views consistent with the same API records. The front-end reads them through TanStack Query; do not keep a second client-side copy.

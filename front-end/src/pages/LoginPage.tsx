@@ -4,13 +4,37 @@ import { Badge, Button, TextField } from "@radix-ui/themes";
 import { login } from "../api/auth";
 import type { Employee } from "../types";
 
+const DEMO_PASSWORD = "kurumsaldemo";
+const DEMO_ACCOUNTS = [
+  {
+    name: "Deniz Yılmaz",
+    email: "deniz.yilmaz@ornek-kurum.com",
+    hint: "Çalışan",
+  },
+  {
+    name: "Ahmet Kaya",
+    email: "ahmet.kaya@ornek-kurum.com",
+    hint: "BT Destek Ekibi",
+  },
+  {
+    name: "Elif Demir",
+    email: "elif.demir@ornek-kurum.com",
+    hint: "BT Destek Ekibi",
+  },
+  {
+    name: "Zeynep Arslan",
+    email: "zeynep.arslan@ornek-kurum.com",
+    hint: "İnsan Kaynakları Ekibi",
+  },
+] as const;
+
 export function LoginPage({
   onLogin,
 }: {
   onLogin: (employee: Employee) => void;
 }) {
-  const [email, setEmail] = useState("deniz.yilmaz@ornek-kurum.com");
-  const [password, setPassword] = useState("kurumsaldemo");
+  const [email, setEmail] = useState<string>(DEMO_ACCOUNTS[0].email);
+  const [password, setPassword] = useState(DEMO_PASSWORD);
   const mutation = useMutation({
     mutationFn: () => login(email, password),
     onSuccess: (result) => onLogin(result.employee),
@@ -44,16 +68,36 @@ export function LoginPage({
             mutation.mutate();
           }}
         >
-          <p className="eyebrow">ÇALIŞAN PORTALI</p>
+          <p className="eyebrow">DEMO GİRİŞ</p>
           <h2>Tekrar hoş geldiniz</h2>
           <p className="muted">
-            Demo hesaba devam etmek için bilgilerinizi kontrol edin.
+            Demo hesaplardan birini seçin. Gerçek kimlik doğrulama yoktur.
           </p>
           {mutation.isError && (
             <div className="form-error" role="alert">
               {mutation.error.message}
             </div>
           )}
+          <div className="demo-accounts">
+            <p className="eyebrow">DEMO HESAPLAR</p>
+            {DEMO_ACCOUNTS.map((account) => (
+              <Button
+                key={account.email}
+                type="button"
+                variant={email === account.email ? "solid" : "soft"}
+                color={email === account.email ? undefined : "gray"}
+                aria-pressed={email === account.email}
+                onClick={() => {
+                  setEmail(account.email);
+                  setPassword(DEMO_PASSWORD);
+                }}
+              >
+                <span>{account.name}</span>
+                <small>{account.hint}</small>
+              </Button>
+            ))}
+            <p className="note">Parola tüm hesaplarda {DEMO_PASSWORD}.</p>
+          </div>
           <label className="field">
             E-posta adresi
             <TextField.Root

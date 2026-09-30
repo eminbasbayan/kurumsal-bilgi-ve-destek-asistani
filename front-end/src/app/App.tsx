@@ -15,6 +15,9 @@ import { NotificationsPage } from "../pages/NotificationsPage";
 import { ProfilePage } from "../pages/ProfilePage";
 import { RequestDetailPage } from "../pages/RequestDetailPage";
 import { RequestsPage } from "../pages/RequestsPage";
+import { SupportHomePage } from "../pages/SupportHomePage";
+import { SupportQueuePage } from "../pages/SupportQueuePage";
+import { SupportRequestDetailPage } from "../pages/SupportRequestDetailPage";
 import type { Employee } from "../types";
 import { go, readRoute, type AppRoute } from "./navigation";
 import "../styles/app.css";
@@ -44,10 +47,11 @@ export default function App() {
     retry: false,
   });
 
+  const support = profileQuery.data?.role === "support";
   const notificationsQuery = useQuery({
     queryKey: ["notifications"],
     queryFn: listNotifications,
-    enabled: authenticated && profileQuery.isSuccess,
+    enabled: authenticated && profileQuery.isSuccess && !support,
   });
 
   useEffect(() => {
@@ -56,6 +60,13 @@ export default function App() {
     if (!location.hash) go("home");
     return () => window.removeEventListener("hashchange", update);
   }, []);
+
+  useEffect(() => {
+    if (!profileQuery.data) return;
+    const employeeOnly = ["assistant", "new", "requests", "notifications"];
+    if (support && employeeOnly.includes(current.page)) go("home");
+    if (!support && current.page === "queue") go("home");
+  }, [support, profileQuery.data, current.page]);
 
   const signedIn = (employee: Employee) => {
     queryClient.clear();
@@ -87,27 +98,36 @@ export default function App() {
   }
 
   const profile = profileQuery.data;
-  const pages: Record<string, ReactNode> = {
-    home: <HomePage profile={profile} />,
-    assistant: (
-      <AssistantPage
-        escalate={(handoff) => {
-          setAssistantHandoff(handoff);
-          go("new");
-        }}
-      />
-    ),
-    new: (
-      <NewRequestPage
-        handoff={assistantHandoff}
-        onCreated={() => setAssistantHandoff(null)}
-      />
-    ),
-    requests: <RequestsPage />,
-    detail: <RequestDetailPage id={current.id} />,
-    notifications: <NotificationsPage />,
-    profile: <ProfilePage profile={profile} logout={logout} />,
-  };
+  const pages: Record<string, ReactNode> = support
+    ? {
+        home: <SupportHomePage profile={profile} />,
+        queue: <SupportQueuePage />,
+        detail: (
+          <SupportRequestDetailPage id={current.id} profile={profile} />
+        ),
+        profile: <ProfilePage profile={profile} logout={logout} />,
+      }
+    : {
+        home: <HomePage profile={profile} />,
+        assistant: (
+          <AssistantPage
+            escalate={(handoff) => {
+              setAssistantHandoff(handoff);
+              go("new");
+            }}
+          />
+        ),
+        new: (
+          <NewRequestPage
+            handoff={assistantHandoff}
+            onCreated={() => setAssistantHandoff(null)}
+          />
+        ),
+        requests: <RequestsPage />,
+        detail: <RequestDetailPage id={current.id} />,
+        notifications: <NotificationsPage />,
+        profile: <ProfilePage profile={profile} logout={logout} />,
+      };
 
   return (
     <AppShell

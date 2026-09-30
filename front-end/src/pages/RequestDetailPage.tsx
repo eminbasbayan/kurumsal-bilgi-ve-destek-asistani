@@ -101,7 +101,10 @@ export function RequestDetailPage({ id }: { id?: number }) {
             <div className="panel-title">
               <div>
                 <h2>Yazışmalar</h2>
-                <p>Destek ekibiyle bu talep üzerinden iletişim kurun.</p>
+                <p>
+                  Destek ekibiyle bu talep üzerinden iletişim kurun. Destek
+                  mesajları demo kayıtlardır; canlı bir destek hizmeti değildir.
+                </p>
               </div>
             </div>
             {item.messages.length ? (
@@ -126,27 +129,31 @@ export function RequestDetailPage({ id }: { id?: number }) {
                 {sendMessage.error.message}
               </div>
             )}
-            <form
-              className="reply-form"
-              onSubmit={(event) => {
-                event.preventDefault();
-                if (message.trim()) sendMessage.mutate(message.trim());
-              }}
-            >
-              <TextArea
-                maxLength={2000}
-                placeholder="Mesajınızı yazın…"
-                value={message}
-                onChange={(event) => setMessage(event.target.value)}
-              />
-              <Button
-                type="submit"
-                disabled={!message.trim() || sendMessage.isPending}
+            {item.status === "Kapatıldı" ? (
+              <p className="note">Kapatılmış talebe mesaj eklenemez.</p>
+            ) : (
+              <form
+                className="reply-form"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (message.trim()) sendMessage.mutate(message.trim());
+                }}
               >
-                <PaperPlaneIcon />{" "}
-                {sendMessage.isPending ? "Gönderiliyor…" : "Mesaj gönder"}
-              </Button>
-            </form>
+                <TextArea
+                  maxLength={2000}
+                  placeholder="Mesajınızı yazın…"
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                />
+                <Button
+                  type="submit"
+                  disabled={!message.trim() || sendMessage.isPending}
+                >
+                  <PaperPlaneIcon />{" "}
+                  {sendMessage.isPending ? "Gönderiliyor…" : "Mesaj gönder"}
+                </Button>
+              </form>
+            )}
           </Card>
         </div>
         <aside className="detail-aside">
@@ -175,6 +182,13 @@ export function RequestDetailPage({ id }: { id?: number }) {
                   <span />
                   <div>
                     <strong>{entry.label}</strong>
+                    {entry.detail && (
+                      <p className="timeline-detail">
+                        {entry.label.endsWith("Kapatıldı")
+                          ? `Gerekçe: ${entry.detail}`
+                          : entry.detail}
+                      </p>
+                    )}
                     <small>
                       {entry.actor} · {formatDateTime(entry.createdAt)}
                     </small>

@@ -291,6 +291,10 @@
   background: #d1fae5;
   color: #047857;
 }
+.stat-icon.slate {
+  background: var(--color-line);
+  color: var(--color-muted);
+}
 .dashboard {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(270px, 1fr);

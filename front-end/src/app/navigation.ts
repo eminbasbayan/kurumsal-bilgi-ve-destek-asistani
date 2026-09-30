@@ -1,4 +1,4 @@
-import type { RequestStatus } from "../types";
+import type { Priority, RequestStatus } from "../types";
 
 export const OPEN_STATUSES: RequestStatus[] = [
   "Yeni",
@@ -13,6 +13,21 @@ export const REQUEST_STATUSES: RequestStatus[] = [
   "Kapatıldı",
 ];
 
+export const PRIORITIES: Priority[] = ["Düşük", "Normal", "Yüksek"];
+
+/** Keep identical to STATUS_TRANSITIONS in back-end/src/config/constants.ts. */
+export const STATUS_TRANSITIONS: Record<
+  RequestStatus,
+  readonly RequestStatus[]
+> = {
+  Yeni: ["İnceleniyor", "Kapatıldı"],
+  İnceleniyor: ["Kullanıcıdan Bilgi Bekleniyor", "Devam Ediyor", "Çözüldü"],
+  "Kullanıcıdan Bilgi Bekleniyor": ["İnceleniyor", "Devam Ediyor", "Çözüldü"],
+  "Devam Ediyor": ["İnceleniyor", "Kullanıcıdan Bilgi Bekleniyor", "Çözüldü"],
+  Çözüldü: ["Devam Ediyor", "Kapatıldı"],
+  Kapatıldı: [],
+};
+
 export const PAGE_TITLES: Record<string, string> = {
   home: "Ana Sayfa",
   assistant: "Bilgi Asistanı",
@@ -21,6 +36,7 @@ export const PAGE_TITLES: Record<string, string> = {
   detail: "Talep Detayı",
   notifications: "Bildirimler",
   profile: "Profil",
+  queue: "Ekip Kuyruğu",
 };
 
 export type AppRoute = { page: string; id?: number };

@@ -8,6 +8,8 @@ export type RequestStatus =
 
 export type Priority = "Düşük" | "Normal" | "Yüksek";
 
+export type UserRole = "employee" | "support";
+
 export type Employee = {
   id: number;
   name: string;
@@ -17,6 +19,8 @@ export type Employee = {
   email: string;
   employeeNo: string;
   location: string;
+  role: UserRole;
+  team: string | null;
 };
 
 export type Attachment = {
@@ -34,11 +38,33 @@ export type RequestMessage = {
   createdAt: string;
 };
 
+export type TimelineEventType =
+  | "created"
+  | "status_change"
+  | "employee_message"
+  | "support_message"
+  | "assignment"
+  | "internal_note";
+
 export type TimelineItem = {
   id: number;
   label: string;
   actor: string;
   createdAt: string;
+  detail: string | null;
+};
+
+export type SupportTimelineItem = TimelineItem & {
+  eventType: TimelineEventType;
+  visibility: "public" | "internal";
+  actorId: number | null;
+  fromStatus: RequestStatus | null;
+  toStatus: RequestStatus | null;
+};
+
+export type PersonRef = {
+  id: number;
+  name: string;
 };
 
 export type RequestListItem = {
@@ -68,6 +94,49 @@ export type RequestSummary = {
   waiting: number;
   completed: number;
   recent: RequestListItem[];
+};
+
+export type SupportRequestListItem = RequestListItem & {
+  employee: PersonRef & { department: string };
+  assignee: PersonRef | null;
+};
+
+export type InternalNote = {
+  id: number;
+  author: PersonRef;
+  text: string;
+  createdAt: string;
+};
+
+export type SupportRequestDetail = Omit<SupportRequestListItem, "employee"> & {
+  employee: PersonRef & {
+    department: string;
+    title: string;
+    email: string;
+  };
+  contentStored: false;
+  attachments: Attachment[];
+  messages: RequestMessage[];
+  timeline: SupportTimelineItem[];
+  internalNotes: InternalNote[];
+};
+
+export type StaffMember = {
+  id: number;
+  name: string;
+  initials: string;
+  title: string;
+  team: string;
+  openAssigned: number;
+};
+
+export type SupportSummary = {
+  team: string;
+  open: number;
+  unassigned: number;
+  mine: number;
+  waiting: number;
+  byStatus: Record<RequestStatus, number>;
 };
 
 export type NotificationItem = {

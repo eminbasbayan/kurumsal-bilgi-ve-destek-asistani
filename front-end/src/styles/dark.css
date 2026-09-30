@@ -91,6 +91,8 @@ html[data-appearance="dark"] :is(
   td small,
   dt,
   .timeline small,
+  .timeline-detail,
+  .note-list article small,
   .ticket-message small,
   .chat-head p,
   .chat-welcome p,
