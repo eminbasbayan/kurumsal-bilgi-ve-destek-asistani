@@ -68,7 +68,7 @@ export const openApiDocument = {
     { name: "Talepler", description: "Destek talepleri ve yazışmalar" },
     { name: "Bildirimler", description: "Talep bildirimleri" },
     { name: "Kaynaklar", description: "Asistanın dayandığı örnek belgeler" },
-    { name: "Asistan", description: "Kural tabanlı bilgi asistanı" },
+    { name: "Asistan", description: "Kaynak bölümlerinden alıntı yapan bilgi asistanı" },
     { name: "Destek Personeli", description: "Demo destek personeli kuyruğu ve talep yönetimi" },
   ],
   components: {
@@ -158,6 +158,51 @@ export const openApiDocument = {
         type: "object",
         required: ["helpful"],
         properties: { helpful: { type: "boolean", example: true } },
+      },
+      SourceDocument: {
+        type: "object",
+        required: ["id", "title", "section", "excerpt", "updatedAt", "demo", "documentId", "category", "subcategory"],
+        properties: {
+          id: { type: "string", example: "izin" },
+          title: { type: "string", example: "Yıllık İzin Politikası" },
+          section: { type: "string", example: "Başvuru süreci" },
+          excerpt: { type: "string" },
+          updatedAt: { type: "string", example: "2026-08-12" },
+          demo: { type: "boolean", enum: [true] },
+          documentId: { type: "string", example: "yillik-izin" },
+          category: { type: "string", example: "İnsan Kaynakları" },
+          subcategory: { type: "string", example: "İzinler" },
+        },
+        description: "Liste ve mesajlarda bölümün tam metni (body) dönmez.",
+      },
+      SourceDocumentDetail: {
+        allOf: [
+          { $ref: "#/components/schemas/SourceDocument" },
+          {
+            type: "object",
+            required: ["body"],
+            properties: { body: { type: "string", description: "Bölümün tam metni." } },
+          },
+        ],
+      },
+      ConversationMessage: {
+        type: "object",
+        required: ["id", "role", "text", "createdAt", "helpful", "source", "sources", "answerMode"],
+        properties: {
+          id: { type: "integer" },
+          role: { type: "string", enum: ["user", "assistant"] },
+          text: { type: "string" },
+          createdAt: { type: "string" },
+          helpful: { type: "boolean", nullable: true },
+          source: { allOf: [{ $ref: "#/components/schemas/SourceDocument" }], nullable: true },
+          sources: { type: "array", items: { $ref: "#/components/schemas/SourceDocument" } },
+          answerMode: {
+            type: "string",
+            nullable: true,
+            enum: ["quote", "no_source", "generated", "legacy"],
+            description: "Kullanıcı mesajında null. v2 öncesi asistan mesajları legacy.",
+          },
+        },
       },
       SupportRequestListItem: {
         type: "object",
@@ -475,7 +520,8 @@ export const openApiDocument = {
     "/api/sources": {
       get: {
         tags: ["Kaynaklar"],
-        summary: "Örnek kaynak belgelerini listele",
+        summary: "Örnek kaynak bölümlerini listele",
+        description: "Her kayıt bir belge bölümüdür. Yanıtta body yoktur.",
         security: bearer,
         responses: { "200": { description: "Kaynak listesi" }, "401": error("Oturum gerekli."), "403": error("Bu işlem için yetkiniz yok.") },
       },
@@ -483,13 +529,17 @@ export const openApiDocument = {
     "/api/sources/{id}": {
       get: {
         tags: ["Kaynaklar"],
-        summary: "Kaynak belgesini getir",
+        summary: "Kaynak bölümünü getir",
+        description: "body yalnız bu uçta döner.",
         security: bearer,
         parameters: [
-          { name: "id", in: "path", required: true, schema: { type: "string", enum: ["izin", "vpn", "bordro", "masraf"] }, example: "vpn" },
+          { name: "id", in: "path", required: true, schema: { type: "string" }, example: "vpn" },
         ],
         responses: {
-          "200": { description: "Belge adı, bölüm ve metin" },
+          "200": {
+            description: "Belge adı, bölüm ve tam metin",
+            content: json({ $ref: "#/components/schemas/SourceDocumentDetail" }),
+          },
           "401": error("Oturum gerekli."),
           "403": error("Bu işlem için yetkiniz yok."),
           "404": error("Kaynak bulunamadı."),
@@ -528,9 +578,9 @@ export const openApiDocument = {
     "/api/conversations/{id}/messages": {
       post: {
         tags: ["Asistan"],
-        summary: "Soru gönder ve kural tabanlı yanıt al",
+        summary: "Soru gönder ve kaynaklı yanıt al",
         description:
-          "Soruda ilk geçen konu (izin, vpn, bordro, masraf) ilgili belgeye bağlanır. Büyük-küçük harf ile ASCII ve Türkçe yazımlar (örneğin IZIN ve İZİN) aynı konuya eşlenir. Başka konular da geçiyorsa yanıt metnine, bunların ayrı sorulursa kaynaklı yanıt verilebileceğini söyleyen kısa bir not eklenir; o konuların yanıt metni eklenmez. Eşleşme yoksa bilgi bulunamadığı söylenir.",
+          "Soru bölüm düzeyinde aranır. Yeterli eşleşme varsa answerMode quote olur: sabit giriş cümlesi, en iyi bölümün değiştirilmemiş metni ve varsa diğer ilgili kaynaklar. Eşleşme yoksa answerMode no_source olur ve sources boştur. source, sources dizisinin ilk elemanı ya da null'dur. Kullanıcı mesajında sources boş, answerMode null'dur.",
         security: bearer,
         parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
         requestBody: { required: true, content: json({ $ref: "#/components/schemas/QuestionRequest" }) },

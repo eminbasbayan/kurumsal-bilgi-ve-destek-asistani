@@ -969,10 +969,10 @@ describe("destek personeli", { concurrency: false }, () => {
       assert.equal(classified.actor_id, null);
       assert.equal(classified.visibility, "public");
       const migrated = upgradeDb.prepare("PRAGMA user_version").get() as { user_version: number };
-      assert.equal(Number(migrated.user_version), 1);
+      assert.equal(Number(migrated.user_version), 2);
       runMigrations(upgradeDb);
       const again = upgradeDb.prepare("PRAGMA user_version").get() as { user_version: number };
-      assert.equal(Number(again.user_version), 1);
+      assert.equal(Number(again.user_version), 2);
 
       const deniz = findEmployeeByEmail(upgradeDb, DEMO_EMAIL);
       assert.ok(deniz);
