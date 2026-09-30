@@ -2,7 +2,7 @@ import type {
   Conversation,
   ConversationMessage,
   ConversationSummary,
-  SourceDocument,
+  SourceDocumentDetail,
 } from "../types";
 import { api } from "./client";
 
@@ -51,6 +51,6 @@ export function setAssistantFeedback(
   });
 }
 
-export function getSource(id: string): Promise<SourceDocument> {
-  return api<SourceDocument>(`/api/sources/${encodeURIComponent(id)}`);
+export function getSource(id: string): Promise<SourceDocumentDetail> {
+  return api<SourceDocumentDetail>(`/api/sources/${encodeURIComponent(id)}`);
 }

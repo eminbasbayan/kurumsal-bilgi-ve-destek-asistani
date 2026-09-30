@@ -29,6 +29,7 @@ cd front-end
 npm run dev      # http://localhost:5173
 npm run lint     # oxlint
 npm run build    # tsc -b && vite build
+npm test         # vitest
 
 cd back-end
 npm run dev        # tsx watch, http://localhost:3001, Swagger at /api-docs
