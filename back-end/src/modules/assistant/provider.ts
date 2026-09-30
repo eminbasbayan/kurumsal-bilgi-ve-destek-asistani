@@ -63,7 +63,7 @@ export type AnswerProvider = {
 };
 
 export const generatedAnswerSchema = z.object({
-  text: z.string(),
+  text: z.string().trim().min(1),
   citedSourceIds: z.array(z.string()),
   insufficient: z.boolean(),
 });

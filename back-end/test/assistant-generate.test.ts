@@ -308,6 +308,23 @@ describe("üretilen yanıt", { concurrency: false }, () => {
     assert.equal(lines.some((line) => line.includes(LEAVE)), false);
   });
 
+  test("boş veya yalnızca boşluk olan üretim quote moduna düşer", async () => {
+    for (const text of ["", "   "]) {
+      const provider = createGeminiProvider({
+        apiKey: "test-key",
+        model: "gemini-2.5-flash",
+        fetchImpl: async () =>
+          candidate(JSON.stringify({ text, citedSourceIds: ["izin"], insufficient: false })),
+      });
+      const lines = await captureLogs(async () => {
+        const result = await ask(LEAVE, runtime(provider));
+        assert.equal(result.assistantMessage.answerMode, "quote");
+        assert.equal(result.assistantMessage.text.startsWith(QUOTE_INTRO), true);
+      });
+      assert.deepEqual(fallbacks(lines), ["assistant_fallback:schema"]);
+    }
+  });
+
   test("şemaya uymayan çıktı quote moduna düşer", async () => {
     const provider = createGeminiProvider({
       apiKey: "test-key",
