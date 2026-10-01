@@ -445,12 +445,16 @@ function Message({
                 key={source.id}
                 size="1"
                 variant="soft"
+                className="source-chip"
+                title={`${source.title} · ${source.section}`}
                 onClick={(event) => onSource(source.id, event.currentTarget)}
               >
-                <FileIcon />{" "}
-                {sources.length === 1
-                  ? "Kaynağı aç"
-                  : `${source.title} · ${source.section}`}
+                <FileIcon />
+                <span className="source-chip-label">
+                  {sources.length === 1
+                    ? "Kaynağı aç"
+                    : `${source.title} · ${source.section}`}
+                </span>
               </Button>
             ))}
             <Tooltip content="Yanıtı kopyala">

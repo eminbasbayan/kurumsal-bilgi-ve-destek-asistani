@@ -83,6 +83,7 @@
 }
 .bubble {
   max-width: 75%;
+  min-width: 0;
   background: #f1f5f9;
   border-radius: 13px;
   padding: 14px 16px;
@@ -465,4 +466,21 @@ fieldset legend {
 }
 .detail-aside .field .rt-TextAreaRoot {
   min-height: 88px;
+}
+
+.message-tools .source-chip {
+  max-width: 100%;
+  min-width: 0;
+  flex-shrink: 1;
+  justify-content: flex-start;
+  white-space: nowrap;
+}
+.source-chip svg {
+  flex-shrink: 0;
+}
+.source-chip-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
