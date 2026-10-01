@@ -14,10 +14,12 @@ export function listConversations(): Promise<{
 
 export function createConversation(
   title?: string,
+  signal?: AbortSignal,
 ): Promise<ConversationSummary> {
   return api<ConversationSummary>("/api/conversations", {
     method: "POST",
     body: JSON.stringify(title ? { title } : {}),
+    signal,
   });
 }
 
@@ -28,6 +30,7 @@ export function getConversation(id: number): Promise<Conversation> {
 export function sendConversationMessage(
   id: number,
   text: string,
+  signal?: AbortSignal,
 ): Promise<{
   userMessage: ConversationMessage;
   assistantMessage: ConversationMessage;
@@ -38,6 +41,7 @@ export function sendConversationMessage(
   }>(`/api/conversations/${id}/messages`, {
     method: "POST",
     body: JSON.stringify({ text }),
+    signal,
   });
 }
 

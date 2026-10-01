@@ -4,7 +4,7 @@
 
 ## Gereksinimler
 
-- Node.js `^22.12` veya `^24` (Vitest)
+- Node.js 22.16+ (tüm proje)
 - Çalışan API. Varsayılan adres `http://localhost:3001`
 
 ## Kurulum

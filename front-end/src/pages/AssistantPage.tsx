@@ -30,6 +30,11 @@ import { listCategories } from "../api/categories";
 import { PageHeader } from "../components/PageHeader";
 import type { Conversation, ConversationMessage, SourceDocument } from "../types";
 import { formatDateTime } from "../utils/date";
+import {
+  ASSISTANT_TIMEOUT_MS,
+  splitQuotedAnswer,
+  withAssistantTimeout,
+} from "./assistantReply";
 import type { AssistantHandoff, AssistantSource } from "./requestHandoff";
 
 export type { AssistantHandoff } from "./requestHandoff";
@@ -75,8 +80,10 @@ function handoffFor(
 
 export function AssistantPage({
   escalate,
+  responseTimeoutMs = ASSISTANT_TIMEOUT_MS,
 }: {
   escalate: (handoff: AssistantHandoff) => void;
+  responseTimeoutMs?: number;
 }) {
   const queryClient = useQueryClient();
   const [input, setInput] = useState(
@@ -112,15 +119,16 @@ export function AssistantPage({
   });
 
   const send = useMutation({
-    mutationFn: async (question: string) => {
-      let id = conversationId;
-      if (!id) {
-        const created = await createConversation();
-        id = created.id;
-      }
-      const result = await sendConversationMessage(id, question);
-      return { id, result };
-    },
+    mutationFn: (question: string) =>
+      withAssistantTimeout(async (signal) => {
+        let id = conversationId;
+        if (!id) {
+          const created = await createConversation(undefined, signal);
+          id = created.id;
+        }
+        const result = await sendConversationMessage(id, question, signal);
+        return { id, result };
+      }, responseTimeoutMs),
     onSuccess: ({ id, result }) => {
       setConversationId(id);
       setInput("");
@@ -225,6 +233,7 @@ export function AssistantPage({
                       key={question}
                       variant="soft"
                       color="gray"
+                      disabled={send.isPending}
                       onClick={() => submit(question)}
                     >
                       {question}
@@ -253,7 +262,7 @@ export function AssistantPage({
               ))
             )}
             {send.isPending && (
-              <div className="chat-row assistant">
+              <div className="chat-row assistant" role="status">
                 <div className="bubble">Yanıt hazırlanıyor…</div>
               </div>
             )}
@@ -271,6 +280,17 @@ export function AssistantPage({
               value={input}
               onChange={(event) => setInput(event.target.value)}
             />
+            {send.isError && (
+              <Button
+                type="button"
+                variant="soft"
+                color="gray"
+                disabled={send.isPending || !input.trim()}
+                onClick={() => submit()}
+              >
+                Tekrar dene
+              </Button>
+            )}
             <Button type="submit" disabled={!input.trim() || send.isPending}>
               <PaperPlaneIcon /> Gönder
             </Button>
@@ -396,7 +416,14 @@ function Message({
   return (
     <div className={`chat-row ${message.role}`}>
       <div className="bubble">
-        <strong>{message.role === "user" ? "Siz" : "Bilgi Asistanı"}</strong>
+        <div className="bubble-head">
+          <strong>{message.role === "user" ? "Siz" : "Bilgi Asistanı"}</strong>
+          {message.role === "assistant" && message.answerMode === "generated" && (
+            <Badge variant="soft" color="gray">
+              Üretilmiş yanıt
+            </Badge>
+          )}
+        </div>
         <AnswerBody message={message} onRequest={onRequest} />
         <small>{formatDateTime(message.createdAt)}</small>
         {message.role === "assistant" && (
@@ -459,7 +486,14 @@ function AnswerBody({
   onRequest?: () => void;
 }) {
   if (message.role === "assistant" && message.answerMode === "quote") {
-    return <blockquote className="answer-quote">{message.text}</blockquote>;
+    const parts = splitQuotedAnswer(message.text);
+    return (
+      <>
+        {parts.intro ? <p>{parts.intro}</p> : null}
+        <blockquote className="answer-quote">{parts.quote}</blockquote>
+        {parts.remainder ? <p>{parts.remainder}</p> : null}
+      </>
+    );
   }
   if (message.role === "assistant" && message.answerMode === "no_source") {
     return (

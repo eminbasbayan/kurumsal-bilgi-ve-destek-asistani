@@ -94,6 +94,12 @@
 .bubble strong {
   font-size: 12px;
 }
+.bubble-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
 .bubble p {
   font-size: var(--answer);
   margin: 8px 0 0;
