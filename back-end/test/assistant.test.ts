@@ -130,7 +130,7 @@ test("v1 veritabanı v2'ye taşınır ve ikinci çalıştırma aynı kalır", ()
 
     runMigrations(db);
     const version = db.prepare("PRAGMA user_version").get() as { user_version: number };
-    assert.equal(version.user_version, 2);
+    assert.equal(version.user_version, 3);
     const stored = getConversation(db, employee.id, conversationId);
     assert.equal(stored.messages[0]?.answerMode, null);
     assert.deepEqual(stored.messages[0]?.sources, []);

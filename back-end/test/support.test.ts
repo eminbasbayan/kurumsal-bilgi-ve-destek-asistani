@@ -26,6 +26,8 @@ function demoAccount(email: string) {
 const ahmetAccount = demoAccount("ahmet.kaya@ornek-kurum.com");
 const elifAccount = demoAccount("elif.demir@ornek-kurum.com");
 const zeynepAccount = demoAccount("zeynep.arslan@ornek-kurum.com");
+const mertAccount = demoAccount("mert.aydin@ornek-kurum.com");
+const selinAccount = demoAccount("selin.koc@ornek-kurum.com");
 
 describe("destek personeli", { concurrency: false }, () => {
   const dir = mkdtempSync(join(tmpdir(), "kda-support-"));
@@ -121,9 +123,7 @@ describe("destek personeli", { concurrency: false }, () => {
     const address = server.address() as AddressInfo;
     base = `http://127.0.0.1:${address.port}`;
     await login(DEMO_EMAIL);
-    await login(ahmetAccount.email);
-    await login(elifAccount.email);
-    await login(zeynepAccount.email);
+    for (const account of DEMO_SUPPORT_ACCOUNTS) await login(account.email);
   });
 
   after(async () => {
@@ -144,6 +144,10 @@ describe("destek personeli", { concurrency: false }, () => {
     const zeynep = profiles[zeynepAccount.email];
     assert.equal(zeynep?.role, "support");
     assert.equal(zeynep?.team, "İnsan Kaynakları Ekibi");
+    for (const account of [mertAccount, selinAccount]) {
+      assert.equal(profiles[account.email]?.role, "support");
+      assert.equal(profiles[account.email]?.team, account.team);
+    }
 
     const profile = await api("/api/profile", {}, tokens[ahmetAccount.email]);
     assert.equal(profile.status, 200);
@@ -969,10 +973,10 @@ describe("destek personeli", { concurrency: false }, () => {
       assert.equal(classified.actor_id, null);
       assert.equal(classified.visibility, "public");
       const migrated = upgradeDb.prepare("PRAGMA user_version").get() as { user_version: number };
-      assert.equal(Number(migrated.user_version), 2);
+      assert.equal(Number(migrated.user_version), 3);
       runMigrations(upgradeDb);
       const again = upgradeDb.prepare("PRAGMA user_version").get() as { user_version: number };
-      assert.equal(Number(again.user_version), 2);
+      assert.equal(Number(again.user_version), 3);
 
       const deniz = findEmployeeByEmail(upgradeDb, DEMO_EMAIL);
       assert.ok(deniz);
@@ -1083,5 +1087,81 @@ describe("destek personeli", { concurrency: false }, () => {
     );
     assert.equal(result.status, 409);
     assert.equal(result.body?.error, "Talep zaten bu personele atanmış.");
+  });
+
+  test("finans ve işyeri personeli kendi kategori taleplerini üstlenip işler", async () => {
+    for (const [account, subcategory] of [
+      [mertAccount, "Masraf Bildirimi"],
+      [selinAccount, "Ofis ve Ekipman"],
+    ] as const) {
+      const token = tokens[account.email] ?? "";
+      const staff = await api("/api/support/staff", {}, token);
+      assert.equal(staff.status, 200);
+      assert.deepEqual(
+        (staff.body?.staff as { name: string; team: string }[]).map((member) => ({ name: member.name, team: member.team })),
+        [{ name: account.name, team: account.team }],
+      );
+      const created = await api("/api/requests", {
+        method: "POST",
+        body: JSON.stringify({
+          category: account.department, subcategory,
+          subject: `${account.department} demo talebi`, description: "Yeni ekip için örnek destek ihtiyacı.",
+          priority: "Normal", attachments: [], assistantContext: "",
+          clientRequestId: `new-team-${account.employeeNo}`,
+        }),
+      }, tokens[DEMO_EMAIL]);
+      assert.equal(created.status, 201);
+      const request = created.body as SupportDetail;
+      assert.equal(request.team, account.team);
+      const queue = await api("/api/support/requests", {}, token);
+      assert.equal(queue.status, 200);
+      const rows = queue.body?.requests as { id: number; team: string }[];
+      assert.ok(rows.some((row) => row.id === request.id));
+      assert.ok(rows.every((row) => row.team === account.team));
+      const forbidden = await api(`/api/support/requests/${request.id}`, {}, tokens[ahmetAccount.email]);
+      assert.equal(forbidden.status, 404);
+      tick();
+      const claimed = await api(`/api/support/requests/${request.id}/claim`, { method: "POST" }, token);
+      assert.equal(claimed.status, 200);
+      assert.equal((claimed.body as SupportDetail).assignee?.id, profiles[account.email]?.id);
+      tick();
+      const changed = await api(`/api/support/requests/${request.id}/status`, {
+        method: "POST",
+        body: JSON.stringify({ status: "İnceleniyor", expectedUpdatedAt: (claimed.body as SupportDetail).updatedAt }),
+      }, token);
+      assert.equal(changed.status, 200);
+      assert.equal((changed.body as SupportDetail).status, "İnceleniyor");
+      const mine = await api("/api/support/requests?queue=mine", {}, token);
+      assert.ok((mine.body?.requests as { id: number }[]).some((row) => row.id === request.id));
+    }
+  });
+
+  test("v2 veritabanına eksik ekip personelleri mevcut kayıtlar korunarak bir kez eklenir", () => {
+    const upgradeDb = openDatabase(":memory:");
+    try {
+      migrateAndSeed(upgradeDb);
+      upgradeDb.prepare("DELETE FROM employees WHERE email IN (?, ?)").run(mertAccount.email, selinAccount.email);
+      upgradeDb.exec("PRAGMA user_version = 2");
+      const oldEmployees = upgradeDb.prepare("SELECT * FROM employees ORDER BY id").all();
+      const oldRequests = upgradeDb.prepare("SELECT * FROM requests ORDER BY id").all();
+      const oldTimeline = upgradeDb.prepare("SELECT * FROM request_timeline ORDER BY id").all();
+      runMigrations(upgradeDb);
+      runMigrations(upgradeDb);
+      assert.deepEqual(upgradeDb.prepare("SELECT * FROM requests ORDER BY id").all(), oldRequests);
+      assert.deepEqual(upgradeDb.prepare("SELECT * FROM request_timeline ORDER BY id").all(), oldTimeline);
+      for (const employee of oldEmployees) {
+        assert.deepEqual(upgradeDb.prepare("SELECT * FROM employees WHERE id = ?").get(employee.id), employee);
+      }
+      for (const account of [mertAccount, selinAccount]) {
+        const added = findEmployeeByEmail(upgradeDb, account.email);
+        assert.equal(added?.role, "support");
+        assert.equal(added?.team, account.team);
+      }
+      const count = upgradeDb.prepare("SELECT COUNT(*) AS count FROM employees WHERE role = 'support'").get() as { count: number };
+      assert.equal(count.count, DEMO_SUPPORT_ACCOUNTS.length);
+      assert.equal(upgradeDb.prepare("PRAGMA user_version").get()?.user_version, 3);
+    } finally {
+      upgradeDb.close();
+    }
   });
 });

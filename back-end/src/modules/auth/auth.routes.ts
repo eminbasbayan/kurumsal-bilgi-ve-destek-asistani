@@ -7,12 +7,15 @@ import { parseInput } from "../../shared/validate.js";
 import { loginSchema } from "./auth.schema.js";
 import { createToken, verifyPassword } from "../../shared/passwords.js";
 import { employeeOf, type Now } from "../../shared/types.js";
-import { createSession, deleteSession, findEmployeeByEmail } from "./auth.service.js";
+import { createSession, deleteSession, findEmployeeByEmail, listDemoAccounts } from "./auth.service.js";
 
 const SESSION_MS = 7 * 24 * 60 * 60 * 1000;
 
 export function createPublicAuthRouter(db: DatabaseSync, now: Now): Router {
   const router = Router();
+  router.get("/demo-accounts", (_req, res) => {
+    res.json({ demo: true, accounts: listDemoAccounts(db) });
+  });
   router.post("/login", (req, res) => {
     const { email, password } = parseInput(loginSchema, req.body, "E-posta ve parola zorunludur.");
     const employee = findEmployeeByEmail(db, email);

@@ -25,6 +25,7 @@
   --color-primary-hover: #1d4ed8;
   --color-nav: #111d35;
   --color-nav-active: #1e3154;
+  --color-danger: #b91c1c;
 }
 * {
   box-sizing: border-box;

@@ -157,7 +157,7 @@
   text-align: left;
   padding: 0;
 }
-.user-menu span:last-child {
+.user-menu .user-menu-info {
   display: flex;
   flex-direction: column;
 }

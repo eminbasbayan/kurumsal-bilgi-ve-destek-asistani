@@ -1,44 +1,31 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Badge, Button, TextField } from "@radix-ui/themes";
-import { login } from "../api/auth";
+import { Badge, Button, IconButton, TextField } from "@radix-ui/themes";
+import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import { listDemoAccounts, login } from "../api/auth";
 import type { Employee } from "../types";
 
 const DEMO_PASSWORD = "kurumsaldemo";
-const DEMO_ACCOUNTS = [
-  {
-    name: "Deniz Yılmaz",
-    email: "deniz.yilmaz@ornek-kurum.com",
-    hint: "Çalışan",
-  },
-  {
-    name: "Ahmet Kaya",
-    email: "ahmet.kaya@ornek-kurum.com",
-    hint: "BT Destek Ekibi",
-  },
-  {
-    name: "Elif Demir",
-    email: "elif.demir@ornek-kurum.com",
-    hint: "BT Destek Ekibi",
-  },
-  {
-    name: "Zeynep Arslan",
-    email: "zeynep.arslan@ornek-kurum.com",
-    hint: "İnsan Kaynakları Ekibi",
-  },
-] as const;
 
 export function LoginPage({
   onLogin,
 }: {
   onLogin: (employee: Employee) => void;
 }) {
-  const [email, setEmail] = useState<string>(DEMO_ACCOUNTS[0].email);
+  const demoAccounts = useQuery({
+    queryKey: ["demo-accounts"],
+    queryFn: listDemoAccounts,
+  });
+  const accounts = demoAccounts.data?.accounts ?? [];
+  const [email, setEmail] = useState<string | undefined>();
+  const selectedEmail = email ?? accounts[0]?.email ?? "";
   const [password, setPassword] = useState(DEMO_PASSWORD);
+  const [showPassword, setShowPassword] = useState(false);
   const mutation = useMutation({
-    mutationFn: () => login(email, password),
+    mutationFn: () => login(selectedEmail, password),
     onSuccess: (result) => onLogin(result.employee),
   });
+  const error = mutation.error?.message || demoAccounts.error?.message;
 
   return (
     <main className="login">
@@ -73,27 +60,33 @@ export function LoginPage({
           <p className="muted">
             Demo hesaplardan birini seçin. Gerçek kimlik doğrulama yoktur.
           </p>
-          {mutation.isError && (
+          {error && (
             <div className="form-error" role="alert">
-              {mutation.error.message}
+              {error}
             </div>
           )}
           <div className="demo-accounts">
             <p className="eyebrow">DEMO HESAPLAR</p>
-            {DEMO_ACCOUNTS.map((account) => (
+            {demoAccounts.isPending && (
+              <p className="note">Demo hesaplar yükleniyor…</p>
+            )}
+            {accounts.map((account) => (
               <Button
                 key={account.email}
                 type="button"
-                variant={email === account.email ? "solid" : "soft"}
-                color={email === account.email ? undefined : "gray"}
-                aria-pressed={email === account.email}
+                variant={selectedEmail === account.email ? "solid" : "soft"}
+                color={selectedEmail === account.email ? undefined : "gray"}
+                aria-pressed={selectedEmail === account.email}
                 onClick={() => {
                   setEmail(account.email);
                   setPassword(DEMO_PASSWORD);
+                  setShowPassword(false);
                 }}
               >
                 <span>{account.name}</span>
-                <small>{account.hint}</small>
+                <small>
+                  {account.role === "support" ? account.team : "Çalışan"}
+                </small>
               </Button>
             ))}
             <p className="note">Parola tüm hesaplarda {DEMO_PASSWORD}.</p>
@@ -103,22 +96,43 @@ export function LoginPage({
             <TextField.Root
               size="3"
               type="email"
-              value={email}
+              value={selectedEmail}
               onChange={(event) => setEmail(event.target.value)}
               required
             />
           </label>
-          <label className="field">
-            Parola
+          <div className="field">
+            <label htmlFor="login-password">Parola</label>
             <TextField.Root
+              id="login-password"
               size="3"
-              type="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-            />
-          </label>
-          <Button size="3" type="submit" disabled={mutation.isPending}>
+            >
+              <TextField.Slot side="right">
+                <IconButton
+                  type="button"
+                  variant="ghost"
+                  aria-label={
+                    showPassword ? "Parolayı gizle" : "Parolayı göster"
+                  }
+                  aria-controls="login-password"
+                  aria-pressed={showPassword}
+                  onClick={() => setShowPassword((current) => !current)}
+                >
+                  {showPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
+                </IconButton>
+              </TextField.Slot>
+            </TextField.Root>
+          </div>
+          <Button
+            size="3"
+            type="submit"
+            disabled={!selectedEmail.trim() || !password || mutation.isPending}
+          >
             {mutation.isPending ? "Giriş yapılıyor…" : "Portala giriş yap"}
           </Button>
           <p className="note">

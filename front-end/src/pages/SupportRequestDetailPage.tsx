@@ -411,7 +411,7 @@ export function SupportRequestDetailPage({
                   <label className="field">
                     Personel
                     <Select.Root
-                      value={assigneeId || undefined}
+                      value={assigneeId}
                       onValueChange={setAssigneeId}
                     >
                       <Select.Trigger placeholder="Personel seçin" />

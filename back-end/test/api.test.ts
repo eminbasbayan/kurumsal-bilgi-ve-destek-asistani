@@ -8,6 +8,7 @@ import { after, before, describe, test } from "node:test";
 import type { Server } from "node:http";
 import { createApp } from "../src/app.js";
 import { migrateAndSeed, openDatabase } from "../src/db/database.js";
+import { DEMO_EMAIL, DEMO_SUPPORT_ACCOUNTS } from "../src/config/constants.js";
 
 test("örnek veri boş veritabanına bir kez yazılır", () => {
   const dir = mkdtempSync(join(tmpdir(), "kda-seed-"));
@@ -25,9 +26,9 @@ test("örnek veri boş veritabanına bir kez yazılır", () => {
       .prepare("SELECT COUNT(*) AS count FROM employees WHERE role = 'support'")
       .get() as { count: number };
     const version = db.prepare("PRAGMA user_version").get() as { user_version: number };
-    assert.equal(Number(employees.count), 4);
-    assert.equal(Number(support.count), 3);
-    assert.equal(version.user_version, 2);
+    assert.equal(Number(employees.count), 1 + DEMO_SUPPORT_ACCOUNTS.length);
+    assert.equal(Number(support.count), DEMO_SUPPORT_ACCOUNTS.length);
+    assert.equal(version.user_version, 3);
     assert.equal(Number(requests.count), 10);
   } finally {
     db.close();
@@ -90,6 +91,7 @@ test("swagger bütün uçları oturumsuz açar", async () => {
   assert.equal(spec.status, 200);
   const document = (await spec.json()) as { paths: Record<string, unknown> };
   for (const path of [
+    "/api/auth/demo-accounts",
     "/api/auth/login",
     "/api/auth/logout",
     "/api/profile",
@@ -109,6 +111,40 @@ test("swagger bütün uçları oturumsuz açar", async () => {
     "/api/assistant/messages/{id}/feedback",
   ]) {
     assert.ok(document.paths[path], path);
+  }
+});
+
+test("demo hesap listesi oturumsuz yalnızca kurgusal giriş hesaplarını döndürür", async () => {
+  const extraEmail = "ek.kullanici@ornek-kurum.com";
+  db.prepare(
+    `INSERT INTO employees (name, initials, title, department, email, employee_no, location, password_hash)
+     SELECT name, initials, title, department, ?, 'T-99999', location, password_hash
+     FROM employees WHERE email = ?`,
+  ).run(extraEmail, DEMO_EMAIL);
+  try {
+    const response = await fetch(`${base}/api/auth/demo-accounts`);
+    assert.equal(response.status, 200);
+    const body = await response.json() as {
+      demo: boolean;
+      accounts: { name: string; email: string; role: string; team: string | null }[];
+    };
+    assert.equal(body.demo, true);
+    assert.deepEqual(body.accounts.map((account) => account.email), [
+      DEMO_EMAIL,
+      ...DEMO_SUPPORT_ACCOUNTS.map((account) => account.email),
+    ]);
+    assert.equal(body.accounts[0]?.role, "employee");
+    assert.equal(body.accounts[0]?.team, null);
+    for (const account of body.accounts) {
+      assert.deepEqual(Object.keys(account).sort(), ["email", "name", "role", "team"]);
+    }
+    for (const expected of DEMO_SUPPORT_ACCOUNTS) {
+      assert.deepEqual(body.accounts.find((account) => account.email === expected.email), {
+        name: expected.name, email: expected.email, role: "support", team: expected.team,
+      });
+    }
+  } finally {
+    db.prepare("DELETE FROM employees WHERE email = ?").run(extraEmail);
   }
 });
 
@@ -230,6 +266,93 @@ test("geçerli talep bir kez oluşur ve mesaj son güncellemeyi yeniler", async 
   assert.equal(notifications[0]?.title, "Talebiniz oluşturuldu");
   assert.match(notifications[0]?.text ?? "", /DST-2026-1043/);
   assert.equal(notes.body?.unread, 3);
+});
+
+test("çalışanların talepleri ve bildirimleri hesaplar arasında yalıtılır", async () => {
+  const originalToken = token;
+  const otherEmail = "ece.test@ornek-kurum.com";
+  db.prepare(
+    `INSERT INTO employees
+       (name, initials, title, department, email, employee_no, location, password_hash, role, team)
+     SELECT ?, ?, title, department, ?, ?, location, password_hash, 'employee', NULL
+     FROM employees WHERE email = ?`,
+  ).run("Ece Test", "ET", otherEmail, "TEST-002", DEMO_EMAIL);
+  const draft = {
+    category: "Bilgi Teknolojileri",
+    subcategory: "Donanım",
+    priority: "Normal",
+    subject: "Hesap izolasyonu testi",
+    description: "Yalnız talep sahibi bu test kaydını görebilir.",
+    attachments: [],
+  };
+  const ownerCreated = await api("/api/requests", {
+    method: "POST",
+    body: JSON.stringify({ ...draft, clientRequestId: "isolation-owner" }),
+  });
+  assert.equal(ownerCreated.status, 201);
+  const ownerId = (ownerCreated.body as { id: number }).id;
+  const ownerBefore = await api(`/api/requests/${ownerId}`);
+  const ownerNotifications = await api("/api/notifications");
+  const ownerNotification = (
+    ownerNotifications.body as { notifications: { id: number; requestId: number }[] }
+  ).notifications.find((entry) => entry.requestId === ownerId)!;
+  const login = await api("/api/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email: otherEmail, password: "kurumsaldemo" }),
+  });
+  assert.equal(login.status, 200);
+  token = String(login.body?.token);
+  try {
+    const empty = await api("/api/requests");
+    assert.deepEqual(empty.body?.requests, []);
+    const otherCreated = await api("/api/requests", {
+      method: "POST",
+      body: JSON.stringify({ ...draft, clientRequestId: "isolation-other" }),
+    });
+    assert.equal(otherCreated.status, 201);
+    const otherId = (otherCreated.body as { id: number }).id;
+    const otherList = await api("/api/requests");
+    assert.deepEqual(
+      (otherList.body as { requests: { id: number }[] }).requests.map((entry) => entry.id),
+      [otherId],
+    );
+    const summary = await api("/api/requests/summary");
+    assert.equal(summary.body?.open, 1);
+    assert.deepEqual(
+      (summary.body as { recent: { id: number }[] }).recent.map((entry) => entry.id),
+      [otherId],
+    );
+    const deniedRead = await api(`/api/requests/${ownerId}`);
+    assert.equal(deniedRead.status, 404);
+    assert.equal(deniedRead.body?.error, "Talep bulunamadı.");
+    const deniedMessage = await api(`/api/requests/${ownerId}/messages`, {
+      method: "POST",
+      body: JSON.stringify({ text: "Başka çalışanın kaydına yazılamaz." }),
+    });
+    assert.equal(deniedMessage.status, 404);
+    assert.equal(deniedMessage.body?.error, "Talep bulunamadı.");
+    const notifications = await api("/api/notifications");
+    assert.deepEqual(
+      (notifications.body as { notifications: { requestId: number }[] })
+        .notifications.map((entry) => entry.requestId),
+      [otherId],
+    );
+    const deniedNotification = await api(`/api/notifications/${ownerNotification.id}/read`, {
+      method: "PATCH",
+    });
+    assert.equal(deniedNotification.status, 404);
+    assert.equal(deniedNotification.body?.error, "Bildirim bulunamadı.");
+    assert.equal((await api("/api/notifications/read-all", { method: "POST" })).status, 200);
+    await api("/api/auth/logout", { method: "POST" });
+    token = originalToken;
+    assert.deepEqual((await api(`/api/requests/${ownerId}`)).body, ownerBefore.body);
+    assert.deepEqual((await api("/api/notifications")).body, ownerNotifications.body);
+    const ownerList = await api("/api/requests");
+    assert.ok(!(ownerList.body as { requests: { id: number }[] }).requests.some((entry) => entry.id === otherId));
+    assert.equal((await api(`/api/requests/${otherId}`)).status, 404);
+  } finally {
+    token = originalToken;
+  }
 });
 
 test("bilinmeyen talep 404 döner", async () => {

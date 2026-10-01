@@ -60,7 +60,17 @@ export function NewRequestPage({
     priority: "Normal",
     attachments: [],
   });
-  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [fileError, setFileError] = useState("");
+  const requiredErrors = {
+    category: draft.category ? "" : "Kategori seçin.",
+    subcategory: draft.subcategory ? "" : "Alt kategori seçin.",
+    subject: draft.subject.trim() ? "" : "Konu alanını doldurun.",
+    description: draft.description.trim() ? "" : "Açıklama alanını doldurun.",
+  };
+  const fieldErrors: Partial<typeof requiredErrors> = submitted
+    ? requiredErrors
+    : {};
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -76,18 +86,17 @@ export function NewRequestPage({
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    if (
-      !draft.category ||
-      !draft.subcategory ||
-      !draft.subject.trim() ||
-      !draft.description.trim()
-    ) {
-      setError(
-        "Kategori, alt kategori, konu ve açıklama alanlarını tamamlayın.",
-      );
+    if (mutation.isPending) return;
+    setSubmitted(true);
+    const firstInvalid = (
+      Object.keys(requiredErrors) as (keyof typeof requiredErrors)[]
+    ).find((field) => requiredErrors[field]);
+    if (firstInvalid) {
+      event.currentTarget
+        .querySelector<HTMLElement>(`#request-${firstInvalid}`)
+        ?.focus();
       return;
     }
-    setError("");
     mutation.mutate();
   };
 
@@ -102,16 +111,16 @@ export function NewRequestPage({
           !ACCEPTED_FILE_TYPES.includes(file.type),
       )
     ) {
-      setError(
+      setFileError(
         "Dosyalar PDF, PNG veya JPG olmalı ve 5 MB sınırını aşmamalıdır.",
       );
       return;
     }
     if (selected.some((file) => file.name.length > 255)) {
-      setError("Dosya adı en fazla 255 karakter olabilir.");
+      setFileError("Dosya adı en fazla 255 karakter olabilir.");
       return;
     }
-    setError("");
+    setFileError("");
     setDraft((current) => {
       const seen = new Set(current.attachments.map(attachmentIdentity));
       const additions: Attachment[] = [];
@@ -165,21 +174,29 @@ export function NewRequestPage({
               <p>Zorunlu alanlar * ile işaretlenmiştir.</p>
             </div>
           </div>
-          {(error || mutation.isError || categories.isError) && (
+          {(mutation.isError || categories.isError) && (
             <div className="form-error" role="alert">
-              {error || mutation.error?.message || categories.error?.message}
+              {mutation.error?.message || categories.error?.message}
             </div>
           )}
           <div className="form-grid">
-            <label className="field">
-              Kategori *
+            <div className="field">
+              <label htmlFor="request-category">Kategori *</label>
               <Select.Root
                 value={draft.category}
                 onValueChange={(value) =>
                   setDraft({ ...draft, category: value, subcategory: "" })
                 }
               >
-                <Select.Trigger placeholder="Kategori seçin" />
+                <Select.Trigger
+                  id="request-category"
+                  placeholder="Kategori seçin"
+                  aria-required="true"
+                  aria-invalid={Boolean(fieldErrors.category)}
+                  aria-describedby={
+                    fieldErrors.category ? "request-category-error" : undefined
+                  }
+                />
                 <Select.Content>
                   {(categories.data?.categories ?? []).map((item) => (
                     <Select.Item key={item.name} value={item.name}>
@@ -188,9 +205,18 @@ export function NewRequestPage({
                   ))}
                 </Select.Content>
               </Select.Root>
-            </label>
-            <label className="field">
-              Alt kategori *
+              {fieldErrors.category && (
+                <small
+                  className="field-error"
+                  id="request-category-error"
+                  role="alert"
+                >
+                  {fieldErrors.category}
+                </small>
+              )}
+            </div>
+            <div className="field">
+              <label htmlFor="request-subcategory">Alt kategori *</label>
               <Select.Root
                 value={draft.subcategory}
                 onValueChange={(value) =>
@@ -198,7 +224,17 @@ export function NewRequestPage({
                 }
                 disabled={!draft.category}
               >
-                <Select.Trigger placeholder="Alt kategori seçin" />
+                <Select.Trigger
+                  id="request-subcategory"
+                  placeholder="Alt kategori seçin"
+                  aria-required="true"
+                  aria-invalid={Boolean(fieldErrors.subcategory)}
+                  aria-describedby={
+                    fieldErrors.subcategory
+                      ? "request-subcategory-error"
+                      : undefined
+                  }
+                />
                 <Select.Content>
                   {(categoryMap[draft.category] || []).map((name) => (
                     <Select.Item key={name} value={name}>
@@ -207,11 +243,24 @@ export function NewRequestPage({
                   ))}
                 </Select.Content>
               </Select.Root>
-            </label>
+              {fieldErrors.subcategory && (
+                <small
+                  className="field-error"
+                  id="request-subcategory-error"
+                  role="alert"
+                >
+                  {fieldErrors.subcategory}
+                </small>
+              )}
+            </div>
           </div>
-          <label className="field">
-            Konu *
+          <div className="field">
+            <label htmlFor="request-subject">Konu *</label>
             <TextField.Root
+              id="request-subject"
+              aria-required="true"
+              aria-invalid={Boolean(fieldErrors.subject)}
+              aria-describedby={`request-subject-count${fieldErrors.subject ? " request-subject-error" : ""}`}
               size="3"
               maxLength={100}
               placeholder="Talebinizi kısa ve açık biçimde özetleyin"
@@ -220,11 +269,24 @@ export function NewRequestPage({
                 setDraft({ ...draft, subject: event.target.value })
               }
             />
-            <small>{draft.subject.length}/100</small>
-          </label>
-          <label className="field">
-            Açıklama *
+            <small id="request-subject-count">{draft.subject.length}/100</small>
+            {fieldErrors.subject && (
+              <small
+                className="field-error"
+                id="request-subject-error"
+                role="alert"
+              >
+                {fieldErrors.subject}
+              </small>
+            )}
+          </div>
+          <div className="field">
+            <label htmlFor="request-description">Açıklama *</label>
             <TextArea
+              id="request-description"
+              aria-required="true"
+              aria-invalid={Boolean(fieldErrors.description)}
+              aria-describedby={`request-description-count${fieldErrors.description ? " request-description-error" : ""}`}
               rows={7}
               maxLength={2000}
               placeholder="Sorunu, beklediğiniz sonucu ve varsa aldığınız hata mesajını açıklayın."
@@ -233,8 +295,19 @@ export function NewRequestPage({
                 setDraft({ ...draft, description: event.target.value })
               }
             />
-            <small>{draft.description.length}/2000</small>
-          </label>
+            <small id="request-description-count">
+              {draft.description.length}/2000
+            </small>
+            {fieldErrors.description && (
+              <small
+                className="field-error"
+                id="request-description-error"
+                role="alert"
+              >
+                {fieldErrors.description}
+              </small>
+            )}
+          </div>
           <fieldset className="field">
             <legend>Öncelik</legend>
             <div className="priority-options">
@@ -274,10 +347,23 @@ export function NewRequestPage({
                 id="request-attachments"
                 type="file"
                 accept=".pdf,.png,.jpg,.jpeg"
+                aria-invalid={Boolean(fileError)}
+                aria-describedby={
+                  fileError ? "request-attachments-error" : undefined
+                }
                 multiple
                 onChange={(event) => files(event.target.files)}
               />
             </div>
+            {fileError && (
+              <small
+                className="field-error"
+                id="request-attachments-error"
+                role="alert"
+              >
+                {fileError}
+              </small>
+            )}
             {draft.attachments.length > 0 && (
               <ul className="file-list">
                 {draft.attachments.map((attachment) => {

@@ -19,6 +19,7 @@ export function RequestsPage() {
   const [scope, setScope] = useState<"all" | "open" | "closed">("all");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState<RequestStatus | "all">("all");
+  const [sort, setSort] = useState<"newest" | "oldest">("newest");
 
   const requests = useQuery({
     queryKey: ["requests", { q: deferredQuery, scope, category, status }],
@@ -28,7 +29,12 @@ export function RequestsPage() {
     queryKey: ["categories"],
     queryFn: listCategories,
   });
-  const items = requests.data?.requests ?? [];
+  const items = [...(requests.data?.requests ?? [])].sort((left, right) => {
+    const difference =
+      Date.parse(left.updatedAt) - Date.parse(right.updatedAt) ||
+      left.id - right.id;
+    return sort === "oldest" ? difference : -difference;
+  });
 
   const counts = useQuery({
     queryKey: ["requests", "counts"],
@@ -73,6 +79,7 @@ export function RequestsPage() {
         <div className="filters">
           <TextField.Root
             placeholder="Talep numarası veya konu ara"
+            aria-label="Talep numarası veya konu ara"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           >
@@ -81,7 +88,7 @@ export function RequestsPage() {
             </TextField.Slot>
           </TextField.Root>
           <Select.Root value={category} onValueChange={setCategory}>
-            <Select.Trigger />
+            <Select.Trigger aria-label="Kategori" />
             <Select.Content>
               <Select.Item value="all">Tüm kategoriler</Select.Item>
               {(categories.data?.categories ?? []).map((item) => (
@@ -95,7 +102,7 @@ export function RequestsPage() {
             value={status}
             onValueChange={(value) => setStatus(value as RequestStatus | "all")}
           >
-            <Select.Trigger />
+            <Select.Trigger aria-label="Durum" />
             <Select.Content>
               <Select.Item value="all">Tüm durumlar</Select.Item>
               {REQUEST_STATUSES.map((name) => (
@@ -103,6 +110,16 @@ export function RequestsPage() {
                   {name}
                 </Select.Item>
               ))}
+            </Select.Content>
+          </Select.Root>
+          <Select.Root
+            value={sort}
+            onValueChange={(value) => setSort(value as typeof sort)}
+          >
+            <Select.Trigger aria-label="Son güncelleme sıralaması" />
+            <Select.Content>
+              <Select.Item value="newest">Son güncelleme: en yeni</Select.Item>
+              <Select.Item value="oldest">Son güncelleme: en eski</Select.Item>
             </Select.Content>
           </Select.Root>
           <Button
@@ -113,6 +130,7 @@ export function RequestsPage() {
               setScope("all");
               setCategory("all");
               setStatus("all");
+              setSort("newest");
             }}
           >
             <ReloadIcon /> Temizle
@@ -126,9 +144,13 @@ export function RequestsPage() {
         <p className="result-count">
           {requests.isPending
             ? "Talepler yükleniyor…"
-            : `${items.length} talep gösteriliyor`}
+            : !requests.isError
+              ? `${items.length} talep gösteriliyor`
+              : null}
         </p>
-        {!requests.isPending && <RequestTable items={items} />}
+        {!requests.isPending && !requests.isError && (
+          <RequestTable items={items} />
+        )}
       </Card>
     </>
   );

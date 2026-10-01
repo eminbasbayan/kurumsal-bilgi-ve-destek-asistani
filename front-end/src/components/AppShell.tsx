@@ -29,7 +29,8 @@ export function AppShell({
 }) {
   const [menu, setMenu] = useState(false);
   const support = profile.role === "support";
-  const active = current === "detail" ? (support ? "queue" : "requests") : current;
+  const active =
+    current === "detail" ? (support ? "queue" : "requests") : current;
   const workspace = support
     ? [
         { path: "home", label: "Ana Sayfa", Icon: DashboardIcon },
@@ -124,12 +125,18 @@ export function AppShell({
             <ThemeToggleButton />
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>
-                <button className="user-menu">
+                <button
+                  className="user-menu"
+                  type="button"
+                  aria-label={`${profile.name}, hesap menüsü`}
+                >
                   <Avatar fallback={profile.initials} size="2" radius="full" />
-                  <span>
+                  <span className="user-menu-info">
                     <strong>{profile.name}</strong>
                     <small>
-                      {support && profile.team ? profile.team : profile.department}
+                      {support && profile.team
+                        ? profile.team
+                        : profile.department}
                     </small>
                   </span>
                 </button>

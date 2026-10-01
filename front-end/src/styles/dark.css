@@ -198,3 +198,6 @@ html[data-appearance="dark"] .form-error {
   background: var(--color-danger-bg);
   color: var(--color-danger);
 }
+html[data-appearance="dark"] .field small.field-error {
+  color: var(--color-danger);
+}

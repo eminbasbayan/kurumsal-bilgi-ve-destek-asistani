@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
   Card,
@@ -91,6 +91,7 @@ export function AssistantPage({
   );
   const [conversationId, setConversationId] = useState<number>();
   const [sourceId, setSourceId] = useState<string>();
+  const sourceTrigger = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     sessionStorage.removeItem("assistant-question");
@@ -246,7 +247,10 @@ export function AssistantPage({
                 <Message
                   key={message.id}
                   message={message}
-                  onSource={(id) => setSourceId(id)}
+                  onSource={(id, trigger) => {
+                    sourceTrigger.current = trigger;
+                    setSourceId(id);
+                  }}
                   onFeedback={(helpful) =>
                     feedback.mutate({ id: message.id, helpful })
                   }
@@ -374,7 +378,15 @@ export function AssistantPage({
         open={Boolean(sourceId)}
         onOpenChange={(open) => !open && setSourceId(undefined)}
       >
-        <Dialog.Content maxWidth="560px">
+        <Dialog.Content
+          maxWidth="560px"
+          onCloseAutoFocus={(event) => {
+            if (sourceTrigger.current?.isConnected) {
+              event.preventDefault();
+              sourceTrigger.current.focus();
+            }
+          }}
+        >
           <Dialog.Title>{source.data?.title ?? "Kaynak"}</Dialog.Title>
           <Dialog.Description>
             {source.data?.section ?? "Kaynak bilgisi yükleniyor."}
@@ -408,7 +420,7 @@ function Message({
   onRequest,
 }: {
   message: ConversationMessage;
-  onSource: (id: string) => void;
+  onSource: (id: string, trigger: HTMLButtonElement) => void;
   onFeedback: (helpful: boolean) => void;
   onRequest?: () => void;
 }) {
@@ -433,7 +445,7 @@ function Message({
                 key={source.id}
                 size="1"
                 variant="soft"
-                onClick={() => onSource(source.id)}
+                onClick={(event) => onSource(source.id, event.currentTarget)}
               >
                 <FileIcon />{" "}
                 {sources.length === 1
@@ -456,6 +468,7 @@ function Message({
                 size="1"
                 variant={message.helpful === true ? "soft" : "ghost"}
                 aria-label="Faydalı"
+                aria-pressed={message.helpful === true}
                 onClick={() => onFeedback(true)}
               >
                 <CheckCircledIcon />
@@ -466,6 +479,7 @@ function Message({
                 size="1"
                 variant={message.helpful === false ? "soft" : "ghost"}
                 aria-label="Faydalı değil"
+                aria-pressed={message.helpful === false}
                 onClick={() => onFeedback(false)}
               >
                 <CrossCircledIcon />

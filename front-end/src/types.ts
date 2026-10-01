@@ -23,6 +23,8 @@ export type Employee = {
   team: string | null;
 };
 
+export type DemoAccount = Pick<Employee, "name" | "email" | "role" | "team">;
+
 export type Attachment = {
   id?: number;
   name: string;

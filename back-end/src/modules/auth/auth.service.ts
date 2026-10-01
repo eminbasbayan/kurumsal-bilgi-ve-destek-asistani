@@ -1,5 +1,5 @@
 import type { DatabaseSync } from "node:sqlite";
-import type { UserRole } from "../../config/constants.js";
+import { DEMO_EMAIL, DEMO_SUPPORT_ACCOUNTS, type UserRole } from "../../config/constants.js";
 import type { Employee, Now } from "../../shared/types.js";
 
 type EmployeeRow = {
@@ -43,6 +43,15 @@ export function findEmployeeByEmail(
     .get(email) as EmployeeRow | undefined;
   if (!row?.password_hash) return undefined;
   return { ...employeeFrom(row), passwordHash: row.password_hash };
+}
+
+export function listDemoAccounts(db: DatabaseSync) {
+  const select = db.prepare("SELECT name, email, role, team FROM employees WHERE email = ?");
+  return [DEMO_EMAIL, ...DEMO_SUPPORT_ACCOUNTS.map((account) => account.email)]
+    .flatMap((email) => {
+      const account = select.get(email) as Pick<Employee, "name" | "email" | "role" | "team"> | undefined;
+      return account ? [account] : [];
+    });
 }
 
 export function createSession(

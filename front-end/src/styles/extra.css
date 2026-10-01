@@ -224,6 +224,10 @@
   color: #64748b;
   font-weight: 400;
 }
+.field small.field-error {
+  color: var(--color-danger);
+  font-weight: 500;
+}
 .field .rt-SelectTrigger {
   min-height: 39px;
 }

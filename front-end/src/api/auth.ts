@@ -1,4 +1,4 @@
-import type { Employee } from "../types";
+import type { DemoAccount, Employee } from "../types";
 import { api, clearToken, setToken } from "./client";
 
 export type LoginResponse = {
@@ -7,6 +7,10 @@ export type LoginResponse = {
   message: string;
   employee: Employee;
 };
+
+export function listDemoAccounts(): Promise<{ demo: true; accounts: DemoAccount[] }> {
+  return api("/api/auth/demo-accounts");
+}
 
 export async function login(
   email: string,

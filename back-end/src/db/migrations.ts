@@ -218,7 +218,7 @@ function migrateV2(db: DatabaseSync): void {
   `);
 }
 
-export function runMigrations(db: DatabaseSync, targetVersion = 2): void {
+export function runMigrations(db: DatabaseSync, targetVersion = 3): void {
   transaction(db, () => {
     if (userVersion(db) < 1 && targetVersion >= 1) {
       migrateV1(db);
@@ -227,6 +227,10 @@ export function runMigrations(db: DatabaseSync, targetVersion = 2): void {
     if (userVersion(db) < 2 && targetVersion >= 2) {
       migrateV2(db);
       db.exec("PRAGMA user_version = 2");
+    }
+    if (userVersion(db) < 3 && targetVersion >= 3) {
+      ensureSupportStaff(db);
+      db.exec("PRAGMA user_version = 3");
     }
   });
 }

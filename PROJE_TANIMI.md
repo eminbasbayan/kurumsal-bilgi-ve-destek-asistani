@@ -508,9 +508,9 @@ Bu bölüm, çalışan taleplerini yöneten demo destek personeli rolünü tanı
 
 - Üründe iki rol bulunmalıdır: **Çalışan** ve **Destek personeli**.
 - Her destek personeli tek bir destek ekibine bağlı olmalıdır. Ekip adları, talep kategorisinden türetilen atanan ekip adlarıyla aynı olmalıdır (örneğin BT Destek Ekibi, İnsan Kaynakları Ekibi).
-- Demo ortamında en az üç kurgusal destek personeli hesabı bulunmalıdır: iki kişi BT Destek Ekibinde, bir kişi İnsan Kaynakları Ekibinde.
+- Demo ortamında en az beş kurgusal destek personeli hesabı bulunmalıdır: iki kişi BT Destek Ekibinde, bir kişi İnsan Kaynakları Ekibinde, bir kişi Finans ve İdari İşler Ekibinde ve bir kişi İşyeri Hizmetleri Ekibinde.
 - Giriş yapan kullanıcının rolü ve varsa ekibi profil bilgisinde görülebilmelidir.
-- Destek personeli bulunmayan ekiplerin talepleri, bu sürümde hiçbir personelin kuyruğunda görünmez; bu durum demo sınırı olarak kabul edilir.
+- Talep oluşturma ekranındaki her kategoriye karşılık gelen ekipte en az bir demo destek personeli bulunmalı; ilgili talepler o ekibin kuyruğunda görünmelidir.
 
 ### 17.3. Yetki sınırları
 

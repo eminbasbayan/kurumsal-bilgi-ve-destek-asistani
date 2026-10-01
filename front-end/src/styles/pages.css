@@ -109,6 +109,10 @@ dd {
   border-top: 1px solid #e2e8f0;
   padding-top: 16px;
 }
+.reply-form > .field {
+  align-self: stretch;
+  min-width: 0;
+}
 .reply-form .rt-TextAreaRoot {
   width: 100%;
 }
@@ -346,7 +350,7 @@ dd {
   .topbar-actions {
     gap: 10px;
   }
-  .user-menu span:last-child {
+  .user-menu .user-menu-info {
     display: none;
   }
   .content {

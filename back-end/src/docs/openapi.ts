@@ -59,7 +59,7 @@ export const openApiDocument = {
       `Denemek için önce Giriş yapın. E-posta: ${DEMO_EMAIL}. Parola: ${DEMO_PASSWORD}.`,
       `Demo destek personeli hesapları aynı parolayı kullanır: ${supportAccounts}.`,
       DEMO_LOGIN_MESSAGE,
-      "Dönen token değerini sağ üstteki Authorize alanına yapıştırın. Diğer uçlar bu belirteci ister.",
+      "Dönen token değerini sağ üstteki Authorize alanına yapıştırın. Giriş ve demo hesap listesi dışındaki uçlar bu belirteci ister.",
     ].join(" "),
   },
   servers: [{ url: "/" }],
@@ -364,6 +364,39 @@ export const openApiDocument = {
     },
   },
   paths: {
+    "/api/auth/demo-accounts": {
+      get: {
+        tags: ["Kimlik"],
+        summary: "Giriş ekranındaki kurgusal demo hesapları listele",
+        description: "Yalnızca tanımlı demo hesapların adını, e-postasını, rolünü ve ekibini döndürür.",
+        security: [],
+        responses: {
+          "200": {
+            description: "Demo hesap listesi",
+            content: json({
+              type: "object",
+              required: ["demo", "accounts"],
+              properties: {
+                demo: { type: "boolean", enum: [true] },
+                accounts: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    required: ["name", "email", "role", "team"],
+                    properties: {
+                      name: { type: "string" },
+                      email: { type: "string", format: "email" },
+                      role: { type: "string", enum: [...USER_ROLES] },
+                      team: { type: "string", nullable: true },
+                    },
+                  },
+                },
+              },
+            }),
+          },
+        },
+      },
+    },
     "/api/auth/login": {
       post: {
         tags: ["Kimlik"],

@@ -30,7 +30,7 @@ export function listSupportRequests(
   if (filters.queue) params.set("queue", filters.queue);
   if (filters.status && filters.status !== "all") {
     params.set("status", filters.status);
-  } else if (filters.scope && filters.scope !== "all") {
+  } else if (filters.scope) {
     params.set("scope", filters.scope);
   }
   if (filters.priority && filters.priority !== "all") {
@@ -52,9 +52,7 @@ export function listSupportStaff(): Promise<{ staff: StaffMember[] }> {
   return api<{ staff: StaffMember[] }>("/api/support/staff");
 }
 
-export function claimSupportRequest(
-  id: number,
-): Promise<SupportRequestDetail> {
+export function claimSupportRequest(id: number): Promise<SupportRequestDetail> {
   return api<SupportRequestDetail>(`/api/support/requests/${id}/claim`, {
     method: "POST",
   });
