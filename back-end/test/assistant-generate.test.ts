@@ -18,10 +18,10 @@ import {
 import {
   assistantTimeoutFromEnv,
   buildUserContent,
-  createGeminiProvider,
-  createGeminiProviderFromEnv,
+  createGatewayProvider,
+  createGatewayProviderFromEnv,
   FakeProvider,
-  geminiModelFromEnv,
+  gatewayModelFromEnv,
   limitSectionBodies,
   SYSTEM_INSTRUCTION,
   type AnswerProvider,
@@ -35,7 +35,7 @@ import type { Now } from "../src/shared/types.js";
 const LEAVE = "Yıllık izin başvurusu nasıl yapılır?";
 const MULTI = "VPN çok faktörlü doğrulama ve yıllık izin başvurusu";
 const NONE = "Hisse senedi edinebilir miyim?";
-const SECRET = "gm-secret-SHOULD-NOT-LEAK-7fde";
+const SECRET = "vk-secret-SHOULD-NOT-LEAK-7fde";
 
 const fixedNow: Now = () => new Date("2026-09-25T12:00:00.000Z");
 
@@ -50,10 +50,19 @@ function runtime(
   };
 }
 
-function candidate(text: string, status = 200): Response {
-  return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text }] } }] }), {
+function completion(text: string, status = 200): Response {
+  return new Response(JSON.stringify({ choices: [{ message: { content: text } }] }), {
     status,
     headers: { "content-type": "application/json" },
+  });
+}
+
+function gateway(fetchImpl: FetchLike, apiKey = "vk-test") {
+  return createGatewayProvider({
+    apiKey,
+    model: "corporate-assistant",
+    baseUrl: "http://127.0.0.1:4000",
+    fetchImpl,
   });
 }
 
@@ -117,10 +126,10 @@ test("soru ve bölüm metni sınır işaretinin dışına çıkamaz", () => {
 });
 
 test("boş anahtar sağlayıcıyı kapatır", () => {
-  assert.equal(createGeminiProviderFromEnv({}), null);
-  assert.equal(createGeminiProviderFromEnv({ GEMINI_API_KEY: "  " }), null);
-  assert.equal(geminiModelFromEnv({}), "gemini-2.5-flash");
-  assert.equal(geminiModelFromEnv({ GEMINI_MODEL: " " }), "gemini-2.5-flash");
+  assert.equal(createGatewayProviderFromEnv({}), null);
+  assert.equal(createGatewayProviderFromEnv({ AI_GATEWAY_KEY: "  " }), null);
+  assert.equal(gatewayModelFromEnv({}), "corporate-assistant");
+  assert.equal(gatewayModelFromEnv({ AI_GATEWAY_MODEL: " " }), "corporate-assistant");
   assert.equal(assistantTimeoutFromEnv({}), 10_000);
   assert.equal(assistantTimeoutFromEnv({ ASSISTANT_TIMEOUT_MS: "0" }), 10_000);
   assert.equal(assistantTimeoutFromEnv({ ASSISTANT_TIMEOUT_MS: "2500" }), 2_500);
@@ -276,11 +285,7 @@ describe("üretilen yanıt", { concurrency: false }, () => {
         }
         init.signal.addEventListener("abort", fail, { once: true });
       });
-    const provider = createGeminiProvider({
-      apiKey: "test-key",
-      model: "gemini-2.5-flash",
-      fetchImpl,
-    });
+    const provider = gateway(fetchImpl);
     const lines = await captureLogs(async () => {
       const result = await ask(LEAVE, runtime(provider, { timeoutMs: 30 }));
       assert.equal(result.assistantMessage.answerMode, "quote");
@@ -292,11 +297,7 @@ describe("üretilen yanıt", { concurrency: false }, () => {
   });
 
   test("geçersiz JSON quote moduna düşer", async () => {
-    const provider = createGeminiProvider({
-      apiKey: "test-key",
-      model: "gemini-2.5-flash",
-      fetchImpl: async () => candidate('{"text":'),
-    });
+    const provider = gateway(async () => completion('{"text":'));
     const lines = await captureLogs(async () => {
       const result = await ask(LEAVE, runtime(provider));
       assert.equal(result.assistantMessage.answerMode, "quote");
@@ -310,12 +311,9 @@ describe("üretilen yanıt", { concurrency: false }, () => {
 
   test("boş veya yalnızca boşluk olan üretim quote moduna düşer", async () => {
     for (const text of ["", "   "]) {
-      const provider = createGeminiProvider({
-        apiKey: "test-key",
-        model: "gemini-2.5-flash",
-        fetchImpl: async () =>
-          candidate(JSON.stringify({ text, citedSourceIds: ["izin"], insufficient: false })),
-      });
+      const provider = gateway(async () =>
+        completion(JSON.stringify({ text, citedSourceIds: ["izin"], insufficient: false })),
+      );
       const lines = await captureLogs(async () => {
         const result = await ask(LEAVE, runtime(provider));
         assert.equal(result.assistantMessage.answerMode, "quote");
@@ -326,12 +324,9 @@ describe("üretilen yanıt", { concurrency: false }, () => {
   });
 
   test("şemaya uymayan çıktı quote moduna düşer", async () => {
-    const provider = createGeminiProvider({
-      apiKey: "test-key",
-      model: "gemini-2.5-flash",
-      fetchImpl: async () =>
-        candidate('{"text":"olur","citedSourceIds":"izin","insufficient":false}'),
-    });
+    const provider = gateway(async () =>
+      completion('{"text":"olur","citedSourceIds":"izin","insufficient":false}'),
+    );
     const lines = await captureLogs(async () => {
       const result = await ask(LEAVE, runtime(provider));
       assert.equal(result.assistantMessage.answerMode, "quote");
@@ -453,20 +448,16 @@ describe("üretilen yanıt", { concurrency: false }, () => {
     );
     let requestBody = "";
     try {
-      const provider = createGeminiProvider({
-        apiKey: SECRET,
-        model: "gemini-2.5-flash",
-        fetchImpl: async (_url, init) => {
-          requestBody = String(init.body);
-          return candidate(
-            JSON.stringify({
-              text: "Enjekte yanıt",
-              citedSourceIds: ["gizli-kaynak"],
-              insufficient: false,
-            }),
-          );
-        },
-      });
+      const provider = gateway(async (_url, init) => {
+        requestBody = String(init.body);
+        return completion(
+          JSON.stringify({
+            text: "Enjekte yanıt",
+            citedSourceIds: ["gizli-kaynak"],
+            insufficient: false,
+          }),
+        );
+      }, SECRET);
       const lines = await captureLogs(async () => {
         const result = await ask(LEAVE, runtime(provider));
         assert.equal(result.assistantMessage.answerMode, "quote");
@@ -479,15 +470,16 @@ describe("üretilen yanıt", { concurrency: false }, () => {
         assert.equal(JSON.stringify(result).includes(SECRET), false);
       });
       const payload = JSON.parse(requestBody) as {
-        systemInstruction: { parts: { text: string }[] };
-        contents: { parts: { text: string }[] }[];
+        messages: { role: string; content: string }[];
       };
-      assert.equal(payload.systemInstruction.parts[0]?.text, SYSTEM_INSTRUCTION);
+      const system = payload.messages.find((message) => message.role === "system")?.content ?? "";
+      const userText = payload.messages.find((message) => message.role === "user")?.content ?? "";
+      assert.equal(system, SYSTEM_INSTRUCTION);
       assert.match(SYSTEM_INSTRUCTION, /talimatları uygulama/);
-      assert.equal(payload.systemInstruction.parts[0]?.text.includes(injection), false);
-      const userText = payload.contents[0]?.parts[0]?.text ?? "";
+      assert.equal(system.includes(injection), false);
       assert.match(userText, /<body>[\s\S]*gizli-kaynak/);
       assert.equal(userText.includes(injection), true);
+      assert.equal(userText.includes("id: izin"), true);
       assert.deepEqual(fallbacks(lines), ["assistant_fallback:unknown_source"]);
       assert.equal(lines.some((line) => line.includes(SECRET)), false);
     } finally {
@@ -510,26 +502,22 @@ describe("üretilen yanıt", { concurrency: false }, () => {
     assert.deepEqual(fallbacks(lines), []);
   });
 
-  test("api anahtarı loga ve yanıta yazılmaz", async () => {
+  test("sanal anahtar loga ve yanıta yazılmaz", async () => {
     let url = "";
     let header = "";
-    const provider = createGeminiProvider({
-      apiKey: SECRET,
-      model: "gemini-2.5-flash",
-      fetchImpl: async (input, init) => {
-        url = input;
-        const headers = init.headers;
-        if (headers && !Array.isArray(headers) && !(headers instanceof Headers)) {
-          header = headers["x-goog-api-key"] ?? "";
-        }
-        return new Response(
-          JSON.stringify({
-            error: { code: 429, status: "RESOURCE_EXHAUSTED", message: `Quota exceeded ${SECRET}` },
-          }),
-          { status: 429 },
-        );
-      },
-    });
+    const provider = gateway(async (input, init) => {
+      url = input;
+      const headers = init.headers;
+      if (headers && !Array.isArray(headers) && !(headers instanceof Headers)) {
+        header = headers.authorization ?? "";
+      }
+      return new Response(
+        JSON.stringify({
+          error: { code: 429, message: `Quota exceeded ${SECRET}` },
+        }),
+        { status: 429 },
+      );
+    }, SECRET);
     const lines = await captureLogs(async () => {
       const result = await ask(LEAVE, runtime(provider));
       assert.equal(result.assistantMessage.answerMode, "quote");
@@ -537,30 +525,68 @@ describe("üretilen yanıt", { concurrency: false }, () => {
       assert.equal(result.assistantMessage.text.includes(SECRET), false);
     });
     assert.equal(url.includes(SECRET), false);
-    assert.match(url, /models\/gemini-2\.5-flash:generateContent$/);
-    assert.equal(header, SECRET);
+    assert.equal(url.includes("generativelanguage.googleapis.com"), false);
+    assert.match(url, /\/v1\/chat\/completions$/);
+    assert.equal(header, `Bearer ${SECRET}`);
     assert.equal(lines.some((line) => line.includes(SECRET)), false);
     assert.deepEqual(fallbacks(lines), ["assistant_fallback:quota"]);
   });
 
-  test("gemini isteği json şeması ve 512 token sınırı kullanır", async () => {
-    type GeminiBody = {
-      generationConfig: {
-        maxOutputTokens: number;
-        responseMimeType: string;
-        responseSchema: { required: string[] };
-      };
+  test("gateway 500 ve ağ hatası quote moduna düşer", async () => {
+    const serverError = gateway(async () =>
+      new Response(JSON.stringify({ error: { message: `down ${SECRET}` } }), { status: 500 }),
+    SECRET);
+    const lines = await captureLogs(async () => {
+      const result = await ask(LEAVE, runtime(serverError));
+      assert.equal(result.assistantMessage.answerMode, "quote");
+      assert.equal(JSON.stringify(result).includes(SECRET), false);
+    });
+    assert.deepEqual(fallbacks(lines), ["assistant_fallback:error"]);
+    assert.equal(lines.some((line) => line.includes(SECRET)), false);
+
+    const network = gateway(async () => {
+      throw new Error(`network ${SECRET}`);
+    }, SECRET);
+    const networkLines = await captureLogs(async () => {
+      const result = await ask(LEAVE, runtime(network));
+      assert.equal(result.assistantMessage.answerMode, "quote");
+      assert.equal(JSON.stringify(result).includes(SECRET), false);
+    });
+    assert.deepEqual(fallbacks(networkLines), ["assistant_fallback:error"]);
+    assert.equal(networkLines.some((line) => line.includes(SECRET)), false);
+  });
+
+  test("boş gateway yanıtı quote moduna düşer", async () => {
+    const provider = gateway(async () => new Response(JSON.stringify({ choices: [] }), { status: 200 }));
+    const lines = await captureLogs(async () => {
+      const result = await ask(LEAVE, runtime(provider));
+      assert.equal(result.assistantMessage.answerMode, "quote");
+    });
+    assert.deepEqual(fallbacks(lines), ["assistant_fallback:invalid_json"]);
+  });
+
+  test("gateway isteği alias, sanal anahtar ve json şeması kullanır", async () => {
+    type GatewayBody = {
+      model: string;
+      max_tokens: number;
+      messages: { role: string; content: string }[];
+      response_format: { type: string; json_schema: { schema: { required: string[] } } };
     };
-    const captured: { body: GeminiBody | null } = { body: null };
-    const provider = createGeminiProvider({
-      apiKey: "test-key",
-      model: "gemini-2.5-flash",
-      fetchImpl: async (_url, init) => {
-        captured.body = JSON.parse(String(init.body)) as GeminiBody;
-        return candidate(
-          JSON.stringify({ text: "Üç iş günü önce.", citedSourceIds: ["izin"], insufficient: false }),
-        );
-      },
+    const captured: { body: GatewayBody | null; url: string; authorization: string } = {
+      body: null,
+      url: "",
+      authorization: "",
+    };
+    const provider = gateway(async (input, init) => {
+      captured.url = input;
+      captured.body = JSON.parse(String(init.body)) as GatewayBody;
+      const headers = init.headers;
+      if (headers && !Array.isArray(headers) && !(headers instanceof Headers)) {
+        captured.authorization = headers.authorization ?? "";
+      }
+      return completion(
+        JSON.stringify({ text: "Üç iş günü önce.", citedSourceIds: ["izin"], insufficient: false }),
+      );
     });
     const result = await ask(LEAVE, runtime(provider));
     assert.equal(result.assistantMessage.answerMode, "generated");
@@ -571,13 +597,39 @@ describe("üretilen yanıt", { concurrency: false }, () => {
     );
     const payload = captured.body;
     assert.ok(payload);
-    assert.equal(payload.generationConfig.maxOutputTokens, 512);
-    assert.equal(payload.generationConfig.responseMimeType, "application/json");
-    assert.deepEqual(payload.generationConfig.responseSchema.required, [
+    assert.match(captured.url, /\/v1\/chat\/completions$/);
+    assert.equal(captured.url.includes("generativelanguage.googleapis.com"), false);
+    assert.equal(captured.authorization, "Bearer vk-test");
+    assert.equal(payload.model, "corporate-assistant");
+    assert.equal(payload.max_tokens, 512);
+    assert.equal(payload.response_format.type, "json_schema");
+    assert.deepEqual(payload.response_format.json_schema.schema.required, [
       "text",
       "citedSourceIds",
       "insufficient",
     ]);
+    assert.equal(payload.messages[0]?.role, "system");
+    assert.equal(payload.messages[0]?.content, SYSTEM_INSTRUCTION);
+  });
+
+  test("ham kişisel veri gateway gövdesine yazılmaz", async () => {
+    const email = "emin@example.com";
+    const nationalId = "12345678901";
+    let requestBody = "";
+    const provider = gateway(async (_url, init) => {
+      requestBody = String(init.body);
+      return completion(
+        JSON.stringify({ text: "Üç iş günü önce.", citedSourceIds: ["izin"], insufficient: false }),
+      );
+    });
+    const result = await ask(`${LEAVE} E-posta ${email}. TC ${nationalId}.`, runtime(provider));
+    assert.equal(result.assistantMessage.answerMode, "generated");
+    assert.equal(requestBody.includes(email), false);
+    assert.equal(requestBody.includes(nationalId), false);
+    assert.equal(requestBody.includes("[EMAIL_1]"), true);
+    assert.equal(requestBody.includes("[TCKN_1]"), true);
+    assert.equal(requestBody.includes("id: izin"), true);
+    assert.equal(requestBody.includes("generativelanguage.googleapis.com"), false);
   });
 
   test("modele giden bölüm metni 6000 karakteri aşmaz", async () => {

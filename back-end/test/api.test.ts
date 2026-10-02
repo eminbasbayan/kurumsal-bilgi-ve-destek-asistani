@@ -83,6 +83,13 @@ after(async () => {
   rmSync(dir, { recursive: true, force: true });
 });
 
+test("sağlık ucu oturumsuz yanıt verir", async () => {
+  const response = await fetch(`${base}/health`);
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as { status: string };
+  assert.equal(body.status, "ok");
+});
+
 test("swagger bütün uçları oturumsuz açar", async () => {
   const page = await fetch(`${base}/api-docs/`);
   assert.equal(page.status, 200);

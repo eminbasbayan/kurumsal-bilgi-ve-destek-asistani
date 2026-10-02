@@ -1,4 +1,5 @@
 .playwright-mcp/
+infra/ai-gateway/.env
 
 # Understand Anything scratch. The graph and config under .ua/ stay tracked.
 .ua/intermediate/

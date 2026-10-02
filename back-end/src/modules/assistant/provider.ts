@@ -1,10 +1,12 @@
 import { z } from "zod";
 import {
+  DEFAULT_AI_GATEWAY_MODEL,
+  DEFAULT_AI_GATEWAY_URL,
   DEFAULT_ASSISTANT_TIMEOUT_MS,
-  DEFAULT_GEMINI_MODEL,
   MAX_MODEL_OUTPUT_TOKENS,
   MAX_MODEL_SECTION_CHARS,
 } from "../../config/constants.js";
+import { createMaskState, maskText } from "../../security/sensitiveData.js";
 
 export const FALLBACK_CODES = [
   "timeout",
@@ -76,9 +78,14 @@ export const SYSTEM_INSTRUCTION = [
 
 type EnvLike = Record<string, string | undefined>;
 
-export function geminiModelFromEnv(env: EnvLike = process.env): string {
-  const model = env.GEMINI_MODEL?.trim();
-  return model || DEFAULT_GEMINI_MODEL;
+export function gatewayModelFromEnv(env: EnvLike = process.env): string {
+  const model = env.AI_GATEWAY_MODEL?.trim();
+  return model || DEFAULT_AI_GATEWAY_MODEL;
+}
+
+export function gatewayUrlFromEnv(env: EnvLike = process.env): string {
+  const url = env.AI_GATEWAY_URL?.trim();
+  return (url || DEFAULT_AI_GATEWAY_URL).replace(/\/+$/, "");
 }
 
 export function assistantTimeoutFromEnv(env: EnvLike = process.env): number {
@@ -133,20 +140,22 @@ export function buildUserContent(
 }
 
 const RESPONSE_SCHEMA = {
-  type: "OBJECT",
+  type: "object",
   properties: {
-    text: { type: "STRING" },
-    citedSourceIds: { type: "ARRAY", items: { type: "STRING" } },
-    insufficient: { type: "BOOLEAN" },
+    text: { type: "string" },
+    citedSourceIds: { type: "array", items: { type: "string" } },
+    insufficient: { type: "boolean" },
   },
   required: ["text", "citedSourceIds", "insufficient"],
+  additionalProperties: false,
 };
 
 export type FetchLike = (url: string, init: RequestInit) => Promise<Response>;
 
-export type GeminiProviderOptions = {
+export type GatewayProviderOptions = {
   apiKey: string;
   model: string;
+  baseUrl: string;
   fetchImpl?: FetchLike;
 };
 
@@ -156,31 +165,49 @@ function isQuota(status: number, body: string): boolean {
   return folded.includes("resource_exhausted") || folded.includes("quota");
 }
 
-function extractCandidateText(payload: unknown): string {
+function extractMessageContent(payload: unknown): string {
   if (!payload || typeof payload !== "object") throw new ProviderFallback("error");
-  const candidates = (payload as { candidates?: unknown }).candidates;
-  if (!Array.isArray(candidates) || candidates.length === 0) throw new ProviderFallback("error");
-  const content = (candidates[0] as { content?: { parts?: { text?: unknown }[] } }).content;
-  const parts = content?.parts ?? [];
-  const text = parts.map((part) => (typeof part?.text === "string" ? part.text : "")).join("");
-  if (!text) throw new ProviderFallback("invalid_json");
-  return text;
+  const choices = (payload as { choices?: unknown }).choices;
+  if (!Array.isArray(choices) || choices.length === 0) throw new ProviderFallback("invalid_json");
+  const message = (choices[0] as { message?: { content?: unknown } }).message;
+  const content = message?.content;
+  if (typeof content !== "string" || !content.trim()) throw new ProviderFallback("invalid_json");
+  return content;
 }
 
-export function createGeminiProvider(options: GeminiProviderOptions): AnswerProvider {
+function maskOutbound(input: GenerateInput): { question: string; sections: ProviderSection[] } {
+  const state = createMaskState();
+  const question = maskText(input.question, state);
+  const masked = input.sections.map((section) => ({
+    id: section.id,
+    title: maskText(section.title, state),
+    section: maskText(section.section, state),
+    body: maskText(section.body, state),
+  }));
+  return { question, sections: limitSectionBodies(masked) };
+}
+
+export function createGatewayProvider(options: GatewayProviderOptions): AnswerProvider {
   const fetchImpl = options.fetchImpl ?? fetch;
-  const model = options.model.trim() || DEFAULT_GEMINI_MODEL;
+  const model = options.model.trim() || DEFAULT_AI_GATEWAY_MODEL;
+  const url = `${options.baseUrl.replace(/\/+$/, "")}/v1/chat/completions`;
   return {
     async generate(input) {
-      const sections = limitSectionBodies(input.sections);
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+      const masked = maskOutbound(input);
       const request = {
-        systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
-        contents: [{ role: "user", parts: [{ text: buildUserContent(input.question, sections) }] }],
-        generationConfig: {
-          maxOutputTokens: MAX_MODEL_OUTPUT_TOKENS,
-          responseMimeType: "application/json",
-          responseSchema: RESPONSE_SCHEMA,
+        model,
+        messages: [
+          { role: "system", content: SYSTEM_INSTRUCTION },
+          { role: "user", content: buildUserContent(masked.question, masked.sections) },
+        ],
+        max_tokens: MAX_MODEL_OUTPUT_TOKENS,
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "generated_answer",
+            strict: true,
+            schema: RESPONSE_SCHEMA,
+          },
         },
       };
       let response: Response;
@@ -189,7 +216,7 @@ export function createGeminiProvider(options: GeminiProviderOptions): AnswerProv
           method: "POST",
           headers: {
             "content-type": "application/json",
-            "x-goog-api-key": options.apiKey,
+            authorization: `Bearer ${options.apiKey}`,
           },
           body: JSON.stringify(request),
           signal: input.signal,
@@ -206,7 +233,7 @@ export function createGeminiProvider(options: GeminiProviderOptions): AnswerProv
       } catch {
         throw new ProviderFallback("error");
       }
-      const text = extractCandidateText(payload);
+      const text = extractMessageContent(payload);
       let parsed: unknown;
       try {
         parsed = JSON.parse(text);
@@ -220,10 +247,14 @@ export function createGeminiProvider(options: GeminiProviderOptions): AnswerProv
   };
 }
 
-export function createGeminiProviderFromEnv(env: EnvLike = process.env): AnswerProvider | null {
-  const apiKey = env.GEMINI_API_KEY?.trim();
+export function createGatewayProviderFromEnv(env: EnvLike = process.env): AnswerProvider | null {
+  const apiKey = env.AI_GATEWAY_KEY?.trim();
   if (!apiKey) return null;
-  return createGeminiProvider({ apiKey, model: geminiModelFromEnv(env) });
+  return createGatewayProvider({
+    apiKey,
+    model: gatewayModelFromEnv(env),
+    baseUrl: gatewayUrlFromEnv(env),
+  });
 }
 
 export class FakeProvider implements AnswerProvider {

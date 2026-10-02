@@ -1,0 +1,86 @@
+# Coolify: Build Pack = Docker Compose, bu dosya depo kökünde.
+# Ön yüz ve API dışarı açılır. LiteLLM ile Postgres yalnızca iç ağdadır.
+# Sırlar Coolify ortam değişkenlerindedir; bu dosyaya yazılmaz.
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: front-end/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:?}
+    restart: unless-stopped
+    environment:
+      SERVICE_URL_FRONTEND: /
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: back-end/Dockerfile
+    restart: unless-stopped
+    environment:
+      SERVICE_URL_BACKEND_3001: /
+      HOST: 0.0.0.0
+      PORT: 3001
+      DATABASE_PATH: /data/app.sqlite
+      CORS_ORIGIN: ${CORS_ORIGIN:?}
+      AI_GATEWAY_URL: http://litellm:4000
+      AI_GATEWAY_KEY: ${AI_GATEWAY_KEY:-}
+      AI_GATEWAY_MODEL: corporate-assistant
+    volumes:
+      - sqlite-data:/data
+    depends_on:
+      litellm:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3001/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+
+  litellm:
+    build:
+      context: .
+      dockerfile: infra/ai-gateway/Dockerfile
+    restart: unless-stopped
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY:?}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?}
+      DATABASE_URL: postgresql://litellm:${SERVICE_PASSWORD_64_LITELLM}@postgres:5432/litellm
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16.10
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_64_LITELLM}
+      POSTGRES_DB: litellm
+    volumes:
+      - litellm-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm -d litellm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  sqlite-data:
+  litellm-pg:

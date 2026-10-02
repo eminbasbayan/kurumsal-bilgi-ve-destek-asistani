@@ -6,7 +6,7 @@ import { errorHandler, notFound } from "./middleware/errorHandler.js";
 import { requireAuth, requireRole } from "./middleware/auth.js";
 import { createAssistantRouter, createConversationsRouter } from "./modules/assistant/assistant.routes.js";
 import type { AssistantRuntime } from "./modules/assistant/assistant.service.js";
-import { assistantTimeoutFromEnv, createGeminiProviderFromEnv } from "./modules/assistant/provider.js";
+import { assistantTimeoutFromEnv, createGatewayProviderFromEnv } from "./modules/assistant/provider.js";
 import { createRateLimiter } from "./modules/assistant/rateLimit.js";
 import {
   createPrivateAuthRouter,
@@ -30,7 +30,7 @@ export type AssistantOverrides = {
 function assistantRuntime(overrides?: AssistantOverrides): AssistantRuntime {
   if (!overrides) {
     return {
-      provider: createGeminiProviderFromEnv(),
+      provider: createGatewayProviderFromEnv(),
       timeoutMs: assistantTimeoutFromEnv(),
       rateLimiter: createRateLimiter(),
     };
@@ -51,6 +51,9 @@ export function createApp(
   const runtime = assistantRuntime(assistant);
   const app = express();
   app.disable("x-powered-by");
+  app.get("/health", (_req, res) => {
+    res.json({ status: "ok" });
+  });
   app.use(cors({ origin: corsOrigin }));
   app.use(express.json());
   mountDocs(app);

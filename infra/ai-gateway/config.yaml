@@ -1,0 +1,14 @@
+model_list:
+  - model_name: corporate-assistant
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_API_KEY
+      rpm: 30
+      tpm: 40000
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+
+general_settings:
+  store_prompts_in_spend_logs: false
