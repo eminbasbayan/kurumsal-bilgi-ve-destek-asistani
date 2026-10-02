@@ -1,1 +1,8 @@
 .playwright-mcp/
+
+# Understand Anything scratch. The graph and config under .ua/ stay tracked.
+.ua/intermediate/
+.ua/tmp/
+.ua/diff-overlay.json
+.ua/.trash-*/
+

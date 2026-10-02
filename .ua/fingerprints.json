@@ -1,0 +1,6162 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "b0ce1678774a52a7fa3c0ab2bffab2ee2b76ff06",
+  "generatedAt": "2026-10-02T17:08:43.454Z",
+  "files": {
+    ".codex/config.toml": {
+      "filePath": ".codex/config.toml",
+      "contentHash": "7a4e8a569fd142e847be6331cf56ffe471df66366725333c7c74a97c0a0dc5ec",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    ".codex/prompts/playwright-mcp-uctan-uca-test.md": {
+      "filePath": ".codex/prompts/playwright-mcp-uctan-uca-test.md",
+      "contentHash": "b85d2205162555c32501b05232049739fb256be924de12cb69bd381932fadc97",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 147,
+      "hasStructuralAnalysis": false
+    },
+    ".codex/skills/frontend-development/SKILL.md": {
+      "filePath": ".codex/skills/frontend-development/SKILL.md",
+      "contentHash": "951c8663db8683b9c82f4b54addc42c0ef325903aa833742317ce1e2c4feb89d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 181,
+      "hasStructuralAnalysis": false
+    },
+    ".cursor/rules/backend/api-modules.mdc": {
+      "filePath": ".cursor/rules/backend/api-modules.mdc",
+      "contentHash": "918de4c364e595c700f4f4fea3da4b03d8a169acbed7d13fe91f2775d83880b7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 42,
+      "hasStructuralAnalysis": false
+    },
+    ".cursor/rules/backend/database.mdc": {
+      "filePath": ".cursor/rules/backend/database.mdc",
+      "contentHash": "69e0cb33094bfb223522a10c4116f65ffd92b3da22becacfec9d8db83e7a7bda",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 42,
+      "hasStructuralAnalysis": false
+    },
+    ".cursor/rules/backend/tests.mdc": {
+      "filePath": ".cursor/rules/backend/tests.mdc",
+      "contentHash": "11bebf451215504ed9e32b50ab3c6e5a4564027a5b4f96537eaf87d50dad2daf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": false
+    },
+    ".cursor/rules/frontend/react-state.mdc": {
+      "filePath": ".cursor/rules/frontend/react-state.mdc",
+      "contentHash": "47e7424a008f2e9c228c123c9372d3cf85e78a0744000b6e1b7642d73d1133d8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 32,
+      "hasStructuralAnalysis": false
+    },
+    ".cursor/rules/frontend/styles.mdc": {
+      "filePath": ".cursor/rules/frontend/styles.mdc",
+      "contentHash": "aa3ca11636671433fa2d71723211f2bedfa893e1b964a639c940788cd394cec9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 40,
+      "hasStructuralAnalysis": false
+    },
+    ".cursor/rules/turkish-text-and-encoding.mdc": {
+      "filePath": ".cursor/rules/turkish-text-and-encoding.mdc",
+      "contentHash": "f5576975170361546822f6144a659a5c7e4666654b298472e62fe0d4e7b43bb8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 34,
+      "hasStructuralAnalysis": false
+    },
+    ".ua/config.json": {
+      "filePath": ".ua/config.json",
+      "contentHash": "c8c9b1408c95bc1c1f31098bec9576d77481da500bdc549eff1feff3ed1ec831",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4,
+      "hasStructuralAnalysis": false
+    },
+    "AGENTS.md": {
+      "filePath": "AGENTS.md",
+      "contentHash": "1dd55bc4c7db403e1238e2f70f1bbc6e9eeda265fd07c7e3d53d83405d2b1290",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 85,
+      "hasStructuralAnalysis": false
+    },
+    "PROJE_TANIMI.md": {
+      "filePath": "PROJE_TANIMI.md",
+      "contentHash": "85930de90302209cee9a298e9ea8f3d206d05f81dfb286740adbddc4eae821ae",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 622,
+      "hasStructuralAnalysis": false
+    },
+    "back-end/.env.example": {
+      "filePath": "back-end/.env.example",
+      "contentHash": "25b3396e02c202fcb2b1cfc2efa74b8665567b069a1b1b3e3114c31ad975f440",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5,
+      "hasStructuralAnalysis": false
+    },
+    "back-end/package.json": {
+      "filePath": "back-end/package.json",
+      "contentHash": "8223a2b720f47818dc3a3a6c3315eb807347783a29d4395b524574ffdbec6fda",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": false
+    },
+    "back-end/src/app.ts": {
+      "filePath": "back-end/src/app.ts",
+      "contentHash": "830f0a0a9bec369d867f4d5c27ff9b8a877946d72fbec96e7bc28354d2f42653",
+      "functions": [
+        {
+          "name": "assistantRuntime",
+          "params": [
+            "overrides"
+          ],
+          "returnType": "AssistantRuntime",
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "createApp",
+          "params": [
+            "db",
+            "now",
+            "corsOrigin",
+            "assistant"
+          ],
+          "returnType": "express.Express",
+          "exported": true,
+          "lineCount": 28
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "cors",
+          "specifiers": [
+            "cors"
+          ]
+        },
+        {
+          "source": "express",
+          "specifiers": [
+            "express"
+          ]
+        },
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "./docs/swagger.js",
+          "specifiers": [
+            "mountDocs"
+          ]
+        },
+        {
+          "source": "./middleware/errorHandler.js",
+          "specifiers": [
+            "errorHandler",
+            "notFound"
+          ]
+        },
+        {
+          "source": "./middleware/auth.js",
+          "specifiers": [
+            "requireAuth",
+            "requireRole"
+          ]
+        },
+        {
+          "source": "./modules/assistant/assistant.routes.js",
+          "specifiers": [
+            "createAssistantRouter",
+            "createConversationsRouter"
+          ]
+        },
+        {
+          "source": "./modules/assistant/assistant.service.js",
+          "specifiers": [
+            "AssistantRuntime"
+          ]
+        },
+        {
+          "source": "./modules/assistant/provider.js",
+          "specifiers": [
+            "assistantTimeoutFromEnv",
+            "createGeminiProviderFromEnv"
+          ]
+        },
+        {
+          "source": "./modules/assistant/rateLimit.js",
+          "specifiers": [
+            "createRateLimiter"
+          ]
+        },
+        {
+          "source": "./modules/auth/auth.routes.js",
+          "specifiers": [
+            "createPrivateAuthRouter",
+            "createProfileRouter",
+            "createPublicAuthRouter"
+          ]
+        },
+        {
+          "source": "./modules/categories/categories.routes.js",
+          "specifiers": [
+            "createCategoriesRouter"
+          ]
+        },
+        {
+          "source": "./modules/notifications/notifications.routes.js",
+          "specifiers": [
+            "createNotificationsRouter"
+          ]
+        },
+        {
+          "source": "./modules/requests/requests.routes.js",
+          "specifiers": [
+            "createRequestsRouter"
+          ]
+        },
+        {
+          "source": "./modules/sources/sources.routes.js",
+          "specifiers": [
+            "createSourcesRouter"
+          ]
+        },
+        {
+          "source": "./modules/support/support.routes.js",
+          "specifiers": [
+            "createSupportRouter"
+          ]
+        },
+        {
+          "source": "./config/constants.js",
+          "specifiers": [
+            "DEFAULT_CORS_ORIGIN"
+          ]
+        },
+        {
+          "source": "./shared/types.js",
+          "specifiers": [
+            "Now"
+          ]
+        }
+      ],
+      "exports": [
+        "createApp"
+      ],
+      "totalLines": 73,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/config/constants.ts": {
+      "filePath": "back-end/src/config/constants.ts",
+      "contentHash": "a43d0607aed0a209c7fa4553b7ed22f3357878ff74cea43996c51d1842c8a832",
+      "functions": [
+        {
+          "name": "teamFor",
+          "params": [
+            "category"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "DEMO_EMAIL",
+        "DEMO_PASSWORD",
+        "DEMO_LOGIN_MESSAGE",
+        "OPEN_STATUSES",
+        "CLOSED_STATUSES",
+        "REQUEST_STATUSES",
+        "PRIORITIES",
+        "CATEGORIES",
+        "MAX_ATTACHMENT_BYTES",
+        "MAX_SUBJECT_LENGTH",
+        "MAX_DESCRIPTION_LENGTH",
+        "MAX_MESSAGE_LENGTH",
+        "MAX_NOTE_LENGTH",
+        "MAX_CLOSE_REASON_LENGTH",
+        "MAX_QUESTION_LENGTH",
+        "DEFAULT_GEMINI_MODEL",
+        "DEFAULT_ASSISTANT_TIMEOUT_MS",
+        "MAX_MODEL_SECTION_CHARS",
+        "MAX_MODEL_OUTPUT_TOKENS",
+        "GENERATION_RATE_LIMIT",
+        "GENERATION_RATE_WINDOW_MS",
+        "MAX_ASSISTANT_CONTEXT_LENGTH",
+        "MAX_FILE_NAME_LENGTH",
+        "DEFAULT_CORS_ORIGIN",
+        "ATTACHMENT_MIME_TYPES",
+        "DEFAULT_CONVERSATION_TITLE",
+        "STATUS_TRANSITIONS",
+        "USER_ROLES",
+        "TIMELINE_EVENT_TYPES",
+        "SYSTEM_ACTOR",
+        "teamFor",
+        "SUPPORT_TEAMS",
+        "DEMO_SUPPORT_ACCOUNTS"
+      ],
+      "totalLines": 143,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/db/database.ts": {
+      "filePath": "back-end/src/db/database.ts",
+      "contentHash": "7db2f9f87113b6cd75b13f6d22341473ab932334cb5d3f35dced37bb206cdad9",
+      "functions": [
+        {
+          "name": "assertFts5Available",
+          "params": [
+            "probe"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "openDatabase",
+          "params": [
+            "path"
+          ],
+          "returnType": "DatabaseSync",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "migrateAndSeed",
+          "params": [
+            "db"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "mkdirSync"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "dirname"
+          ]
+        },
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        },
+        {
+          "source": "./migrations.js",
+          "specifiers": [
+            "runMigrations"
+          ]
+        },
+        {
+          "source": "./seed.js",
+          "specifiers": [
+            "seedIfEmpty"
+          ]
+        }
+      ],
+      "exports": [
+        "defaultDatabasePath",
+        "SCHEMA",
+        "FTS5_MISSING_MESSAGE",
+        "assertFts5Available",
+        "openDatabase",
+        "migrateAndSeed"
+      ],
+      "totalLines": 155,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/db/documents.ts": {
+      "filePath": "back-end/src/db/documents.ts",
+      "contentHash": "dd39918938884d9638dd31b215483098361d95bb608923d7b5ba11a567181264",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "SOURCE_SECTIONS",
+        "LEGACY_SECTION_IDS"
+      ],
+      "totalLines": 508,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/db/migrations.ts": {
+      "filePath": "back-end/src/db/migrations.ts",
+      "contentHash": "846e8d92527b4e35d24bdb1e75192a3d7819c9cd342617acda00ed9f9afcec81",
+      "functions": [
+        {
+          "name": "quoteList",
+          "params": [
+            "values"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "userVersion",
+          "params": [
+            "db"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "ensureSupportStaff",
+          "params": [
+            "db"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 27
+        },
+        {
+          "name": "assignDemoRequest",
+          "params": [
+            "db",
+            "number",
+            "email",
+            "team",
+            "assigneeName"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 31
+        },
+        {
+          "name": "migrateV1",
+          "params": [
+            "db"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 35
+        },
+        {
+          "name": "applySourceCatalog",
+          "params": [
+            "db"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 43
+        },
+        {
+          "name": "rebuildSourceFts",
+          "params": [
+            "db"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 26
+        },
+        {
+          "name": "migrateV2",
+          "params": [
+            "db"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 28
+        },
+        {
+          "name": "runMigrations",
+          "params": [
+            "db",
+            "targetVersion"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../config/constants.js",
+          "specifiers": [
+            "DEMO_PASSWORD",
+            "DEMO_SUPPORT_ACCOUNTS",
+            "REQUEST_STATUSES",
+            "SUPPORT_TEAMS",
+            "SYSTEM_ACTOR",
+            "TIMELINE_EVENT_TYPES",
+            "USER_ROLES"
+          ]
+        },
+        {
+          "source": "../shared/normalize.js",
+          "specifiers": [
+            "normalizeText"
+          ]
+        },
+        {
+          "source": "../shared/passwords.js",
+          "specifiers": [
+            "hashPassword"
+          ]
+        },
+        {
+          "source": "./documents.js",
+          "specifiers": [
+            "SOURCE_SECTIONS"
+          ]
+        },
+        {
+          "source": "./sql.js",
+          "specifiers": [
+            "transaction"
+          ]
+        }
+      ],
+      "exports": [
+        "runMigrations"
+      ],
+      "totalLines": 237,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/db/seed.ts": {
+      "filePath": "back-end/src/db/seed.ts",
+      "contentHash": "7770ee0046b5330a704538e9ed6855f2301cdc5a4957b88bfb25d00f355d15aa",
+      "functions": [
+        {
+          "name": "at",
+          "params": [
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "seedIfEmpty",
+          "params": [
+            "db"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 124
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../config/constants.js",
+          "specifiers": [
+            "DEMO_EMAIL",
+            "DEMO_PASSWORD",
+            "teamFor"
+          ]
+        },
+        {
+          "source": "../shared/passwords.js",
+          "specifiers": [
+            "hashPassword"
+          ]
+        },
+        {
+          "source": "./sql.js",
+          "specifiers": [
+            "insertedId",
+            "transaction"
+          ]
+        }
+      ],
+      "exports": [
+        "seedIfEmpty"
+      ],
+      "totalLines": 306,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/db/sql.ts": {
+      "filePath": "back-end/src/db/sql.ts",
+      "contentHash": "de1dc8cf33e0dec414030dfe00c036b5f0dc91dead5f7dbcd81b06e07cc7abb4",
+      "functions": [
+        {
+          "name": "transaction",
+          "params": [
+            "db",
+            "run"
+          ],
+          "returnType": "T",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "insertedId",
+          "params": [
+            "result"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        }
+      ],
+      "exports": [
+        "transaction",
+        "insertedId"
+      ],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/docs/openapi.ts": {
+      "filePath": "back-end/src/docs/openapi.ts",
+      "contentHash": "a16a9c3d4c4e4454df633af00200ccd041afc60faa7c84e46bd9a9ef9efe2d76",
+      "functions": [
+        {
+          "name": "json",
+          "params": [
+            "schema",
+            "example"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "error",
+          "params": [
+            "description",
+            "example"
+          ],
+          "exported": false,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../config/constants.js",
+          "specifiers": [
+            "ATTACHMENT_MIME_TYPES",
+            "CATEGORIES",
+            "DEMO_EMAIL",
+            "DEMO_LOGIN_MESSAGE",
+            "DEMO_PASSWORD",
+            "DEMO_SUPPORT_ACCOUNTS",
+            "MAX_ASSISTANT_CONTEXT_LENGTH",
+            "MAX_CLOSE_REASON_LENGTH",
+            "MAX_DESCRIPTION_LENGTH",
+            "MAX_FILE_NAME_LENGTH",
+            "MAX_MESSAGE_LENGTH",
+            "MAX_NOTE_LENGTH",
+            "MAX_QUESTION_LENGTH",
+            "MAX_SUBJECT_LENGTH",
+            "PRIORITIES",
+            "REQUEST_STATUSES",
+            "TIMELINE_EVENT_TYPES",
+            "USER_ROLES"
+          ]
+        }
+      ],
+      "exports": [
+        "openApiDocument"
+      ],
+      "totalLines": 843,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/docs/swagger.ts": {
+      "filePath": "back-end/src/docs/swagger.ts",
+      "contentHash": "f80a2b6cd88b5fc8f33b6140e3d9a8667a9d88f7c50a5c257a19ba8a2519034a",
+      "functions": [
+        {
+          "name": "mountDocs",
+          "params": [
+            "app"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "Express"
+          ]
+        },
+        {
+          "source": "swagger-ui-express",
+          "specifiers": [
+            "serve",
+            "setup"
+          ]
+        },
+        {
+          "source": "./openapi.js",
+          "specifiers": [
+            "openApiDocument"
+          ]
+        }
+      ],
+      "exports": [
+        "mountDocs"
+      ],
+      "totalLines": 18,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/index.ts": {
+      "filePath": "back-end/src/index.ts",
+      "contentHash": "fa5f5f2c750e81ae363c564388a50c646b8249f4366dcfacf3a04a55abc7ef94",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./app.js",
+          "specifiers": [
+            "createApp"
+          ]
+        },
+        {
+          "source": "./config/constants.js",
+          "specifiers": [
+            "DEFAULT_CORS_ORIGIN"
+          ]
+        },
+        {
+          "source": "./db/database.js",
+          "specifiers": [
+            "defaultDatabasePath",
+            "migrateAndSeed",
+            "openDatabase"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/middleware/auth.ts": {
+      "filePath": "back-end/src/middleware/auth.ts",
+      "contentHash": "d9801a01bfe23216e93d0375046fe8b4dd8227ef0e813186be361ee872daebb3",
+      "functions": [
+        {
+          "name": "bearerToken",
+          "params": [
+            "header"
+          ],
+          "returnType": "string | undefined",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "requireAuth",
+          "params": [
+            "db",
+            "now"
+          ],
+          "returnType": "RequestHandler",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "requireRole",
+          "params": [
+            "role"
+          ],
+          "returnType": "RequestHandler",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "RequestHandler"
+          ]
+        },
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../config/constants.js",
+          "specifiers": [
+            "UserRole"
+          ]
+        },
+        {
+          "source": "../modules/auth/auth.service.js",
+          "specifiers": [
+            "employeeForToken"
+          ]
+        },
+        {
+          "source": "../shared/http.js",
+          "specifiers": [
+            "HttpError"
+          ]
+        },
+        {
+          "source": "../shared/types.js",
+          "specifiers": [
+            "Employee",
+            "Now"
+          ]
+        }
+      ],
+      "exports": [
+        "bearerToken",
+        "requireAuth",
+        "requireRole"
+      ],
+      "totalLines": 32,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/middleware/errorHandler.ts": {
+      "filePath": "back-end/src/middleware/errorHandler.ts",
+      "contentHash": "f421b0b688e863d68d3ed9db3c61659f20d0b5896be835b0fd47d03411286120",
+      "functions": [
+        {
+          "name": "errorHandler",
+          "params": [
+            "error",
+            "_req",
+            "res",
+            "_next"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "notFound",
+          "params": [
+            "_req",
+            "res"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "ErrorRequestHandler",
+            "RequestHandler"
+          ]
+        },
+        {
+          "source": "../shared/http.js",
+          "specifiers": [
+            "HttpError"
+          ]
+        }
+      ],
+      "exports": [
+        "errorHandler",
+        "notFound"
+      ],
+      "totalLines": 20,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/assistant/assistant.routes.ts": {
+      "filePath": "back-end/src/modules/assistant/assistant.routes.ts",
+      "contentHash": "457183c0ad6226987882abb9986cc8aaf27b491ed4f80dbf1bf342e48f2eeb08",
+      "functions": [
+        {
+          "name": "createConversationsRouter",
+          "params": [
+            "db",
+            "now",
+            "assistant"
+          ],
+          "returnType": "Router",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "createAssistantRouter",
+          "params": [
+            "db"
+          ],
+          "returnType": "Router",
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "Router"
+          ]
+        },
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../shared/types.js",
+          "specifiers": [
+            "employeeOf",
+            "parseId",
+            "Now"
+          ]
+        },
+        {
+          "source": "../../shared/validate.js",
+          "specifiers": [
+            "parseInput"
+          ]
+        },
+        {
+          "source": "./assistant.schema.js",
+          "specifiers": [
+            "conversationSchema",
+            "feedbackSchema"
+          ]
+        },
+        {
+          "source": "./assistant.service.js",
+          "specifiers": [
+            "addConversationMessage",
+            "createConversation",
+            "getConversation",
+            "listConversations",
+            "setMessageFeedback",
+            "AssistantRuntime"
+          ]
+        }
+      ],
+      "exports": [
+        "createConversationsRouter",
+        "createAssistantRouter"
+      ],
+      "totalLines": 65,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/assistant/assistant.schema.ts": {
+      "filePath": "back-end/src/modules/assistant/assistant.schema.ts",
+      "contentHash": "c615cbdc4a629d907ff0b54285c2fe273a0ce73ff2832220d548cc1249bff11e",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "zod",
+          "specifiers": [
+            "z"
+          ]
+        },
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "MAX_QUESTION_LENGTH"
+          ]
+        }
+      ],
+      "exports": [
+        "questionSchema",
+        "conversationSchema",
+        "feedbackSchema"
+      ],
+      "totalLines": 25,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/assistant/assistant.service.ts": {
+      "filePath": "back-end/src/modules/assistant/assistant.service.ts",
+      "contentHash": "ee689d7f800547e30b6c2a4aace5a1381aac2255c74a4b9a5ec9d9935934157d",
+      "functions": [
+        {
+          "name": "sourcesForMessage",
+          "params": [
+            "db",
+            "messageId"
+          ],
+          "returnType": "SourceRecord[]",
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "messageView",
+          "params": [
+            "db",
+            "row"
+          ],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "publicSource",
+          "params": [
+            "section"
+          ],
+          "returnType": "SourceRecord",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "quoteFromSearch",
+          "params": [
+            "found"
+          ],
+          "returnType": "AnswerPayload",
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "acceptGenerated",
+          "params": [
+            "found",
+            "sent",
+            "generated"
+          ],
+          "returnType": "{ ok: true; value: AnswerPayload } | { ok: false; code: FallbackCode }",
+          "exported": false,
+          "lineCount": 24
+        },
+        {
+          "name": "answerQuestion",
+          "params": [
+            "db",
+            "question"
+          ],
+          "returnType": "AnswerPayload",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "resolveAnswer",
+          "params": [
+            "db",
+            "question",
+            "employeeId",
+            "now",
+            "assistant"
+          ],
+          "returnType": "Promise<AnswerPayload>",
+          "exported": false,
+          "lineCount": 50
+        },
+        {
+          "name": "listConversations",
+          "params": [
+            "db",
+            "employeeId"
+          ],
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "createConversation",
+          "params": [
+            "db",
+            "employeeId",
+            "title",
+            "now"
+          ],
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "getConversation",
+          "params": [
+            "db",
+            "employeeId",
+            "id"
+          ],
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "addConversationMessage",
+          "params": [
+            "db",
+            "employeeId",
+            "conversationId",
+            "body",
+            "now",
+            "assistant"
+          ],
+          "exported": true,
+          "lineCount": 64
+        },
+        {
+          "name": "setMessageFeedback",
+          "params": [
+            "db",
+            "employeeId",
+            "messageId",
+            "helpful"
+          ],
+          "exported": true,
+          "lineCount": 27
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "DEFAULT_CONVERSATION_TITLE"
+          ]
+        },
+        {
+          "source": "../../db/sql.js",
+          "specifiers": [
+            "insertedId",
+            "transaction"
+          ]
+        },
+        {
+          "source": "../../shared/http.js",
+          "specifiers": [
+            "HttpError"
+          ]
+        },
+        {
+          "source": "../../shared/validate.js",
+          "specifiers": [
+            "parseInput"
+          ]
+        },
+        {
+          "source": "../../shared/types.js",
+          "specifiers": [
+            "Now"
+          ]
+        },
+        {
+          "source": "../sources/sources.service.js",
+          "specifiers": [
+            "sourceFromRow",
+            "SourceRecord",
+            "SourceRow"
+          ]
+        },
+        {
+          "source": "./assistant.schema.js",
+          "specifiers": [
+            "questionSchema"
+          ]
+        },
+        {
+          "source": "./provider.js",
+          "specifiers": [
+            "isAbortError",
+            "limitSectionBodies",
+            "logAssistantFallback",
+            "ProviderFallback",
+            "AnswerProvider",
+            "FallbackCode",
+            "GenerateResult",
+            "ProviderSection"
+          ]
+        },
+        {
+          "source": "./rateLimit.js",
+          "specifiers": [
+            "RateLimiter"
+          ]
+        },
+        {
+          "source": "./reply.js",
+          "specifiers": [
+            "composeAnswer",
+            "AnswerMode"
+          ]
+        },
+        {
+          "source": "./search.js",
+          "specifiers": [
+            "searchSections",
+            "RankedSection"
+          ]
+        }
+      ],
+      "exports": [
+        "answerQuestion",
+        "listConversations",
+        "createConversation",
+        "getConversation",
+        "addConversationMessage",
+        "setMessageFeedback"
+      ],
+      "totalLines": 331,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/assistant/provider.ts": {
+      "filePath": "back-end/src/modules/assistant/provider.ts",
+      "contentHash": "18f061205a1b00e13d3bb050dcde009ae66f58247133afea8d7ace1774aed9f7",
+      "functions": [
+        {
+          "name": "logAssistantFallback",
+          "params": [
+            "code"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "isAbortError",
+          "params": [
+            "error"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "geminiModelFromEnv",
+          "params": [
+            "env"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "assistantTimeoutFromEnv",
+          "params": [
+            "env"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "limitSectionBodies",
+          "params": [
+            "sections",
+            "maxChars"
+          ],
+          "returnType": "T[]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "fence",
+          "params": [
+            "name",
+            "value"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "buildUserContent",
+          "params": [
+            "question",
+            "sections"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "isQuota",
+          "params": [
+            "status",
+            "body"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "extractCandidateText",
+          "params": [
+            "payload"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "createGeminiProvider",
+          "params": [
+            "options"
+          ],
+          "returnType": "AnswerProvider",
+          "exported": true,
+          "lineCount": 52
+        },
+        {
+          "name": "createGeminiProviderFromEnv",
+          "params": [
+            "env"
+          ],
+          "returnType": "AnswerProvider | null",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProviderFallback",
+          "methods": [
+            "constructor"
+          ],
+          "properties": [
+            "code"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "FakeProvider",
+          "methods": [
+            "constructor",
+            "generate"
+          ],
+          "properties": [
+            "calls"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [
+        {
+          "source": "zod",
+          "specifiers": [
+            "z"
+          ]
+        },
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "DEFAULT_ASSISTANT_TIMEOUT_MS",
+            "DEFAULT_GEMINI_MODEL",
+            "MAX_MODEL_OUTPUT_TOKENS",
+            "MAX_MODEL_SECTION_CHARS"
+          ]
+        }
+      ],
+      "exports": [
+        "FALLBACK_CODES",
+        "ProviderFallback",
+        "logAssistantFallback",
+        "isAbortError",
+        "generatedAnswerSchema",
+        "SYSTEM_INSTRUCTION",
+        "geminiModelFromEnv",
+        "assistantTimeoutFromEnv",
+        "limitSectionBodies",
+        "buildUserContent",
+        "createGeminiProvider",
+        "createGeminiProviderFromEnv",
+        "FakeProvider"
+      ],
+      "totalLines": 241,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/assistant/rateLimit.ts": {
+      "filePath": "back-end/src/modules/assistant/rateLimit.ts",
+      "contentHash": "32237edf148887b769ab82d5f69055fa5c1bd423b6337da4931f6095f15f53a6",
+      "functions": [
+        {
+          "name": "createRateLimiter",
+          "params": [
+            "limit",
+            "windowMs"
+          ],
+          "returnType": "RateLimiter",
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "GENERATION_RATE_LIMIT",
+            "GENERATION_RATE_WINDOW_MS"
+          ]
+        }
+      ],
+      "exports": [
+        "createRateLimiter"
+      ],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/assistant/reply.ts": {
+      "filePath": "back-end/src/modules/assistant/reply.ts",
+      "contentHash": "0a1ca7ad4976315d60502566ee53d945411a510ec713d6d01b769cf80f383b39",
+      "functions": [
+        {
+          "name": "composeAnswer",
+          "params": [
+            "sections"
+          ],
+          "returnType": "{\r\n  text: string;\r\n  answerMode: \"quote\" | \"no_source\";\r\n}",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "suggestCategory",
+          "params": [
+            "sources"
+          ],
+          "returnType": "{ category: string; subcategory: string } | null",
+          "exported": true,
+          "lineCount": 11
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "QUOTE_INTRO",
+        "NO_SOURCE_TEXT",
+        "OTHER_SOURCES_LABEL",
+        "composeAnswer",
+        "suggestCategory"
+      ],
+      "totalLines": 41,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/assistant/search.ts": {
+      "filePath": "back-end/src/modules/assistant/search.ts",
+      "contentHash": "bbf0c5d617943c62adca7ceace7889318d489cf1942c982425ecda42dbd8bf54",
+      "functions": [
+        {
+          "name": "searchSections",
+          "params": [
+            "db",
+            "question"
+          ],
+          "returnType": "RankedSection[]",
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../shared/normalize.js",
+          "specifiers": [
+            "buildFtsQuery"
+          ]
+        },
+        {
+          "source": "../sources/sources.service.js",
+          "specifiers": [
+            "sourceFromRow",
+            "SourceRow"
+          ]
+        }
+      ],
+      "exports": [
+        "MIN_BM25_SCORE",
+        "RELATIVE_BM25",
+        "searchSections"
+      ],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/auth/auth.routes.ts": {
+      "filePath": "back-end/src/modules/auth/auth.routes.ts",
+      "contentHash": "3c1845a8566321fbe51876425f292717e4ae3ca145e094499a2457a25a84d406",
+      "functions": [
+        {
+          "name": "createPublicAuthRouter",
+          "params": [
+            "db",
+            "now"
+          ],
+          "returnType": "Router",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "createPrivateAuthRouter",
+          "params": [
+            "db"
+          ],
+          "returnType": "Router",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "createProfileRouter",
+          "params": [],
+          "returnType": "Router",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "Router"
+          ]
+        },
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "DEMO_LOGIN_MESSAGE"
+          ]
+        },
+        {
+          "source": "../../middleware/auth.js",
+          "specifiers": [
+            "bearerToken"
+          ]
+        },
+        {
+          "source": "../../shared/http.js",
+          "specifiers": [
+            "HttpError"
+          ]
+        },
+        {
+          "source": "../../shared/validate.js",
+          "specifiers": [
+            "parseInput"
+          ]
+        },
+        {
+          "source": "./auth.schema.js",
+          "specifiers": [
+            "loginSchema"
+          ]
+        },
+        {
+          "source": "../../shared/passwords.js",
+          "specifiers": [
+            "createToken",
+            "verifyPassword"
+          ]
+        },
+        {
+          "source": "../../shared/types.js",
+          "specifiers": [
+            "employeeOf",
+            "Now"
+          ]
+        },
+        {
+          "source": "./auth.service.js",
+          "specifiers": [
+            "createSession",
+            "deleteSession",
+            "findEmployeeByEmail",
+            "listDemoAccounts"
+          ]
+        }
+      ],
+      "exports": [
+        "createPublicAuthRouter",
+        "createPrivateAuthRouter",
+        "createProfileRouter"
+      ],
+      "totalLines": 56,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/auth/auth.schema.ts": {
+      "filePath": "back-end/src/modules/auth/auth.schema.ts",
+      "contentHash": "4c2dfdce356558926c34e5ce791ccb2778fb32801173ad42aaf3599ffac2fae9",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "zod",
+          "specifiers": [
+            "z"
+          ]
+        }
+      ],
+      "exports": [
+        "loginSchema"
+      ],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/auth/auth.service.ts": {
+      "filePath": "back-end/src/modules/auth/auth.service.ts",
+      "contentHash": "61d4a71fbdb5907a1946556d5de286dae61fdadfa6a3741f44cbe2198664979c",
+      "functions": [
+        {
+          "name": "employeeFrom",
+          "params": [
+            "row"
+          ],
+          "returnType": "Employee",
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "findEmployeeByEmail",
+          "params": [
+            "db",
+            "email"
+          ],
+          "returnType": "(Employee & { passwordHash: string }) | undefined",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "listDemoAccounts",
+          "params": [
+            "db"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "createSession",
+          "params": [
+            "db",
+            "employeeId",
+            "token",
+            "expiresAt",
+            "now"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "employeeForToken",
+          "params": [
+            "db",
+            "token",
+            "now"
+          ],
+          "returnType": "Employee | undefined",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "deleteSession",
+          "params": [
+            "db",
+            "token"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "DEMO_EMAIL",
+            "DEMO_SUPPORT_ACCOUNTS",
+            "UserRole"
+          ]
+        },
+        {
+          "source": "../../shared/types.js",
+          "specifiers": [
+            "Employee",
+            "Now"
+          ]
+        }
+      ],
+      "exports": [
+        "findEmployeeByEmail",
+        "listDemoAccounts",
+        "createSession",
+        "employeeForToken",
+        "deleteSession"
+      ],
+      "totalLines": 90,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/categories/categories.routes.ts": {
+      "filePath": "back-end/src/modules/categories/categories.routes.ts",
+      "contentHash": "df75fb57fda1ab2f0d8cb93879aa10eab85dfb277d90ea12224a20a1df1aa927",
+      "functions": [
+        {
+          "name": "createCategoriesRouter",
+          "params": [],
+          "returnType": "Router",
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "Router"
+          ]
+        },
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "CATEGORIES"
+          ]
+        }
+      ],
+      "exports": [
+        "createCategoriesRouter"
+      ],
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/notifications/notifications.routes.ts": {
+      "filePath": "back-end/src/modules/notifications/notifications.routes.ts",
+      "contentHash": "850bcec25216ad628f05c162f9c7945b86138f4ab1885996cf2c94c367b14bb3",
+      "functions": [
+        {
+          "name": "createNotificationsRouter",
+          "params": [
+            "db"
+          ],
+          "returnType": "Router",
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "Router"
+          ]
+        },
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../shared/types.js",
+          "specifiers": [
+            "employeeOf",
+            "parseId"
+          ]
+        },
+        {
+          "source": "./notifications.service.js",
+          "specifiers": [
+            "listNotifications",
+            "markAllNotificationsRead",
+            "markNotificationRead"
+          ]
+        }
+      ],
+      "exports": [
+        "createNotificationsRouter"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/notifications/notifications.service.ts": {
+      "filePath": "back-end/src/modules/notifications/notifications.service.ts",
+      "contentHash": "b802d4a26538f0957f54ccb01755dc3794868088942a162ed4f1785a9c368b30",
+      "functions": [
+        {
+          "name": "listNotifications",
+          "params": [
+            "db",
+            "employeeId"
+          ],
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "markNotificationRead",
+          "params": [
+            "db",
+            "employeeId",
+            "id"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "markAllNotificationsRead",
+          "params": [
+            "db",
+            "employeeId"
+          ],
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../shared/http.js",
+          "specifiers": [
+            "HttpError"
+          ]
+        }
+      ],
+      "exports": [
+        "listNotifications",
+        "markNotificationRead",
+        "markAllNotificationsRead"
+      ],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/requests/requests.routes.ts": {
+      "filePath": "back-end/src/modules/requests/requests.routes.ts",
+      "contentHash": "b45a0fe7d4eccc70d232693d40fe1e9149c798e4524c0671fc417cc6c182abae",
+      "functions": [
+        {
+          "name": "createRequestsRouter",
+          "params": [
+            "db",
+            "now"
+          ],
+          "returnType": "Router",
+          "exported": true,
+          "lineCount": 34
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "Router"
+          ]
+        },
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../shared/http.js",
+          "specifiers": [
+            "queryText"
+          ]
+        },
+        {
+          "source": "../../shared/types.js",
+          "specifiers": [
+            "employeeOf",
+            "parseId",
+            "Now"
+          ]
+        },
+        {
+          "source": "./requests.service.js",
+          "specifiers": [
+            "addRequestMessage",
+            "createRequest",
+            "getRequest",
+            "listRequests",
+            "parseCreateRequest",
+            "requestSummary"
+          ]
+        }
+      ],
+      "exports": [
+        "createRequestsRouter"
+      ],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/requests/requests.schema.ts": {
+      "filePath": "back-end/src/modules/requests/requests.schema.ts",
+      "contentHash": "e450350e5cc3dc700b60d292e30fac1e7c4cd8b302e8afb1f0652e131515be90",
+      "functions": [
+        {
+          "name": "issue",
+          "params": [
+            "context",
+            "message"
+          ],
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "zod",
+          "specifiers": [
+            "z"
+          ]
+        },
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "ATTACHMENT_MIME_TYPES",
+            "CATEGORIES",
+            "MAX_ASSISTANT_CONTEXT_LENGTH",
+            "MAX_ATTACHMENT_BYTES",
+            "MAX_DESCRIPTION_LENGTH",
+            "MAX_FILE_NAME_LENGTH",
+            "MAX_MESSAGE_LENGTH",
+            "MAX_SUBJECT_LENGTH",
+            "PRIORITIES",
+            "REQUEST_STATUSES",
+            "Priority"
+          ]
+        }
+      ],
+      "exports": [
+        "createRequestSchema",
+        "requestMessageSchema",
+        "requestListFilterSchema"
+      ],
+      "totalLines": 154,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/requests/requests.service.ts": {
+      "filePath": "back-end/src/modules/requests/requests.service.ts",
+      "contentHash": "581481e6ffdac6c2aefa1e47602d58455a45534f93cde0b5955cdf5caead3d9e",
+      "functions": [
+        {
+          "name": "requestListItem",
+          "params": [
+            "row"
+          ],
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "requestSummary",
+          "params": [
+            "db",
+            "employeeId"
+          ],
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "listRequests",
+          "params": [
+            "db",
+            "employeeId",
+            "filter"
+          ],
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "loadDetail",
+          "params": [
+            "db",
+            "employeeId",
+            "id"
+          ],
+          "exported": false,
+          "lineCount": 67
+        },
+        {
+          "name": "getRequest",
+          "params": [
+            "db",
+            "employeeId",
+            "id"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "insertTimeline",
+          "params": [
+            "db",
+            "entry"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "insertNotification",
+          "params": [
+            "db",
+            "entry"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "parseCreateRequest",
+          "params": [
+            "body"
+          ],
+          "returnType": "CreateRequestInput",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "nextRequestNumber",
+          "params": [
+            "db",
+            "year"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "createRequest",
+          "params": [
+            "db",
+            "employee",
+            "input",
+            "now"
+          ],
+          "exported": true,
+          "lineCount": 70
+        },
+        {
+          "name": "addRequestMessage",
+          "params": [
+            "db",
+            "employee",
+            "requestId",
+            "body",
+            "now"
+          ],
+          "exported": true,
+          "lineCount": 54
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "CLOSED_STATUSES",
+            "OPEN_STATUSES",
+            "SYSTEM_ACTOR",
+            "teamFor",
+            "Priority",
+            "RequestStatus",
+            "TimelineEventType"
+          ]
+        },
+        {
+          "source": "../../db/sql.js",
+          "specifiers": [
+            "insertedId",
+            "transaction"
+          ]
+        },
+        {
+          "source": "../../shared/http.js",
+          "specifiers": [
+            "HttpError",
+            "includesTr"
+          ]
+        },
+        {
+          "source": "../../shared/validate.js",
+          "specifiers": [
+            "parseInput"
+          ]
+        },
+        {
+          "source": "../../shared/types.js",
+          "specifiers": [
+            "Employee",
+            "Now"
+          ]
+        },
+        {
+          "source": "./requests.schema.js",
+          "specifiers": [
+            "createRequestSchema",
+            "requestListFilterSchema",
+            "requestMessageSchema",
+            "CreateRequestInput"
+          ]
+        }
+      ],
+      "exports": [
+        "CreateRequestInput",
+        "requestSummary",
+        "listRequests",
+        "getRequest",
+        "insertTimeline",
+        "insertNotification",
+        "parseCreateRequest",
+        "createRequest",
+        "addRequestMessage"
+      ],
+      "totalLines": 372,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/sources/sources.routes.ts": {
+      "filePath": "back-end/src/modules/sources/sources.routes.ts",
+      "contentHash": "f59b7620fd82511abc5c1b758b9ccde3a08aeaefd23a7c3bbfc75ea11b7758ad",
+      "functions": [
+        {
+          "name": "createSourcesRouter",
+          "params": [
+            "db"
+          ],
+          "returnType": "Router",
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "Router"
+          ]
+        },
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "./sources.service.js",
+          "specifiers": [
+            "getSource",
+            "listSources"
+          ]
+        }
+      ],
+      "exports": [
+        "createSourcesRouter"
+      ],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/sources/sources.service.ts": {
+      "filePath": "back-end/src/modules/sources/sources.service.ts",
+      "contentHash": "24167fc1cf84762892a7a8da20d2eb670e52aad7a4ac57e0ef46c5199bd457a1",
+      "functions": [
+        {
+          "name": "sourceFromRow",
+          "params": [
+            "row"
+          ],
+          "returnType": "SourceRecord",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "listSources",
+          "params": [
+            "db"
+          ],
+          "returnType": "SourceRecord[]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "getSource",
+          "params": [
+            "db",
+            "id"
+          ],
+          "returnType": "SourceDetail",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../shared/http.js",
+          "specifiers": [
+            "HttpError"
+          ]
+        }
+      ],
+      "exports": [
+        "sourceFromRow",
+        "listSources",
+        "getSource"
+      ],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/support/support.routes.ts": {
+      "filePath": "back-end/src/modules/support/support.routes.ts",
+      "contentHash": "4ffb7834891bce4004ef8cc67ff834dff709883d82f58a7e0d716f2364a15b72",
+      "functions": [
+        {
+          "name": "createSupportRouter",
+          "params": [
+            "db",
+            "now"
+          ],
+          "returnType": "Router",
+          "exported": true,
+          "lineCount": 56
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "Router"
+          ]
+        },
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../shared/http.js",
+          "specifiers": [
+            "queryText"
+          ]
+        },
+        {
+          "source": "../../shared/types.js",
+          "specifiers": [
+            "employeeOf",
+            "parseId",
+            "Now"
+          ]
+        },
+        {
+          "source": "./support.service.js",
+          "specifiers": [
+            "addInternalNote",
+            "addSupportMessage",
+            "assignRequest",
+            "changeRequestStatus",
+            "claimRequest",
+            "getSupportRequest",
+            "listSupportRequests",
+            "listSupportStaff",
+            "supportSummary"
+          ]
+        }
+      ],
+      "exports": [
+        "createSupportRouter"
+      ],
+      "totalLines": 73,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/support/support.schema.ts": {
+      "filePath": "back-end/src/modules/support/support.schema.ts",
+      "contentHash": "16df0d52e998191ee82a4b50d32ae7fb4b87e34c3cfa89c52391fc8771e425b8",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "zod",
+          "specifiers": [
+            "z"
+          ]
+        },
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "MAX_CLOSE_REASON_LENGTH",
+            "MAX_NOTE_LENGTH",
+            "PRIORITIES",
+            "REQUEST_STATUSES"
+          ]
+        }
+      ],
+      "exports": [
+        "supportListFilterSchema",
+        "assignRequestSchema",
+        "statusChangeSchema",
+        "noteSchema"
+      ],
+      "totalLines": 66,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/modules/support/support.service.ts": {
+      "filePath": "back-end/src/modules/support/support.service.ts",
+      "contentHash": "02a46a5d2c3aa3841d1892e25c366742853a6774105d91af37b0263cc616f0c9",
+      "functions": [
+        {
+          "name": "teamOf",
+          "params": [
+            "employee"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "assigneeOf",
+          "params": [
+            "row"
+          ],
+          "returnType": "PersonRef | null",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "listItem",
+          "params": [
+            "row"
+          ],
+          "returnType": "SupportRequestListItem",
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "supportSummary",
+          "params": [
+            "db",
+            "employee"
+          ],
+          "returnType": "SupportSummary",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "listSupportRequests",
+          "params": [
+            "db",
+            "employee",
+            "filter"
+          ],
+          "returnType": "SupportRequestListItem[]",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "getSupportRequest",
+          "params": [
+            "db",
+            "employee",
+            "id"
+          ],
+          "returnType": "SupportRequestDetail",
+          "exported": true,
+          "lineCount": 113
+        },
+        {
+          "name": "listSupportStaff",
+          "params": [
+            "db",
+            "employee"
+          ],
+          "returnType": "StaffMember[]",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "loadTeamRequest",
+          "params": [
+            "db",
+            "employee",
+            "id"
+          ],
+          "returnType": "TeamRequest",
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "assertCurrent",
+          "params": [
+            "row",
+            "expectedUpdatedAt"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "assertNotClosed",
+          "params": [
+            "row"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "assertAssignedTo",
+          "params": [
+            "row",
+            "employee"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "statusNotification",
+          "params": [
+            "number",
+            "status"
+          ],
+          "returnType": "{ title: string; text: string }",
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "claimRequest",
+          "params": [
+            "db",
+            "employee",
+            "id",
+            "now"
+          ],
+          "returnType": "SupportRequestDetail",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "assignRequest",
+          "params": [
+            "db",
+            "employee",
+            "id",
+            "body",
+            "now"
+          ],
+          "returnType": "SupportRequestDetail",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "changeRequestStatus",
+          "params": [
+            "db",
+            "employee",
+            "id",
+            "body",
+            "now"
+          ],
+          "returnType": "SupportRequestDetail",
+          "exported": true,
+          "lineCount": 46
+        },
+        {
+          "name": "addSupportMessage",
+          "params": [
+            "db",
+            "employee",
+            "id",
+            "body",
+            "now"
+          ],
+          "returnType": "SupportRequestDetail",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "addInternalNote",
+          "params": [
+            "db",
+            "employee",
+            "id",
+            "body",
+            "now"
+          ],
+          "returnType": "SupportRequestDetail",
+          "exported": true,
+          "lineCount": 28
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:sqlite",
+          "specifiers": [
+            "DatabaseSync"
+          ]
+        },
+        {
+          "source": "../../config/constants.js",
+          "specifiers": [
+            "CLOSED_STATUSES",
+            "OPEN_STATUSES",
+            "REQUEST_STATUSES",
+            "STATUS_TRANSITIONS",
+            "Priority",
+            "RequestStatus",
+            "TimelineEventType"
+          ]
+        },
+        {
+          "source": "../../db/sql.js",
+          "specifiers": [
+            "transaction"
+          ]
+        },
+        {
+          "source": "../../shared/http.js",
+          "specifiers": [
+            "HttpError",
+            "includesTr"
+          ]
+        },
+        {
+          "source": "../../shared/validate.js",
+          "specifiers": [
+            "parseInput"
+          ]
+        },
+        {
+          "source": "../../shared/types.js",
+          "specifiers": [
+            "Attachment",
+            "Employee",
+            "InternalNote",
+            "Now",
+            "PersonRef",
+            "RequestMessage",
+            "StaffMember",
+            "SupportRequestDetail",
+            "SupportRequestListItem",
+            "SupportSummary",
+            "SupportTimelineItem"
+          ]
+        },
+        {
+          "source": "../requests/requests.schema.js",
+          "specifiers": [
+            "requestMessageSchema"
+          ]
+        },
+        {
+          "source": "../requests/requests.service.js",
+          "specifiers": [
+            "insertNotification",
+            "insertTimeline"
+          ]
+        },
+        {
+          "source": "./support.schema.js",
+          "specifiers": [
+            "assignRequestSchema",
+            "noteSchema",
+            "statusChangeSchema",
+            "supportListFilterSchema"
+          ]
+        }
+      ],
+      "exports": [
+        "supportSummary",
+        "listSupportRequests",
+        "getSupportRequest",
+        "listSupportStaff",
+        "claimRequest",
+        "assignRequest",
+        "changeRequestStatus",
+        "addSupportMessage",
+        "addInternalNote"
+      ],
+      "totalLines": 564,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/shared/http.ts": {
+      "filePath": "back-end/src/shared/http.ts",
+      "contentHash": "0c370e49a5d540ae230eb33fd74bb9f0d8d981d480e080c7404d99722de9b9ba",
+      "functions": [
+        {
+          "name": "isRecord",
+          "params": [
+            "value"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "requiredText",
+          "params": [
+            "value",
+            "message"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "queryText",
+          "params": [
+            "value"
+          ],
+          "returnType": "string | undefined",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "includesTr",
+          "params": [
+            "haystack",
+            "needle"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [
+        {
+          "name": "HttpError",
+          "methods": [
+            "constructor"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "HttpError",
+        "isRecord",
+        "requiredText",
+        "queryText",
+        "includesTr"
+      ],
+      "totalLines": 31,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/shared/normalize.ts": {
+      "filePath": "back-end/src/shared/normalize.ts",
+      "contentHash": "c7a222d4dd3d17930c08d4937ff932d9354aa0312f65bb1665ed9a72df81beab",
+      "functions": [
+        {
+          "name": "foldTurkish",
+          "params": [
+            "value"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "normalizeText",
+          "params": [
+            "value"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "phrasePresent",
+          "params": [
+            "normalized",
+            "tokens",
+            "phrase"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "addTokens",
+          "params": [
+            "target",
+            "phrase"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "expandQueryTokens",
+          "params": [
+            "normalized"
+          ],
+          "returnType": "string[]",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "prefixClauses",
+          "params": [
+            "term"
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "buildFtsQuery",
+          "params": [
+            "question"
+          ],
+          "returnType": "string | null",
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "foldTurkish",
+        "normalizeText",
+        "expandQueryTokens",
+        "buildFtsQuery"
+      ],
+      "totalLines": 164,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/shared/passwords.ts": {
+      "filePath": "back-end/src/shared/passwords.ts",
+      "contentHash": "5ab8300a372c6f1e5d2ee1dd078bd98e71cb94b4daa0ad22c21681d2313f5d95",
+      "functions": [
+        {
+          "name": "hashPassword",
+          "params": [
+            "password"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "verifyPassword",
+          "params": [
+            "password",
+            "stored"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "createToken",
+          "params": [],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:crypto",
+          "specifiers": [
+            "randomBytes",
+            "scryptSync",
+            "timingSafeEqual"
+          ]
+        }
+      ],
+      "exports": [
+        "hashPassword",
+        "verifyPassword",
+        "createToken"
+      ],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/shared/types.ts": {
+      "filePath": "back-end/src/shared/types.ts",
+      "contentHash": "ebed195ef37447e53cc4a0a2dd440faa2e12fca646a5553c26c4ad9fc5e4fd3e",
+      "functions": [
+        {
+          "name": "employeeOf",
+          "params": [
+            "res"
+          ],
+          "returnType": "Employee",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "parseId",
+          "params": [
+            "value",
+            "message"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "express",
+          "specifiers": [
+            "Response"
+          ]
+        },
+        {
+          "source": "../config/constants.js",
+          "specifiers": [
+            "Priority",
+            "RequestStatus",
+            "TimelineEventType",
+            "UserRole"
+          ]
+        },
+        {
+          "source": "./http.js",
+          "specifiers": [
+            "HttpError"
+          ]
+        }
+      ],
+      "exports": [
+        "TimelineEventType",
+        "UserRole",
+        "employeeOf",
+        "parseId"
+      ],
+      "totalLines": 120,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/src/shared/validate.ts": {
+      "filePath": "back-end/src/shared/validate.ts",
+      "contentHash": "9a9d50eb60b6ee2ea3afc78024d9ec2b0dfd47831a2009aa143d3e6fafbd0484",
+      "functions": [
+        {
+          "name": "parseInput",
+          "params": [
+            "schema",
+            "value",
+            "fallback"
+          ],
+          "returnType": "T",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "zod",
+          "specifiers": [
+            "ZodType"
+          ]
+        },
+        {
+          "source": "./http.js",
+          "specifiers": [
+            "HttpError"
+          ]
+        }
+      ],
+      "exports": [
+        "parseInput"
+      ],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/test/api.test.ts": {
+      "filePath": "back-end/test/api.test.ts",
+      "contentHash": "c17d84800b36351abcb78270e752f20d036c7fd91b296fdea82f3726e0f737bc",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:events",
+          "specifiers": [
+            "once"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "mkdtempSync",
+            "rmSync"
+          ]
+        },
+        {
+          "source": "node:os",
+          "specifiers": [
+            "tmpdir"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "join"
+          ]
+        },
+        {
+          "source": "node:net",
+          "specifiers": [
+            "AddressInfo"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "after",
+            "before",
+            "describe",
+            "test"
+          ]
+        },
+        {
+          "source": "node:http",
+          "specifiers": [
+            "Server"
+          ]
+        },
+        {
+          "source": "../src/app.js",
+          "specifiers": [
+            "createApp"
+          ]
+        },
+        {
+          "source": "../src/db/database.js",
+          "specifiers": [
+            "migrateAndSeed",
+            "openDatabase"
+          ]
+        },
+        {
+          "source": "../src/config/constants.js",
+          "specifiers": [
+            "DEMO_EMAIL",
+            "DEMO_SUPPORT_ACCOUNTS"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 610,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/test/assistant-eval.test.ts": {
+      "filePath": "back-end/test/assistant-eval.test.ts",
+      "contentHash": "3d94e6ed473b389a6854727642e413034689f77a58ebfba64fcdeb9985a24e0d",
+      "functions": [
+        {
+          "name": "percent",
+          "params": [
+            "hit",
+            "total"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "readFileSync"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "mkdtempSync",
+            "rmSync"
+          ]
+        },
+        {
+          "source": "node:os",
+          "specifiers": [
+            "tmpdir"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "join"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        },
+        {
+          "source": "../src/db/database.js",
+          "specifiers": [
+            "migrateAndSeed",
+            "openDatabase"
+          ]
+        },
+        {
+          "source": "../src/modules/assistant/assistant.service.js",
+          "specifiers": [
+            "answerQuestion"
+          ]
+        },
+        {
+          "source": "../src/modules/assistant/reply.js",
+          "specifiers": [
+            "suggestCategory"
+          ]
+        },
+        {
+          "source": "../src/modules/assistant/search.js",
+          "specifiers": [
+            "searchSections"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 118,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/test/assistant-generate.test.ts": {
+      "filePath": "back-end/test/assistant-generate.test.ts",
+      "contentHash": "9c73e3d3067bccf75510dfbbfa6aff4bb60f96a5d7b183453099d6585bf791d2",
+      "functions": [
+        {
+          "name": "fixedNow",
+          "params": [],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "runtime",
+          "params": [
+            "provider",
+            "extra"
+          ],
+          "returnType": "AssistantRuntime",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "candidate",
+          "params": [
+            "text",
+            "status"
+          ],
+          "returnType": "Response",
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "captureLogs",
+          "params": [
+            "run"
+          ],
+          "returnType": "Promise<string[]>",
+          "exported": false,
+          "lineCount": 25
+        },
+        {
+          "name": "fallbacks",
+          "params": [
+            "lines"
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:events",
+          "specifiers": [
+            "once"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "mkdtempSync",
+            "rmSync"
+          ]
+        },
+        {
+          "source": "node:http",
+          "specifiers": [
+            "Server"
+          ]
+        },
+        {
+          "source": "node:net",
+          "specifiers": [
+            "AddressInfo"
+          ]
+        },
+        {
+          "source": "node:os",
+          "specifiers": [
+            "tmpdir"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "join"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "after",
+            "describe",
+            "test"
+          ]
+        },
+        {
+          "source": "../src/app.js",
+          "specifiers": [
+            "createApp"
+          ]
+        },
+        {
+          "source": "../src/config/constants.js",
+          "specifiers": [
+            "DEMO_EMAIL",
+            "DEMO_PASSWORD",
+            "MAX_MODEL_SECTION_CHARS"
+          ]
+        },
+        {
+          "source": "../src/db/database.js",
+          "specifiers": [
+            "migrateAndSeed",
+            "openDatabase"
+          ]
+        },
+        {
+          "source": "../src/modules/assistant/assistant.service.js",
+          "specifiers": [
+            "addConversationMessage",
+            "createConversation",
+            "getConversation",
+            "AssistantRuntime"
+          ]
+        },
+        {
+          "source": "../src/modules/assistant/provider.js",
+          "specifiers": [
+            "assistantTimeoutFromEnv",
+            "buildUserContent",
+            "createGeminiProvider",
+            "createGeminiProviderFromEnv",
+            "FakeProvider",
+            "geminiModelFromEnv",
+            "limitSectionBodies",
+            "SYSTEM_INSTRUCTION",
+            "AnswerProvider",
+            "FetchLike"
+          ]
+        },
+        {
+          "source": "../src/modules/assistant/rateLimit.js",
+          "specifiers": [
+            "createRateLimiter"
+          ]
+        },
+        {
+          "source": "../src/modules/assistant/reply.js",
+          "specifiers": [
+            "NO_SOURCE_TEXT",
+            "QUOTE_INTRO"
+          ]
+        },
+        {
+          "source": "../src/shared/http.js",
+          "specifiers": [
+            "HttpError"
+          ]
+        },
+        {
+          "source": "../src/shared/types.js",
+          "specifiers": [
+            "Now"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 620,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/test/assistant.test.ts": {
+      "filePath": "back-end/test/assistant.test.ts",
+      "contentHash": "1145acf8d8bc704c8defee9127ebad8574a651e72f00e9c18be3cfdd1d949c65",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "mkdtempSync",
+            "rmSync"
+          ]
+        },
+        {
+          "source": "node:os",
+          "specifiers": [
+            "tmpdir"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "join"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "../src/config/constants.js",
+          "specifiers": [
+            "CATEGORIES",
+            "DEMO_EMAIL"
+          ]
+        },
+        {
+          "source": "../src/db/database.js",
+          "specifiers": [
+            "SCHEMA",
+            "assertFts5Available",
+            "migrateAndSeed",
+            "openDatabase"
+          ]
+        },
+        {
+          "source": "../src/db/documents.js",
+          "specifiers": [
+            "LEGACY_SECTION_IDS",
+            "SOURCE_SECTIONS"
+          ]
+        },
+        {
+          "source": "../src/db/migrations.js",
+          "specifiers": [
+            "runMigrations"
+          ]
+        },
+        {
+          "source": "../src/db/seed.js",
+          "specifiers": [
+            "seedIfEmpty"
+          ]
+        },
+        {
+          "source": "../src/modules/assistant/assistant.service.js",
+          "specifiers": [
+            "getConversation"
+          ]
+        },
+        {
+          "source": "../src/modules/assistant/assistant.service.js",
+          "specifiers": [
+            "answerQuestion"
+          ]
+        },
+        {
+          "source": "../src/modules/assistant/reply.js",
+          "specifiers": [
+            "NO_SOURCE_TEXT",
+            "QUOTE_INTRO",
+            "suggestCategory"
+          ]
+        },
+        {
+          "source": "../src/modules/sources/sources.service.js",
+          "specifiers": [
+            "getSource"
+          ]
+        },
+        {
+          "source": "../src/shared/normalize.js",
+          "specifiers": [
+            "buildFtsQuery",
+            "foldTurkish",
+            "normalizeText"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 218,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/test/fixtures/assistant-eval.json": {
+      "filePath": "back-end/test/fixtures/assistant-eval.json",
+      "contentHash": "b2698909e1e7bc5687ec164a208d6c970231e5b9966db1d7a0e55fdf678c33f2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 303,
+      "hasStructuralAnalysis": false
+    },
+    "back-end/test/support.test.ts": {
+      "filePath": "back-end/test/support.test.ts",
+      "contentHash": "2eb8b5fc7f37d31bf58533aaf814987b506396b2e99e9d08fe7bc431f9da0eeb",
+      "functions": [
+        {
+          "name": "demoAccount",
+          "params": [
+            "email"
+          ],
+          "exported": false,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:events",
+          "specifiers": [
+            "once"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "mkdtempSync",
+            "rmSync"
+          ]
+        },
+        {
+          "source": "node:http",
+          "specifiers": [
+            "Server"
+          ]
+        },
+        {
+          "source": "node:net",
+          "specifiers": [
+            "AddressInfo"
+          ]
+        },
+        {
+          "source": "node:os",
+          "specifiers": [
+            "tmpdir"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "join"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "after",
+            "before",
+            "describe",
+            "test"
+          ]
+        },
+        {
+          "source": "../src/config/constants.js",
+          "specifiers": [
+            "DEMO_EMAIL",
+            "DEMO_PASSWORD",
+            "DEMO_SUPPORT_ACCOUNTS",
+            "REQUEST_STATUSES"
+          ]
+        },
+        {
+          "source": "../src/app.js",
+          "specifiers": [
+            "createApp"
+          ]
+        },
+        {
+          "source": "../src/db/database.js",
+          "specifiers": [
+            "SCHEMA",
+            "migrateAndSeed",
+            "openDatabase"
+          ]
+        },
+        {
+          "source": "../src/db/migrations.js",
+          "specifiers": [
+            "runMigrations"
+          ]
+        },
+        {
+          "source": "../src/db/seed.js",
+          "specifiers": [
+            "seedIfEmpty"
+          ]
+        },
+        {
+          "source": "../src/modules/auth/auth.service.js",
+          "specifiers": [
+            "findEmployeeByEmail"
+          ]
+        },
+        {
+          "source": "../src/modules/requests/requests.service.js",
+          "specifiers": [
+            "addRequestMessage",
+            "createRequest"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 1168,
+      "hasStructuralAnalysis": true
+    },
+    "back-end/tsconfig.json": {
+      "filePath": "back-end/tsconfig.json",
+      "contentHash": "dc479c3af15d4f506dae8f0e7d883cda42be697ac0f5f5b1b8cd3fe2d3f792be",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 16,
+      "hasStructuralAnalysis": false
+    },
+    "back-end/tsconfig.typecheck.json": {
+      "filePath": "back-end/tsconfig.typecheck.json",
+      "contentHash": "1f76726a0e55a84c425350130c95d25ccb3037e86e8517be93788b461bd037bf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/.env.example": {
+      "filePath": "front-end/.env.example",
+      "contentHash": "e15ab763e9ad74a8fecff73f0ae5e272b4d9d068bdc78b317fd1b0b4d8d86c87",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/.oxlintrc.json": {
+      "filePath": "front-end/.oxlintrc.json",
+      "contentHash": "b4d344818a1e1bf43997e4744a9153c8eef770c98b58229cd86363dabb85ded4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/README.md": {
+      "filePath": "front-end/README.md",
+      "contentHash": "62379277eebf9a6488f582e86d0cbbdeee37baea606f4adfd867a4a7fc8303b4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 42,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/index.html": {
+      "filePath": "front-end/index.html",
+      "contentHash": "218e3920ab06c59cc22f62abea7d59917c8690eb9da943827ccbf33002c862dd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 20,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/package.json": {
+      "filePath": "front-end/package.json",
+      "contentHash": "6ad1f8f757f0687e16c45adaba98cbe3c3b42c153a5f6c545554627664790a94",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 34,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/src/api/assistant.ts": {
+      "filePath": "front-end/src/api/assistant.ts",
+      "contentHash": "5b154209612f7ac3a9eaad91eccf2ff3448745793ebd4892e127a5ad50db4cfa",
+      "functions": [
+        {
+          "name": "listConversations",
+          "params": [],
+          "returnType": "Promise<{\r\n  conversations: ConversationSummary[];\r\n}>",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "createConversation",
+          "params": [
+            "title",
+            "signal"
+          ],
+          "returnType": "Promise<ConversationSummary>",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "getConversation",
+          "params": [
+            "id"
+          ],
+          "returnType": "Promise<Conversation>",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "sendConversationMessage",
+          "params": [
+            "id",
+            "text",
+            "signal"
+          ],
+          "returnType": "Promise<{\r\n  userMessage: ConversationMessage;\r\n  assistantMessage: ConversationMessage;\r\n}>",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "setAssistantFeedback",
+          "params": [
+            "id",
+            "helpful"
+          ],
+          "returnType": "Promise<ConversationMessage>",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "getSource",
+          "params": [
+            "id"
+          ],
+          "returnType": "Promise<SourceDocumentDetail>",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "Conversation",
+            "ConversationMessage",
+            "ConversationSummary",
+            "SourceDocumentDetail"
+          ]
+        },
+        {
+          "source": "./client",
+          "specifiers": [
+            "api"
+          ]
+        }
+      ],
+      "exports": [
+        "listConversations",
+        "createConversation",
+        "getConversation",
+        "sendConversationMessage",
+        "setAssistantFeedback",
+        "getSource"
+      ],
+      "totalLines": 61,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/api/auth.ts": {
+      "filePath": "front-end/src/api/auth.ts",
+      "contentHash": "4080a7dadd241274bd9e753158446d0d18da2b02feccf798ca10990e220ca6a1",
+      "functions": [
+        {
+          "name": "listDemoAccounts",
+          "params": [],
+          "returnType": "Promise<{ demo: true; accounts: DemoAccount[] }>",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "login",
+          "params": [
+            "email",
+            "password"
+          ],
+          "returnType": "Promise<LoginResponse>",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "logout",
+          "params": [],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "getProfile",
+          "params": [],
+          "returnType": "Promise<Employee>",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "DemoAccount",
+            "Employee"
+          ]
+        },
+        {
+          "source": "./client",
+          "specifiers": [
+            "api",
+            "clearToken",
+            "setToken"
+          ]
+        }
+      ],
+      "exports": [
+        "listDemoAccounts",
+        "login",
+        "logout",
+        "getProfile"
+      ],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/api/categories.ts": {
+      "filePath": "front-end/src/api/categories.ts",
+      "contentHash": "85f92abe579051102688c971ed1922183d59159a00a0680ff099acd00e971108",
+      "functions": [
+        {
+          "name": "listCategories",
+          "params": [],
+          "returnType": "Promise<{ categories: CategoryItem[] }>",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "CategoryItem"
+          ]
+        },
+        {
+          "source": "./client",
+          "specifiers": [
+            "api"
+          ]
+        }
+      ],
+      "exports": [
+        "listCategories"
+      ],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/api/client.ts": {
+      "filePath": "front-end/src/api/client.ts",
+      "contentHash": "043104f0ee86edd59129e4690a19d54d6607b9a11a151c70f570e4f2cf9ffec7",
+      "functions": [
+        {
+          "name": "getToken",
+          "params": [],
+          "returnType": "string | null",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "hasToken",
+          "params": [],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "setToken",
+          "params": [
+            "token"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "clearToken",
+          "params": [],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "api",
+          "params": [
+            "path",
+            "init"
+          ],
+          "returnType": "Promise<T>",
+          "exported": true,
+          "lineCount": 32
+        }
+      ],
+      "classes": [
+        {
+          "name": "ApiError",
+          "methods": [
+            "constructor"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "imports": [],
+      "exports": [
+        "ApiError",
+        "getToken",
+        "hasToken",
+        "setToken",
+        "clearToken",
+        "api"
+      ],
+      "totalLines": 63,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/api/notifications.ts": {
+      "filePath": "front-end/src/api/notifications.ts",
+      "contentHash": "4b08d0e4b2df17a55b7c177c60f2327637d2d76e92f719cf9222c7188cf9e9ce",
+      "functions": [
+        {
+          "name": "listNotifications",
+          "params": [],
+          "returnType": "Promise<NotificationResponse>",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "markNotificationRead",
+          "params": [
+            "id"
+          ],
+          "returnType": "Promise<NotificationItem>",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "markAllNotificationsRead",
+          "params": [],
+          "returnType": "Promise<{ unread: 0 }>",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "NotificationResponse",
+            "NotificationItem"
+          ]
+        },
+        {
+          "source": "./client",
+          "specifiers": [
+            "api"
+          ]
+        }
+      ],
+      "exports": [
+        "listNotifications",
+        "markNotificationRead",
+        "markAllNotificationsRead"
+      ],
+      "totalLines": 19,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/api/requests.ts": {
+      "filePath": "front-end/src/api/requests.ts",
+      "contentHash": "862cf8214ba1995598deadf93fa14431fd283737d7dea89056bf6560a29e5e06",
+      "functions": [
+        {
+          "name": "getRequestSummary",
+          "params": [],
+          "returnType": "Promise<RequestSummary>",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "listRequests",
+          "params": [
+            "filters"
+          ],
+          "returnType": "Promise<{ requests: RequestListItem[] }>",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "getRequest",
+          "params": [
+            "id"
+          ],
+          "returnType": "Promise<SupportRequest>",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "createRequest",
+          "params": [
+            "input"
+          ],
+          "returnType": "Promise<SupportRequest>",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "addRequestMessage",
+          "params": [
+            "id",
+            "text"
+          ],
+          "returnType": "Promise<SupportRequest>",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "CreateRequestInput",
+            "RequestListItem",
+            "RequestStatus",
+            "RequestSummary",
+            "SupportRequest"
+          ]
+        },
+        {
+          "source": "./client",
+          "specifiers": [
+            "api"
+          ]
+        }
+      ],
+      "exports": [
+        "getRequestSummary",
+        "listRequests",
+        "getRequest",
+        "createRequest",
+        "addRequestMessage"
+      ],
+      "totalLines": 60,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/api/support.ts": {
+      "filePath": "front-end/src/api/support.ts",
+      "contentHash": "edafe7e294da49b9c2358cc0c9526be3c01bfc7d57f2ba0116a009091d194fc7",
+      "functions": [
+        {
+          "name": "getSupportSummary",
+          "params": [],
+          "returnType": "Promise<SupportSummary>",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "listSupportRequests",
+          "params": [
+            "filters"
+          ],
+          "returnType": "Promise<{ requests: SupportRequestListItem[] }>",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "getSupportRequest",
+          "params": [
+            "id"
+          ],
+          "returnType": "Promise<SupportRequestDetail>",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "listSupportStaff",
+          "params": [],
+          "returnType": "Promise<{ staff: StaffMember[] }>",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "claimSupportRequest",
+          "params": [
+            "id"
+          ],
+          "returnType": "Promise<SupportRequestDetail>",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "assignSupportRequest",
+          "params": [
+            "id",
+            "assigneeId",
+            "expectedUpdatedAt"
+          ],
+          "returnType": "Promise<SupportRequestDetail>",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "changeSupportRequestStatus",
+          "params": [
+            "id",
+            "input"
+          ],
+          "returnType": "Promise<SupportRequestDetail>",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "addSupportMessage",
+          "params": [
+            "id",
+            "text"
+          ],
+          "returnType": "Promise<SupportRequestDetail>",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "addSupportNote",
+          "params": [
+            "id",
+            "text"
+          ],
+          "returnType": "Promise<SupportRequestDetail>",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "Priority",
+            "RequestStatus",
+            "StaffMember",
+            "SupportRequestDetail",
+            "SupportRequestListItem",
+            "SupportSummary"
+          ]
+        },
+        {
+          "source": "./client",
+          "specifiers": [
+            "api"
+          ]
+        }
+      ],
+      "exports": [
+        "getSupportSummary",
+        "listSupportRequests",
+        "getSupportRequest",
+        "listSupportStaff",
+        "claimSupportRequest",
+        "assignSupportRequest",
+        "changeSupportRequestStatus",
+        "addSupportMessage",
+        "addSupportNote"
+      ],
+      "totalLines": 109,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/app/App.tsx": {
+      "filePath": "front-end/src/app/App.tsx",
+      "contentHash": "8771231a251d33e8bd3b600d11a78ed8f2e7e9fb39dbcb871f410559e4edfe50",
+      "functions": [
+        {
+          "name": "App",
+          "params": [],
+          "exported": true,
+          "lineCount": 115
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useState",
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "../api/auth",
+          "specifiers": [
+            "getProfile",
+            "logoutApi"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "ApiError",
+            "clearToken",
+            "hasToken"
+          ]
+        },
+        {
+          "source": "../api/notifications",
+          "specifiers": [
+            "listNotifications"
+          ]
+        },
+        {
+          "source": "../components/AppShell",
+          "specifiers": [
+            "AppShell"
+          ]
+        },
+        {
+          "source": "../pages/AssistantPage",
+          "specifiers": [
+            "AssistantPage",
+            "AssistantHandoff"
+          ]
+        },
+        {
+          "source": "../pages/HomePage",
+          "specifiers": [
+            "HomePage"
+          ]
+        },
+        {
+          "source": "../pages/LoginPage",
+          "specifiers": [
+            "LoginPage"
+          ]
+        },
+        {
+          "source": "../pages/NewRequestPage",
+          "specifiers": [
+            "NewRequestPage"
+          ]
+        },
+        {
+          "source": "../pages/NotificationsPage",
+          "specifiers": [
+            "NotificationsPage"
+          ]
+        },
+        {
+          "source": "../pages/ProfilePage",
+          "specifiers": [
+            "ProfilePage"
+          ]
+        },
+        {
+          "source": "../pages/RequestDetailPage",
+          "specifiers": [
+            "RequestDetailPage"
+          ]
+        },
+        {
+          "source": "../pages/RequestsPage",
+          "specifiers": [
+            "RequestsPage"
+          ]
+        },
+        {
+          "source": "../pages/SupportHomePage",
+          "specifiers": [
+            "SupportHomePage"
+          ]
+        },
+        {
+          "source": "../pages/SupportQueuePage",
+          "specifiers": [
+            "SupportQueuePage"
+          ]
+        },
+        {
+          "source": "../pages/SupportRequestDetailPage",
+          "specifiers": [
+            "SupportRequestDetailPage"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Employee"
+          ]
+        },
+        {
+          "source": "./navigation",
+          "specifiers": [
+            "go",
+            "readRoute",
+            "AppRoute"
+          ]
+        },
+        {
+          "source": "../styles/app.css",
+          "specifiers": []
+        },
+        {
+          "source": "../styles/extra.css",
+          "specifiers": []
+        },
+        {
+          "source": "../styles/pages.css",
+          "specifiers": []
+        },
+        {
+          "source": "../styles/dark.css",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "App"
+      ],
+      "totalLines": 143,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/app/navigation.ts": {
+      "filePath": "front-end/src/app/navigation.ts",
+      "contentHash": "294167eaf83a4734fea5687b9726403d7fbd612c6ad5bec927671d38ce72a8c9",
+      "functions": [
+        {
+          "name": "readRoute",
+          "params": [],
+          "returnType": "AppRoute",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "go",
+          "params": [
+            "path"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "statusClass",
+          "params": [
+            "status"
+          ],
+          "exported": true,
+          "lineCount": 8
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "Priority",
+            "RequestStatus"
+          ]
+        }
+      ],
+      "exports": [
+        "OPEN_STATUSES",
+        "REQUEST_STATUSES",
+        "PRIORITIES",
+        "STATUS_TRANSITIONS",
+        "PAGE_TITLES",
+        "readRoute",
+        "go",
+        "statusClass"
+      ],
+      "totalLines": 63,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/components/AppShell.tsx": {
+      "filePath": "front-end/src/components/AppShell.tsx",
+      "contentHash": "ab9eb06f03d890db41c35212afd6409d2d62814b40a77b5b0ed45226b330bffb",
+      "functions": [
+        {
+          "name": "AppShell",
+          "params": [
+            "{\r\n  children,\r\n  current,\r\n  profile,\r\n  unread,\r\n  logout,\r\n}"
+          ],
+          "exported": true,
+          "lineCount": 144
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "useState",
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Avatar",
+            "DropdownMenu",
+            "IconButton",
+            "Tooltip"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "BellIcon",
+            "ChatBubbleIcon",
+            "DashboardIcon",
+            "ExitIcon",
+            "HamburgerMenuIcon",
+            "PersonIcon",
+            "PlusIcon",
+            "ReaderIcon"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Employee"
+          ]
+        },
+        {
+          "source": "../app/navigation",
+          "specifiers": [
+            "go",
+            "PAGE_TITLES"
+          ]
+        },
+        {
+          "source": "./ThemeToggleButton",
+          "specifiers": [
+            "ThemeToggleButton"
+          ]
+        }
+      ],
+      "exports": [
+        "AppShell"
+      ],
+      "totalLines": 161,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/components/EmptyState.tsx": {
+      "filePath": "front-end/src/components/EmptyState.tsx",
+      "contentHash": "9c216943331207f2386f503cb4fd49501dbac5a39a76e59d5252b83cf62a0eaf",
+      "functions": [
+        {
+          "name": "EmptyState",
+          "params": [
+            "{\n  title,\n  text,\n  action,\n}"
+          ],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "ReaderIcon"
+          ]
+        }
+      ],
+      "exports": [
+        "EmptyState"
+      ],
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/components/PageHeader.tsx": {
+      "filePath": "front-end/src/components/PageHeader.tsx",
+      "contentHash": "be0c06c55533b6d253ba8c4f9449c3bf362f62c64d21dd3f40856d8f6d4bda0a",
+      "functions": [
+        {
+          "name": "PageHeader",
+          "params": [
+            "{\n  eyebrow,\n  title,\n  description,\n  action,\n}"
+          ],
+          "exported": true,
+          "lineCount": 22
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "ReactNode"
+          ]
+        }
+      ],
+      "exports": [
+        "PageHeader"
+      ],
+      "totalLines": 25,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/components/RequestTable.tsx": {
+      "filePath": "front-end/src/components/RequestTable.tsx",
+      "contentHash": "74cff27c0526713a2c9a1314c3e18fa2cd4c7ab4f491bc79092e7632b5f843a0",
+      "functions": [
+        {
+          "name": "RequestTable",
+          "params": [
+            "{ items }"
+          ],
+          "exported": true,
+          "lineCount": 57
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "ChevronRightIcon"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "RequestListItem"
+          ]
+        },
+        {
+          "source": "../utils/date",
+          "specifiers": [
+            "formatDateTime"
+          ]
+        },
+        {
+          "source": "./EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        },
+        {
+          "source": "./StatusBadge",
+          "specifiers": [
+            "StatusBadge"
+          ]
+        }
+      ],
+      "exports": [
+        "RequestTable"
+      ],
+      "totalLines": 64,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/components/StatusBadge.tsx": {
+      "filePath": "front-end/src/components/StatusBadge.tsx",
+      "contentHash": "618c9dd118d28f90db5a221299a817b8da328efac673164cb7e895ac2c519d30",
+      "functions": [
+        {
+          "name": "StatusBadge",
+          "params": [
+            "{ value }"
+          ],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Badge"
+          ]
+        },
+        {
+          "source": "../app/navigation",
+          "specifiers": [
+            "statusClass"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "RequestStatus"
+          ]
+        }
+      ],
+      "exports": [
+        "StatusBadge"
+      ],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/components/SupportQueueTable.tsx": {
+      "filePath": "front-end/src/components/SupportQueueTable.tsx",
+      "contentHash": "f5cae518fbc853d469190f37574f356151a5a164404b28c1b30cbc77e277f874",
+      "functions": [
+        {
+          "name": "SupportQueueTable",
+          "params": [
+            "{\n  items,\n}"
+          ],
+          "exported": true,
+          "lineCount": 63
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "ChevronRightIcon"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "SupportRequestListItem"
+          ]
+        },
+        {
+          "source": "../utils/date",
+          "specifiers": [
+            "formatDateTime"
+          ]
+        },
+        {
+          "source": "./EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        },
+        {
+          "source": "./StatusBadge",
+          "specifiers": [
+            "StatusBadge"
+          ]
+        }
+      ],
+      "exports": [
+        "SupportQueueTable"
+      ],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/components/ThemeToggleButton.tsx": {
+      "filePath": "front-end/src/components/ThemeToggleButton.tsx",
+      "contentHash": "d806d516835de50d323c57760e6d52ecfe50ffc59d0a6034257e5f2c0fd230e9",
+      "functions": [
+        {
+          "name": "readAppearance",
+          "params": [],
+          "returnType": "ThemeAppearance",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "AppTheme",
+          "params": [
+            "{ children }"
+          ],
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "ThemeToggleButton",
+          "params": [],
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "react",
+          "specifiers": [
+            "createContext",
+            "useContext",
+            "useLayoutEffect",
+            "useState",
+            "ReactNode"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "IconButton",
+            "Theme",
+            "Tooltip"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "MoonIcon",
+            "SunIcon"
+          ]
+        }
+      ],
+      "exports": [
+        "AppTheme",
+        "ThemeToggleButton"
+      ],
+      "totalLines": 64,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/index.css": {
+      "filePath": "front-end/src/index.css",
+      "contentHash": "be667276a0431f1edf81eb6f87c3b964d7b254897adac229e2926b5b72a670f2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 106,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/src/main.tsx": {
+      "filePath": "front-end/src/main.tsx",
+      "contentHash": "0e262be6cc15a6348d21018d9e435a8a3c51a6af25c595aad5966fb0bbf7ad1b",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "QueryClient",
+            "QueryClientProvider"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "StrictMode"
+          ]
+        },
+        {
+          "source": "react-dom/client",
+          "specifiers": [
+            "createRoot"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes/styles.css",
+          "specifiers": []
+        },
+        {
+          "source": "./index.css",
+          "specifiers": []
+        },
+        {
+          "source": "./app/App.tsx",
+          "specifiers": [
+            "App"
+          ]
+        },
+        {
+          "source": "./components/ThemeToggleButton.tsx",
+          "specifiers": [
+            "AppTheme"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/AssistantPage.test.tsx": {
+      "filePath": "front-end/src/pages/AssistantPage.test.tsx",
+      "contentHash": "ff66ab9d9384911a7af6db9bbca1476aeea3964c3a73fcf295f2e65cba5b4b80",
+      "functions": [
+        {
+          "name": "abortError",
+          "params": [],
+          "returnType": "Error",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "message",
+          "params": [
+            "partial"
+          ],
+          "returnType": "ConversationMessage",
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "renderPage",
+          "params": [
+            "responseTimeoutMs"
+          ],
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "openConversation",
+          "params": [
+            "conversation"
+          ],
+          "exported": false,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@testing-library/react",
+          "specifiers": [
+            "cleanup",
+            "fireEvent",
+            "render",
+            "screen",
+            "waitFor"
+          ]
+        },
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "QueryClient",
+            "QueryClientProvider"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Theme"
+          ]
+        },
+        {
+          "source": "vitest",
+          "specifiers": [
+            "afterEach",
+            "beforeEach",
+            "describe",
+            "expect",
+            "it",
+            "vi"
+          ]
+        },
+        {
+          "source": "../api/assistant",
+          "specifiers": [
+            "createConversation",
+            "getConversation",
+            "listConversations",
+            "sendConversationMessage"
+          ]
+        },
+        {
+          "source": "../api/categories",
+          "specifiers": [
+            "listCategories"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Conversation",
+            "ConversationMessage",
+            "SourceDocument"
+          ]
+        },
+        {
+          "source": "./AssistantPage",
+          "specifiers": [
+            "AssistantPage"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 273,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/AssistantPage.tsx": {
+      "filePath": "front-end/src/pages/AssistantPage.tsx",
+      "contentHash": "d8e59c43adf73ab60c171644246e3312826aa3c06b982f091e5d099bd63f3bcc",
+      "functions": [
+        {
+          "name": "visibleSources",
+          "params": [
+            "message"
+          ],
+          "returnType": "SourceDocument[]",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "toHandoffSource",
+          "params": [
+            "source"
+          ],
+          "returnType": "AssistantSource",
+          "exported": false,
+          "lineCount": 9
+        },
+        {
+          "name": "handoffFor",
+          "params": [
+            "messages",
+            "assistantIndex"
+          ],
+          "returnType": "AssistantHandoff | null",
+          "exported": false,
+          "lineCount": 16
+        },
+        {
+          "name": "AssistantPage",
+          "params": [
+            "{\r\n  escalate,\r\n  responseTimeoutMs = ASSISTANT_TIMEOUT_MS,\r\n}"
+          ],
+          "exported": true,
+          "lineCount": 334
+        },
+        {
+          "name": "Message",
+          "params": [
+            "{\r\n  message,\r\n  onSource,\r\n  onFeedback,\r\n  onRequest,\r\n}"
+          ],
+          "exported": false,
+          "lineCount": 82
+        },
+        {
+          "name": "AnswerBody",
+          "params": [
+            "{\r\n  message,\r\n  onRequest,\r\n}"
+          ],
+          "exported": false,
+          "lineCount": 32
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useMutation",
+            "useQuery",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useEffect",
+            "useRef",
+            "useState"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Button",
+            "Card",
+            "Dialog",
+            "IconButton",
+            "TextArea",
+            "Tooltip",
+            "Badge"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "ChatBubbleIcon",
+            "CheckCircledIcon",
+            "ClipboardCopyIcon",
+            "CrossCircledIcon",
+            "FileIcon",
+            "PaperPlaneIcon",
+            "PlusIcon"
+          ]
+        },
+        {
+          "source": "../api/assistant",
+          "specifiers": [
+            "createConversation",
+            "getConversation",
+            "getSource",
+            "listConversations",
+            "sendConversationMessage",
+            "setAssistantFeedback"
+          ]
+        },
+        {
+          "source": "../api/categories",
+          "specifiers": [
+            "listCategories"
+          ]
+        },
+        {
+          "source": "../components/PageHeader",
+          "specifiers": [
+            "PageHeader"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Conversation",
+            "ConversationMessage",
+            "SourceDocument"
+          ]
+        },
+        {
+          "source": "../utils/date",
+          "specifiers": [
+            "formatDateTime"
+          ]
+        },
+        {
+          "source": "./assistantReply",
+          "specifiers": [
+            "ASSISTANT_TIMEOUT_MS",
+            "splitQuotedAnswer",
+            "withAssistantTimeout"
+          ]
+        },
+        {
+          "source": "./requestHandoff",
+          "specifiers": [
+            "AssistantHandoff",
+            "AssistantSource"
+          ]
+        }
+      ],
+      "exports": [
+        "AssistantHandoff",
+        "AssistantPage"
+      ],
+      "totalLines": 531,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/HomePage.tsx": {
+      "filePath": "front-end/src/pages/HomePage.tsx",
+      "contentHash": "2aee9e054cc5188c03d2d9c52fd46028a0f856896ee2a7b184097d7b43a8eca9",
+      "functions": [
+        {
+          "name": "HomePage",
+          "params": [
+            "{ profile }"
+          ],
+          "exported": true,
+          "lineCount": 112
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Button",
+            "Card",
+            "Badge"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "ChatBubbleIcon",
+            "CheckCircledIcon",
+            "ChevronRightIcon",
+            "PlusIcon",
+            "QuestionMarkCircledIcon",
+            "ReaderIcon"
+          ]
+        },
+        {
+          "source": "../api/requests",
+          "specifiers": [
+            "getRequestSummary"
+          ]
+        },
+        {
+          "source": "../app/navigation",
+          "specifiers": [
+            "go"
+          ]
+        },
+        {
+          "source": "../components/PageHeader",
+          "specifiers": [
+            "PageHeader"
+          ]
+        },
+        {
+          "source": "../components/RequestTable",
+          "specifiers": [
+            "RequestTable"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Employee"
+          ]
+        }
+      ],
+      "exports": [
+        "HomePage"
+      ],
+      "totalLines": 136,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/LoginPage.tsx": {
+      "filePath": "front-end/src/pages/LoginPage.tsx",
+      "contentHash": "4cf6b3702b75defe13c9976f517ce557c673c8bec7b2e3b52e71367d3c93ead0",
+      "functions": [
+        {
+          "name": "LoginPage",
+          "params": [
+            "{\r\n  onLogin,\r\n}"
+          ],
+          "exported": true,
+          "lineCount": 137
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useMutation",
+            "useQuery"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Badge",
+            "Button",
+            "IconButton",
+            "TextField"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "EyeClosedIcon",
+            "EyeOpenIcon"
+          ]
+        },
+        {
+          "source": "../api/auth",
+          "specifiers": [
+            "listDemoAccounts",
+            "login"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Employee"
+          ]
+        }
+      ],
+      "exports": [
+        "LoginPage"
+      ],
+      "totalLines": 147,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/NewRequestPage.tsx": {
+      "filePath": "front-end/src/pages/NewRequestPage.tsx",
+      "contentHash": "0549e54044680293e346fb73dae9c61115ce4092fbface2c7a5cacd0222dab1b",
+      "functions": [
+        {
+          "name": "formatFileSize",
+          "params": [
+            "sizeBytes"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "attachmentIdentity",
+          "params": [
+            "attachment"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "NewRequestPage",
+          "params": [
+            "{\r\n  handoff,\r\n  onCreated,\r\n}"
+          ],
+          "exported": true,
+          "lineCount": 407
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useMutation",
+            "useQuery",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useRef",
+            "useState",
+            "FormEvent"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Button",
+            "Card",
+            "IconButton",
+            "Select",
+            "TextArea",
+            "TextField"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "ChatBubbleIcon",
+            "Cross2Icon",
+            "FileIcon",
+            "PaperPlaneIcon"
+          ]
+        },
+        {
+          "source": "../api/categories",
+          "specifiers": [
+            "listCategories"
+          ]
+        },
+        {
+          "source": "../api/requests",
+          "specifiers": [
+            "createRequest"
+          ]
+        },
+        {
+          "source": "../app/navigation",
+          "specifiers": [
+            "go"
+          ]
+        },
+        {
+          "source": "../components/PageHeader",
+          "specifiers": [
+            "PageHeader"
+          ]
+        },
+        {
+          "source": "./requestHandoff",
+          "specifiers": [
+            "requestFields",
+            "withoutAssistantContext",
+            "AssistantHandoff"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Attachment",
+            "Priority",
+            "RequestDraft"
+          ]
+        }
+      ],
+      "exports": [
+        "NewRequestPage"
+      ],
+      "totalLines": 450,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/NotificationsPage.tsx": {
+      "filePath": "front-end/src/pages/NotificationsPage.tsx",
+      "contentHash": "14f67c539ab21e76c62c394af0419f0a6470b718b73d32224966ae996e0cb163",
+      "functions": [
+        {
+          "name": "NotificationsPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 76
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useMutation",
+            "useQuery",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Button",
+            "Card"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "BellIcon",
+            "CheckCircledIcon",
+            "ChevronRightIcon"
+          ]
+        },
+        {
+          "source": "../api/notifications",
+          "specifiers": [
+            "listNotifications",
+            "markAllNotificationsRead",
+            "markNotificationRead"
+          ]
+        },
+        {
+          "source": "../app/navigation",
+          "specifiers": [
+            "go"
+          ]
+        },
+        {
+          "source": "../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        },
+        {
+          "source": "../components/PageHeader",
+          "specifiers": [
+            "PageHeader"
+          ]
+        },
+        {
+          "source": "../utils/date",
+          "specifiers": [
+            "formatDateTime"
+          ]
+        }
+      ],
+      "exports": [
+        "NotificationsPage"
+      ],
+      "totalLines": 94,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/ProfilePage.tsx": {
+      "filePath": "front-end/src/pages/ProfilePage.tsx",
+      "contentHash": "29266f25885212c0abbe5b1be7b5ca291c117d9c885430a63dee43932ea575b0",
+      "functions": [
+        {
+          "name": "ProfilePage",
+          "params": [
+            "{\r\n  profile,\r\n  logout,\r\n}"
+          ],
+          "exported": true,
+          "lineCount": 60
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Avatar",
+            "Badge",
+            "Button",
+            "Card"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "ExitIcon"
+          ]
+        },
+        {
+          "source": "../components/PageHeader",
+          "specifiers": [
+            "PageHeader"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Employee"
+          ]
+        }
+      ],
+      "exports": [
+        "ProfilePage"
+      ],
+      "totalLines": 66,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/RequestDetailPage.tsx": {
+      "filePath": "front-end/src/pages/RequestDetailPage.tsx",
+      "contentHash": "527cf0754ee1443fb82e9cfdf8642efdf527644fae78276d9cad7822b265de0d",
+      "functions": [
+        {
+          "name": "RequestDetailPage",
+          "params": [
+            "{ id }"
+          ],
+          "exported": true,
+          "lineCount": 194
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useMutation",
+            "useQuery",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Avatar",
+            "Button",
+            "Card",
+            "TextArea"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "ChatBubbleIcon",
+            "FileIcon",
+            "PaperPlaneIcon"
+          ]
+        },
+        {
+          "source": "../api/requests",
+          "specifiers": [
+            "addRequestMessage",
+            "getRequest"
+          ]
+        },
+        {
+          "source": "../app/navigation",
+          "specifiers": [
+            "go"
+          ]
+        },
+        {
+          "source": "../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        },
+        {
+          "source": "../components/PageHeader",
+          "specifiers": [
+            "PageHeader"
+          ]
+        },
+        {
+          "source": "../components/StatusBadge",
+          "specifiers": [
+            "StatusBadge"
+          ]
+        },
+        {
+          "source": "../utils/date",
+          "specifiers": [
+            "formatDateTime"
+          ]
+        }
+      ],
+      "exports": [
+        "RequestDetailPage"
+      ],
+      "totalLines": 210,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/RequestsPage.tsx": {
+      "filePath": "front-end/src/pages/RequestsPage.tsx",
+      "contentHash": "e8aeeff84726361ea9b0d8267c9049e68d065c44ab9d7b95f2f6cd1389098bf1",
+      "functions": [
+        {
+          "name": "RequestsPage",
+          "params": [],
+          "exported": true,
+          "lineCount": 142
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useDeferredValue",
+            "useState"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Button",
+            "Card",
+            "Select",
+            "Tabs",
+            "TextField"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "MagnifyingGlassIcon",
+            "PlusIcon",
+            "ReloadIcon"
+          ]
+        },
+        {
+          "source": "../api/categories",
+          "specifiers": [
+            "listCategories"
+          ]
+        },
+        {
+          "source": "../api/requests",
+          "specifiers": [
+            "listRequests"
+          ]
+        },
+        {
+          "source": "../app/navigation",
+          "specifiers": [
+            "OPEN_STATUSES",
+            "REQUEST_STATUSES",
+            "go"
+          ]
+        },
+        {
+          "source": "../components/PageHeader",
+          "specifiers": [
+            "PageHeader"
+          ]
+        },
+        {
+          "source": "../components/RequestTable",
+          "specifiers": [
+            "RequestTable"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "RequestStatus"
+          ]
+        }
+      ],
+      "exports": [
+        "RequestsPage"
+      ],
+      "totalLines": 158,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/SupportHomePage.tsx": {
+      "filePath": "front-end/src/pages/SupportHomePage.tsx",
+      "contentHash": "cbdba9d4b5d4cb4b0ff131d59e6b68f1a9b08e6d40cae55a062c56acd3d87ca1",
+      "functions": [
+        {
+          "name": "SupportHomePage",
+          "params": [
+            "{ profile }"
+          ],
+          "exported": true,
+          "lineCount": 97
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Badge",
+            "Button",
+            "Card"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "ChevronRightIcon",
+            "PersonIcon",
+            "QuestionMarkCircledIcon",
+            "ReaderIcon"
+          ]
+        },
+        {
+          "source": "../api/support",
+          "specifiers": [
+            "getSupportSummary",
+            "listSupportRequests"
+          ]
+        },
+        {
+          "source": "../app/navigation",
+          "specifiers": [
+            "go"
+          ]
+        },
+        {
+          "source": "../components/PageHeader",
+          "specifiers": [
+            "PageHeader"
+          ]
+        },
+        {
+          "source": "../components/SupportQueueTable",
+          "specifiers": [
+            "SupportQueueTable"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Employee"
+          ]
+        }
+      ],
+      "exports": [
+        "SupportHomePage"
+      ],
+      "totalLines": 114,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/SupportQueuePage.tsx": {
+      "filePath": "front-end/src/pages/SupportQueuePage.tsx",
+      "contentHash": "f6142d6f0806453da2fe2690b4e5c25d6d339c4ae933bde41f9a53a238ddcbed",
+      "functions": [
+        {
+          "name": "SupportQueuePage",
+          "params": [],
+          "exported": true,
+          "lineCount": 151
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useQuery"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useDeferredValue",
+            "useState"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Button",
+            "Card",
+            "Checkbox",
+            "Select",
+            "Tabs",
+            "TextField"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "MagnifyingGlassIcon",
+            "ReloadIcon"
+          ]
+        },
+        {
+          "source": "../api/support",
+          "specifiers": [
+            "getSupportSummary",
+            "listSupportRequests",
+            "SupportQueue"
+          ]
+        },
+        {
+          "source": "../app/navigation",
+          "specifiers": [
+            "OPEN_STATUSES",
+            "PRIORITIES",
+            "REQUEST_STATUSES"
+          ]
+        },
+        {
+          "source": "../components/PageHeader",
+          "specifiers": [
+            "PageHeader"
+          ]
+        },
+        {
+          "source": "../components/SupportQueueTable",
+          "specifiers": [
+            "SupportQueueTable"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Priority",
+            "RequestStatus"
+          ]
+        }
+      ],
+      "exports": [
+        "SupportQueuePage"
+      ],
+      "totalLines": 166,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/SupportRequestDetailPage.tsx": {
+      "filePath": "front-end/src/pages/SupportRequestDetailPage.tsx",
+      "contentHash": "67038dfbef5443d874b66fb0af0abe2493dde012ccb086fdf50343ea8bdd03ea",
+      "functions": [
+        {
+          "name": "rememberDetail",
+          "params": [
+            "queryClient",
+            "id",
+            "updated"
+          ],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "visibleError",
+          "params": [
+            "error"
+          ],
+          "returnType": "string | null",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "refreshAfterConflict",
+          "params": [
+            "queryClient",
+            "id",
+            "error"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "SupportRequestDetailPage",
+          "params": [
+            "{\r\n  id,\r\n  profile,\r\n}"
+          ],
+          "exported": true,
+          "lineCount": 512
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@tanstack/react-query",
+          "specifiers": [
+            "useMutation",
+            "useQuery",
+            "useQueryClient"
+          ]
+        },
+        {
+          "source": "react",
+          "specifiers": [
+            "useState"
+          ]
+        },
+        {
+          "source": "@radix-ui/themes",
+          "specifiers": [
+            "Avatar",
+            "Badge",
+            "Button",
+            "Card",
+            "Select",
+            "TextArea"
+          ]
+        },
+        {
+          "source": "@radix-ui/react-icons",
+          "specifiers": [
+            "ChatBubbleIcon",
+            "FileIcon",
+            "PaperPlaneIcon"
+          ]
+        },
+        {
+          "source": "../api/support",
+          "specifiers": [
+            "addSupportMessage",
+            "addSupportNote",
+            "assignSupportRequest",
+            "changeSupportRequestStatus",
+            "claimSupportRequest",
+            "getSupportRequest",
+            "listSupportStaff"
+          ]
+        },
+        {
+          "source": "../api/client",
+          "specifiers": [
+            "ApiError"
+          ]
+        },
+        {
+          "source": "../app/navigation",
+          "specifiers": [
+            "go",
+            "STATUS_TRANSITIONS"
+          ]
+        },
+        {
+          "source": "../components/EmptyState",
+          "specifiers": [
+            "EmptyState"
+          ]
+        },
+        {
+          "source": "../components/PageHeader",
+          "specifiers": [
+            "PageHeader"
+          ]
+        },
+        {
+          "source": "../components/StatusBadge",
+          "specifiers": [
+            "StatusBadge"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "Employee",
+            "RequestStatus",
+            "SupportRequestDetail"
+          ]
+        },
+        {
+          "source": "../utils/date",
+          "specifiers": [
+            "formatDateTime"
+          ]
+        }
+      ],
+      "exports": [
+        "SupportRequestDetailPage"
+      ],
+      "totalLines": 568,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/assistantReply.test.ts": {
+      "filePath": "front-end/src/pages/assistantReply.test.ts",
+      "contentHash": "a050a0ca9c57e1bffa5c801d75cc0008c64d42cc91456cc9db64d1f86c9c9d10",
+      "functions": [
+        {
+          "name": "abortError",
+          "params": [],
+          "returnType": "Error",
+          "exported": false,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "vitest",
+          "specifiers": [
+            "afterEach",
+            "describe",
+            "expect",
+            "it",
+            "vi"
+          ]
+        },
+        {
+          "source": "./assistantReply",
+          "specifiers": [
+            "ASSISTANT_TIMEOUT_MESSAGE",
+            "ASSISTANT_TIMEOUT_MS",
+            "splitQuotedAnswer",
+            "withAssistantTimeout"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 72,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/assistantReply.ts": {
+      "filePath": "front-end/src/pages/assistantReply.ts",
+      "contentHash": "bd4d4b6d601998c7bb6272920f85c199235fbbaeb89270962c81d94bb4d9cd43",
+      "functions": [
+        {
+          "name": "splitQuotedAnswer",
+          "params": [
+            "text"
+          ],
+          "returnType": "QuotedAnswerParts",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "withAssistantTimeout",
+          "params": [
+            "run",
+            "timeoutMs"
+          ],
+          "returnType": "Promise<T>",
+          "exported": true,
+          "lineCount": 28
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "ASSISTANT_TIMEOUT_MS",
+        "ASSISTANT_TIMEOUT_MESSAGE",
+        "QUOTE_INTRO",
+        "splitQuotedAnswer",
+        "withAssistantTimeout"
+      ],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/requestHandoff.test.ts": {
+      "filePath": "front-end/src/pages/requestHandoff.test.ts",
+      "contentHash": "3726fc31ca2ee4046a5d6e5459e019e1a648187c9fab92c4b535f3c92d507f13",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "vitest",
+          "specifiers": [
+            "describe",
+            "expect",
+            "it"
+          ]
+        },
+        {
+          "source": "./requestHandoff",
+          "specifiers": [
+            "requestFields",
+            "withoutAssistantContext"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 252,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/pages/requestHandoff.ts": {
+      "filePath": "front-end/src/pages/requestHandoff.ts",
+      "contentHash": "bb5e85ba8882b6f80b939ce53e8b61d93d25ed6c30385027baca2059c75e4343",
+      "functions": [
+        {
+          "name": "suggestedCategory",
+          "params": [
+            "sources"
+          ],
+          "returnType": "[string, string]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "requestFields",
+          "params": [
+            "handoff"
+          ],
+          "returnType": "Pick<\r\n  RequestDraft,\r\n  \"category\" | \"subcategory\" | \"subject\" | \"description\" | \"assistantContext\"\r\n>",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "withoutAssistantContext",
+          "params": [
+            "draft"
+          ],
+          "returnType": "T",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "RequestDraft"
+          ]
+        }
+      ],
+      "exports": [
+        "suggestedCategory",
+        "requestFields",
+        "withoutAssistantContext"
+      ],
+      "totalLines": 62,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/styles/app.css": {
+      "filePath": "front-end/src/styles/app.css",
+      "contentHash": "9ddef5fd9b811d31394d2a3debcbb283a111752bbc0678a33e5c087273e7526b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 431,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/src/styles/dark.css": {
+      "filePath": "front-end/src/styles/dark.css",
+      "contentHash": "7f268a5ae7fb804dfc121bf5b650a31a274fe45c6e30f8f71bd0798291129ae5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 204,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/src/styles/extra.css": {
+      "filePath": "front-end/src/styles/extra.css",
+      "contentHash": "37af8d1137701ad369030974751279dfb8364c67a091fe0aede8bffd68e03081",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 487,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/src/styles/pages.css": {
+      "filePath": "front-end/src/styles/pages.css",
+      "contentHash": "202203ce1daaaee3680cdef27bb576685df554a7c25a4b76b6fd21e48ff31fd5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 449,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/src/types.ts": {
+      "filePath": "front-end/src/types.ts",
+      "contentHash": "a89be996ad268415fe221a0ac4a1a268210d618228a016d8c61b2e6cc21eab9e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 216,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/src/utils/date.ts": {
+      "filePath": "front-end/src/utils/date.ts",
+      "contentHash": "54b5f52754defd650958bf2adc80e166d9d37a55e114933dfb9aff938c4584fb",
+      "functions": [
+        {
+          "name": "formatDateTime",
+          "params": [
+            "value"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "formatDateTime"
+      ],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "front-end/tsconfig.app.json": {
+      "filePath": "front-end/tsconfig.app.json",
+      "contentHash": "2fc98a1e19ee4d64301e631c12205d500c8677edda1f2e12d80a014f2c467121",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 27,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/tsconfig.json": {
+      "filePath": "front-end/tsconfig.json",
+      "contentHash": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/tsconfig.node.json": {
+      "filePath": "front-end/tsconfig.node.json",
+      "contentHash": "65e1e0f173ceb3e800b656507498b69528d440f93eec8fb903bac461c440689d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": false
+    },
+    "front-end/vite.config.ts": {
+      "filePath": "front-end/vite.config.ts",
+      "contentHash": "79d7af67a992ee1aa4a1b0b546fe27eafd8f9659f5984b9007da5e6f70c998ba",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "@vitejs/plugin-react",
+          "specifiers": [
+            "react"
+          ]
+        },
+        {
+          "source": "vitest/config",
+          "specifiers": [
+            "defineConfig"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 12,
+      "hasStructuralAnalysis": true
+    },
+    "index.html": {
+      "filePath": "index.html",
+      "contentHash": "bceb1a058389640951a34e210091b1587980652201ab32f8e11dc026065bba12",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 143,
+      "hasStructuralAnalysis": false
+    }
+  }
+}
